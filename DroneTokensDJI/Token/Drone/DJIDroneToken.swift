@@ -17,6 +17,8 @@ import PromiseKit
 
 //MARK: DJIDroneToken
 public class DJIDroneToken: ExecutableTokenCard, DroneToken {
+
+
     private let aircraft: DJIAircraft
     private let flightControllerDelegate: FlightControllerDelegate = FlightControllerDelegate()
     
@@ -162,6 +164,35 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         }.then {
             PromiseKit.wrap { missionManager.startMissionExecution(completion: $0) }
         }
+    }
+    
+    
+    public func location() -> DCKCoordinate2D {
+        fatalError("Not Implemented")
+    }
+    
+    public func landingGear(down: Bool) -> Promise<Void> {
+        fatalError("Not Implemented")
+    }
+    
+    public func getHome() -> DCKCoordinate2D {
+        fatalError("Not Implemented")
+    }
+    
+    public func setHome(location: DCKCoordinate2D) {
+        fatalError("Not Implemented")
+    }
+    
+    public func takeOffCancel() -> Promise<Void> {
+        fatalError("Not Implemented")
+    }
+    
+    public func returnHomeCancel() -> Promise<Void> {
+        fatalError("Not Implemented")
+    }
+    
+    public func landCancel() -> Promise<Void> {
+        fatalError("Not Implemented")
     }
 }
 
