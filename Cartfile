@@ -1,0 +1,10 @@
+git "git@github.ibm.com:CMER/drone-card-kit.git" "restructuring"
+github "mxcl/PromiseKit" ~> 4.0
+
+# this is being included manually
+# github "dji-sdk/Mobile-SDK-iOS" ~> 3.4
+
+# for the pixhawk, which we aren't implementing (yet?)
+#github "mavlink/c_library_v1" "master"
+#github "mavlink/c_library_v2" "master"
+#git "https://bitbucket.org/boland/redparkserialcable.git" "master"
