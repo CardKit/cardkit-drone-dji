@@ -42,6 +42,16 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "68DE995B1DF1BB250040D76A"
+               BuildableName = "DroneTokensDJITests iOS.xctest"
+               BlueprintName = "DroneTokensDJITests iOS"
+               ReferencedContainer = "container:DroneTokensDJI.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
