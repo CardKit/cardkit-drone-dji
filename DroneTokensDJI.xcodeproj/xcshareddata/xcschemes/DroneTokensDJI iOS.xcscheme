@@ -14,23 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "68DE99521DF1BB250040D76A"
+               BlueprintIdentifier = "685338961DF4C219003F1DA5"
                BuildableName = "DroneTokensDJI.framework"
                BlueprintName = "DroneTokensDJI iOS"
-               ReferencedContainer = "container:DroneTokensDJI.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "NO"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "68DE995B1DF1BB250040D76A"
-               BuildableName = "DroneTokensDJITests iOS.xctest"
-               BlueprintName = "DroneTokensDJITests iOS"
                ReferencedContainer = "container:DroneTokensDJI.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -46,7 +32,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "68DE995B1DF1BB250040D76A"
+               BlueprintIdentifier = "6853389F1DF4C219003F1DA5"
                BuildableName = "DroneTokensDJITests iOS.xctest"
                BlueprintName = "DroneTokensDJITests iOS"
                ReferencedContainer = "container:DroneTokensDJI.xcodeproj">
@@ -56,10 +42,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "68DE99521DF1BB250040D76A"
-            BuildableName = "DroneCKTokensDJI.framework"
+            BlueprintIdentifier = "685338961DF4C219003F1DA5"
+            BuildableName = "DroneTokensDJI.framework"
             BlueprintName = "DroneTokensDJI iOS"
-            ReferencedContainer = "container:DroneCKTokensDJI.xcodeproj">
+            ReferencedContainer = "container:DroneTokensDJI.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -78,7 +64,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "68DE99521DF1BB250040D76A"
+            BlueprintIdentifier = "685338961DF4C219003F1DA5"
             BuildableName = "DroneTokensDJI.framework"
             BlueprintName = "DroneTokensDJI iOS"
             ReferencedContainer = "container:DroneTokensDJI.xcodeproj">
@@ -93,6 +79,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "685338961DF4C219003F1DA5"
+            BuildableName = "DroneTokensDJI.framework"
+            BlueprintName = "DroneTokensDJI iOS"
+            ReferencedContainer = "container:DroneTokensDJI.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
