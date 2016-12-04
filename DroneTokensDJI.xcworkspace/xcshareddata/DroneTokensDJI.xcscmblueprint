@@ -1,0 +1,44 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "F4D35797753D1741819727992B1A5C94E5919169",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "F4D35797753D1741819727992B1A5C94E5919169" : 9223372036854775807,
+    "B9DBB42E70CA3C1BCC85171BF8F3EAAC1E75F3CF" : 9223372036854775807,
+    "CAA449FE015D93E5CCEAF955F604D6B28C2AEE27" : 9223372036854775807,
+    "697D6D019C667A7F357F5BB879F79A2824CA12EB" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "641D5FD1-1C7B-41F6-82FE-350FAB078019",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "F4D35797753D1741819727992B1A5C94E5919169" : "drone-tokens-dji\/",
+    "B9DBB42E70CA3C1BCC85171BF8F3EAAC1E75F3CF" : "drone-card-kit\/",
+    "CAA449FE015D93E5CCEAF955F604D6B28C2AEE27" : "card-kit-runtime\/",
+    "697D6D019C667A7F357F5BB879F79A2824CA12EB" : "card-kit\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "DroneTokensDJI",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "DroneTokensDJI.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.ibm.com:CMER\/card-kit.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "697D6D019C667A7F357F5BB879F79A2824CA12EB"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.ibm.com:CMER\/drone-card-kit.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "B9DBB42E70CA3C1BCC85171BF8F3EAAC1E75F3CF"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.ibm.com:CMER\/card-kit-runtime.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "CAA449FE015D93E5CCEAF955F604D6B28C2AEE27"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.ibm.com:CMER\/drone-tokens-dji.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "F4D35797753D1741819727992B1A5C94E5919169"
+    }
+  ]
+}
