@@ -1,15 +1,16 @@
 //
-//  DroneCKTokensDJITests.swift
-//  DroneCKTokensDJITests
+//  DroneTokensDJITests.swift
+//  DroneTokensDJITests
 //
-//  Created by ismails on 12/2/16.
+//  Created by ismails on 12/4/16.
 //  Copyright © 2016 IBM. All rights reserved.
 //
 
 import XCTest
-@testable import DroneCKTokensDJI
+@testable import DroneTokensDJI
+@testable import CardKit
 
-class DroneCKTokensDJITests: XCTestCase {
+class DroneTokensDJITests: XCTestCase {
     
     override func setUp() {
         super.setUp()
