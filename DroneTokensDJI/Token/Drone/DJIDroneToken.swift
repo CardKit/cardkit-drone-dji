@@ -16,7 +16,7 @@ import DJISDK
 import PromiseKit
 
 //MARK: DJIDroneToken
-public class DJIDroneToken: ExecutableTokenCard, DroneToken {
+public class DJIDroneToken: ExecutableTokenCard{ //, DroneToken {
 
 
     private let aircraft: DJIAircraft
@@ -113,7 +113,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
             // create a waypoint to each destination
             let c = CLLocationCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude)
             let waypoint = DJIWaypoint(coordinate: c)
-            waypoint.altitude = Float(coordinate.altitudeMeters)
+            waypoint.altitude = Float(coordinate.altitude.metersAboveSeaLevel)
             
             // add it to the mission
             mission.add(waypoint)
