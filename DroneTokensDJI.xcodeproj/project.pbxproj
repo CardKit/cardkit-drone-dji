@@ -139,12 +139,12 @@
 		685338B11DF4C251003F1DA5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				689498E71DF4C373007D765A /* DJISDK.framework */,
 				685338B21DF4C251003F1DA5 /* CardKit.framework */,
 				685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */,
 				685338B41DF4C251003F1DA5 /* DroneCardKit.framework */,
 				685338B51DF4C251003F1DA5 /* Freddy.framework */,
 				685338B61DF4C251003F1DA5 /* PromiseKit.framework */,
+				689498E71DF4C373007D765A /* DJISDK.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
