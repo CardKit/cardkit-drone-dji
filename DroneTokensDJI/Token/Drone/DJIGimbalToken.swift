@@ -35,23 +35,29 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
         }
     }
     
-    public func rotateToAbsoluteAngle(pitch: Float, roll: Float, yaw: Float) -> Promise<Void> {
-        let pitchAngle = DJIGimbalAngleRotation(enabled: true, angle: pitch, direction: .clockwise)
-        let rollAngle = DJIGimbalAngleRotation(enabled: true, angle: roll, direction: .clockwise)
-        let yawAngle = DJIGimbalAngleRotation(enabled: true, angle: yaw, direction: .clockwise)
+    public func rotate(yaw: DCKAngle?, pitch: DCKAngle?, roll: DCKAngle?, relative: Bool) -> Promise<Void> {
+        
+        var pitchAngle = DJIGimbalAngleRotation(enabled: false, angle: 0, direction: .clockwise)
+        var rollAngle = DJIGimbalAngleRotation(enabled: false, angle: 0, direction: .clockwise)
+        var yawAngle = DJIGimbalAngleRotation(enabled: false, angle: 0, direction: .clockwise)
+        
+        if let degrees = pitch?.degrees {
+            pitchAngle.enabled = true
+            pitchAngle.angle = Float(degrees)
+        }
+        
+        if let degrees = roll?.degrees {
+            rollAngle.enabled = true
+            rollAngle.angle = Float(degrees)
+        }
+        
+        if let degrees = yaw?.degrees {
+            yawAngle.enabled = true
+            yawAngle.angle = Float(degrees)
+        }
         
         return PromiseKit.wrap {
             self.gimbal.rotateGimbal(with: .angleModeAbsoluteAngle, pitch: pitchAngle, roll: rollAngle, yaw: yawAngle, withCompletion: $0)
-        }
-    }
-    
-    public func rotateToRelativeAngle(pitch: Float, roll: Float, yaw: Float) -> Promise<Void> {
-        let pitchAngle = DJIGimbalAngleRotation(enabled: true, angle: pitch, direction: .clockwise)
-        let rollAngle = DJIGimbalAngleRotation(enabled: true, angle: roll, direction: .clockwise)
-        let yawAngle = DJIGimbalAngleRotation(enabled: true, angle: yaw, direction: .clockwise)
-        
-        return PromiseKit.wrap {
-            self.gimbal.rotateGimbal(with: .angleModeRelativeAngle, pitch: pitchAngle, roll: rollAngle, yaw: yawAngle, withCompletion: $0)
         }
     }
 }
