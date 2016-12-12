@@ -10,6 +10,11 @@ from StringIO import StringIO
 
 PODSPEC_URL = "https://raw.githubusercontent.com/dji-sdk/Mobile-SDK-iOS/master/DJI-SDK-iOS.podspec"
 SDK_URL = ""
+FRAMEWORK_PATH = "Frameworks/DJISDK.framework"
+
+# check if the framework is present
+if os.path.exists(FRAMEWORK_PATH):
+	exit(0)
 
 # download podspec
 print("downloading latest DJI SDK podspec from %s" % PODSPEC_URL)

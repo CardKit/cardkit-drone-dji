@@ -1,0 +1,3 @@
+# Ignore the DJISDK.framework since it is huge. Instead, we will
+# download it if it is missing when we build the project.
+DJISDK.framework
