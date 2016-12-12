@@ -184,10 +184,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 685338AB1DF4C219003F1DA5 /* Build configuration list for PBXNativeTarget "DroneTokensDJI iOS" */;
 			buildPhases = (
+				CCF8A6031DFF00EF00BDCEE7 /* ShellScript */,
 				685338921DF4C219003F1DA5 /* Sources */,
 				685338931DF4C219003F1DA5 /* Frameworks */,
 				685338941DF4C219003F1DA5 /* Headers */,
 				685338951DF4C219003F1DA5 /* Resources */,
+				CCF8A6021DFEFFF700BDCEE7 /* ShellScript */,
 				685338BC1DF4C25A003F1DA5 /* ShellScript */,
 			);
 			buildRules = (
@@ -312,6 +314,32 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+		CCF8A6021DFEFFF700BDCEE7 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\nswiftlint\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi";
+		};
+		CCF8A6031DFF00EF00BDCEE7 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "python2.7 scripts/fetchDJISDK.py";
 		};
 /* End PBXShellScriptBuildPhase section */
 
