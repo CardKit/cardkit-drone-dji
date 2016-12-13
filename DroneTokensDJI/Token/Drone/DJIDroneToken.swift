@@ -16,9 +16,8 @@ import DJISDK
 import PromiseKit
 
 //MARK: DJIDroneToken
-public class DJIDroneToken: ExecutableTokenCard{ //, DroneToken {
-
-
+public class DJIDroneToken: ExecutableTokenCard, DroneToken {
+    
     private let aircraft: DJIAircraft
     private let flightControllerDelegate: FlightControllerDelegate = FlightControllerDelegate()
     
@@ -26,9 +25,119 @@ public class DJIDroneToken: ExecutableTokenCard{ //, DroneToken {
         self.aircraft = aircraft
         self.aircraft.flightController?.delegate = self.flightControllerDelegate
         super.init(with: card)
+        
     }
     
+    //
+    //    func areMotorsOn() -> Promise<Bool>
+    //    func motors(spinning: Bool) -> Promise<Void>
+    //
+    //    func currentLocation() -> Promise<DCKCoordinate3D>
+    //    func currentOrientation() -> Promise<DCKOrientation>
+    //
+    //    func hover(withYaw yaw: DCKAngle?) -> Promise<Void>
+    //
+    //    func fly(to altitude: DCKAltitude, withYaw yaw: DCKAngle?, atSpeed speed: DCKVelocity?) -> Promise<Void>
+    //    func fly(to coordinate: DCKCoordinate2D, atAltitude altitude: DCKAltitude?, withYaw yaw: DCKAngle?, atSpeed speed: DCKVelocity?) -> Promise<Void>
+    //    func fly(on path: DCKCoordinate2DPath, atSpeed speed: DCKVelocity?) -> Promise<Void>
+    //    func fly(on path: DCKCoordinate3DPath, atSpeed speed: DCKVelocity?) -> Promise<Void>
+    //
+    //    func setHome(location: DCKCoordinate2D)
+    //    func homeLocation() -> Promise<DCKCoordinate2D>
+    //    func returnHome(withYaw yaw: DCKAngle?, atSpeed speed: DCKVelocity?) -> Promise<Void>
+    //
+    //    func landingGear(down: Bool) -> Promise<Void>
+    //
+    //    func land() -> Promise<Void>
+    
     //MARK: DroneToken
+    
+    
+    public func areMotorsOn() -> Promise<Bool> {
+        return Promise {fulfill, reject in
+            guard let motorsOn = flightControllerDelegate.currentState?.areMotorsOn else {
+                reject(DroneTokenError.FailureRetrievingState)
+            }
+            
+            fulfill(motorsOn)
+        }
+    }
+    
+    public func motors(spinning: Bool) -> Promise<Void> {
+        if spinning {
+            return PromiseKit.wrap{
+                aircraft.flightController?.turnOnMotors(completion: $0)
+            }
+        }
+        
+        return PromiseKit.wrap{
+            aircraft.flightController?.turnOffMotors(completion: $0)
+        }
+    }
+    
+    
+    public func currentLocation() -> Promise<DCKCoordinate3D> {
+        return Promise {fulfill, reject in
+            guard let location = flightControllerDelegate.currentState?.aircraftLocation else {
+                reject(DroneTokenError.FailureRetrievingState)
+            }
+            
+            guard let altitude = flightControllerDelegate.currentState?.altitude else {
+                reject(DroneTokenError.FailureRetrievingState)
+            }
+            
+            let relativeAltObject = DCKRelativeAltitude(metersAboveGroundAtTakeoff: altitude)
+            let currentLocObject = DCKCoordinate3D(latitude: location.latitude, longitude: location.longitude, altitude: relativeAltObject)
+            
+            fulfill(currentLocObject)
+        }
+    }
+    
+    public func currentOrientation() -> Promise<DCKOrientation> {
+        return Promise {fulfill, reject in
+            guard let attitude = flightControllerDelegate.currentState?.attitude else {
+                reject(DroneTokenError.FailureRetrievingState)
+            }
+            
+            let yaw = DCKAngle(degrees: attitude.yaw)
+            let pitch = DCKAngle(degrees: attitude.pitch)
+            let roll = DCKAngle(degrees: attitude.roll)
+            let attitudeObj = DCKOrientation(yaw: yaw, pitch: pitch, roll: roll)
+            
+            fulfill(attitudeObj)
+        }
+    }
+    
+    public func hover(withYaw yaw: DCKAngle?) -> Promise<Void> {
+        // TODO: cancel everything & hover
+        
+        if let desiredYaw = yaw?.degrees,
+            let currentYaw = flightControllerDelegate.currentState?.attitude.yaw {
+            let motionYaw = desiredYaw - currentYaw
+            
+            
+            let flightControlData = DJIVirtualStickFlightControlData(pitch: 0, roll: 0, yaw: Float(motionYaw), verticalThrottle: 0)
+            
+            aircraft.flightController.
+            
+            return
+                firstly {
+                    PromiseKit.wrap { aircraft.flightController?.setControlMode(DJIVirtualStickYawControlMode.angle, withCompletion: $0) }
+                    }.then { _ in
+                        PromiseKit.wrap { aircraft.flightController?.enableVirtualStickControlMode(completion: $0) }
+                    }.then { _ in
+                        PromiseKit.wrap { aircraft.flightController?.send(controlData: flightControlData, withCompletion: $0) }
+                    }.then  { _ in
+                        PromiseKit.wrap { aircraft.flightController?.disableVirtualStickControlMode(completion: $0) }
+            }
+        }
+        
+        return Promise.empty()
+    }
+    
+    
+    // --------------
+    
     
     public func takeOff() -> Promise<Void> {
         print("drone taking off!")
@@ -161,8 +270,8 @@ public class DJIDroneToken: ExecutableTokenCard{ //, DroneToken {
         
         return PromiseKit.wrap {
             missionManager.prepare(mission, withProgress: nil, withCompletion: $0)
-        }.then {
-            PromiseKit.wrap { missionManager.startMissionExecution(completion: $0) }
+            }.then {
+                PromiseKit.wrap { missionManager.startMissionExecution(completion: $0) }
         }
     }
     
