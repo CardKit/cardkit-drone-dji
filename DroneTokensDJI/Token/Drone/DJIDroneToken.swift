@@ -21,7 +21,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     private let aircraft: DJIAircraft
     private let flightControllerDelegate: FlightControllerDelegate = FlightControllerDelegate()
     
-    init(with card: TokenCard, for aircraft: DJIAircraft) {
+    public init(with card: TokenCard, for aircraft: DJIAircraft) {
         self.aircraft = aircraft
         self.aircraft.flightController?.delegate = self.flightControllerDelegate
         super.init(with: card)
