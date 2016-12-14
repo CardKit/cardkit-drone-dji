@@ -28,42 +28,9 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         
     }
     
-    //
-    //    // Location & attitude
-    //    var currentLocation: DCKCoordinate2D? { get }
-    //    var currentAltitude: DCKRelativeAltitude? { get }
-    //    var currentAttitude: DCKAttitude? { get }
-    //
-    //    // Motor state
-    //    var areMotorsOn: Bool? { get }
-    //    func turnMotorsOn() -> Promise<Void>
-    //    func turnMotorsOff() -> Promise<Void>
-    //
-    //    // Take off
-    //    func takeOff(at altitude: DCKRelativeAltitude?) -> Promise<Void>
-    //
-    //    // Hover
-    //    func hover(at altitude: DCKRelativeAltitude?, withYaw yaw: DCKAngle?) -> Promise<Void>
-    //
-    //    // Fly
-    //    func fly(to coordinate: DCKCoordinate2D, atYaw yaw: DCKAngle?, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?) -> Promise<Void>
-    //    func fly(on path: DCKCoordinate2DPath, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?) -> Promise<Void>
-    //    func fly(on path: DCKCoordinate3DPath, atSpeed speed: DCKSpeed?) -> Promise<Void>
-    //
-    //    // Return home
-    //    var homeLocation: DCKCoordinate2D? { get }
-    //    func returnHome(atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?) -> Promise<Void>
-    //
-    //    // Landing gear
-    //    var isLandingGearDown: Bool? { get }
-    //    func landingGear(down: Bool) -> Promise<Void>
-    //
-    //    // Land
-    //    func land() -> Promise<Void>
-    //
-    //MARK: DroneToken
+    //MARK: - DroneToken Protocol Implementation
     
-    
+    // MARK: Computed Properties
     public var currentLocation: DCKCoordinate2D? {
         guard let location = flightControllerDelegate.currentState?.aircraftLocation else {
             return nil
@@ -105,6 +72,24 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         }
     }
     
+    public var homeLocation: DCKCoordinate2D? {
+        guard let coordinates = self.flightControllerDelegate.currentState?.homeLocation else {
+            return nil
+        }
+        
+        return DCKCoordinate2D(latitude: coordinates.latitude, longitude: coordinates.longitude)
+    }
+    
+    public var isLandingGearDown: Bool? {
+        guard let landingGear = self.aircraft.flightController?.landingGear else {
+            return false;
+        }
+        
+        return landingGear.status == .deployed
+    }
+    
+    // MARK: Take Off
+    
     public func takeOff(at altitude: DCKRelativeAltitude?) -> Promise<Void> {
         if let desiredAltitude = altitude {
             print("drone taking off and climbing to altitude \(altitude)")
@@ -136,6 +121,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         }
     }
     
+    // MARK: Hover
     public func hover(at altitude: DCKRelativeAltitude?, withYaw yaw: DCKAngle?) -> Promise<Void> {
         // TODO: cancel everything & hover
         
@@ -145,7 +131,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
             
             
             let flightControlData = DJIVirtualStickFlightControlData(pitch: 0, roll: 0, yaw: Float(motionYaw), verticalThrottle: 0)
-
+            
             return
                 firstly { () -> Promise<Void> in
                     PromiseKit.wrap { aircraft.flightController?.setControlMode(DJIFlightControllerControlMode.smart, withCompletion: $0) }
@@ -164,19 +150,95 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         }
     }
     
-//    public func fly(to coordinate: DCKCoordinate2D, atYaw yaw: DCKAngle?, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?) -> Promise<Void> {
-//        
-//    }
-//
-//    public func fly(on path: DCKCoordinate2DPath, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?) -> Promise<Void> {
-//        
-//    }
-//    
-//    public func fly(on path: DCKCoordinate3DPath, atSpeed speed: DCKSpeed?) -> Promise<Void> {
-//        
-//    }
+    // MARK: Fly To
     
-    // MARK: Instance Methods
+    public func fly(to coordinate: DCKCoordinate2D, atYaw yaw: DCKAngle?, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?) -> Promise<Void> {
+        return
+            firstly {
+                hover(withYaw: yaw)
+                }.then { _ in
+                    self.fly(on: DCKCoordinate2DPath(path: [coordinate]), atAltitude: altitude, atSpeed: speed)
+        }
+    }
+    
+    public func fly(on path: DCKCoordinate2DPath, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?) -> Promise<Void> {
+        var altitudeInMeters: Double? = nil
+        
+        // if altitude was not passed, use current altitude
+        if let userSetAltitude = altitude {
+            altitudeInMeters = userSetAltitude.metersAboveGroundAtTakeoff
+        } else if let currentAltitude = self.flightControllerDelegate.currentState?.altitude {
+            altitudeInMeters = Double(currentAltitude)
+        } else {
+            return firstly {
+                throw DroneTokenError.FailureRetrievingDroneState
+            }
+        }
+        
+        let coordinate3DPath = path.path.map { (coordinate2d) -> DCKCoordinate3D in
+            DCKCoordinate3D(latitude: coordinate2d.latitude, longitude: coordinate2d.longitude, altitude: DCKRelativeAltitude(metersAboveGroundAtTakeoff: altitudeInMeters!))
+        }
+        
+        return self.fly(on: DCKCoordinate3DPath(path: coordinate3DPath), atSpeed: speed)
+    }
+    
+    public func fly(on path: DCKCoordinate3DPath, atSpeed speed: DCKSpeed?) -> Promise<Void> {
+        print("drone flying on path: [\(path)] at current altitude at speed \(speed)")
+        
+        let mission = DJIWaypointMission()
+        mission.finishedAction = .noAction
+        mission.headingMode = .auto
+        mission.flightPathMode = .normal
+        
+        if let speedInMetersPerSecond = speed?.metersPerSecond, speedInMetersPerSecond > 0 {
+            mission.autoFlightSpeed = Float(speedInMetersPerSecond)
+        }
+        
+        for coordinate in path.path {
+            // create a waypoint to each destination
+            let c = CLLocationCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude)
+            let waypoint = DJIWaypoint(coordinate: c)
+            waypoint.altitude = Float(coordinate.altitude.metersAboveGroundAtTakeoff)
+            
+            // add it to the mission
+            mission.add(waypoint)
+        }
+        
+        // execute it
+        return self.executeWaypointMission(mission: mission)
+    }
+    
+    // MARK: Land/Return Home
+    
+    public func landingGear(down: Bool) -> Promise<Void> {
+        if(down) {
+            return PromiseKit.wrap {
+                self.aircraft.flightController?.landingGear?.deployLandingGear(completion: $0)
+            }
+        }
+        
+        return PromiseKit.wrap {
+            self.aircraft.flightController?.landingGear?.retractLandingGear(completion: $0)
+        }
+    }
+    
+    public func land() -> Promise<Void> {
+        return PromiseKit.wrap {
+            self.aircraft.flightController?.autoLanding(completion: $0)
+        }
+    }
+    
+    public func returnHome(atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?) -> Promise<Void> {
+        guard let homeCoordinates = self.homeLocation else {
+            return firstly {
+                throw DroneTokenError.FailureRetrievingDroneState
+            }
+        }
+        
+        return self.fly(to: homeCoordinates, atAltitude: altitude, atSpeed: speed)
+    }
+    
+    // MARK: - Instance Methods
     
     private func executeWaypointMission(mission: DJIWaypointMission) -> Promise<Void> {
         // create a waypoint step
@@ -203,236 +265,6 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
                 PromiseKit.wrap { missionManager.startMissionExecution(completion: $0) }
         }
     }
-    
-    
-    //
-    //    public func currentLocation() -> Promise<DCKCoordinate3D> {
-    //        return Promise {fulfill, reject in
-    //            guard let location = flightControllerDelegate.currentState?.aircraftLocation else {
-    //                reject(DroneTokenError.FailureRetrievingState)
-    //            }
-    //
-    //            guard let altitude = flightControllerDelegate.currentState?.altitude else {
-    //                reject(DroneTokenError.FailureRetrievingState)
-    //            }
-    //
-    //            let relativeAltObject = DCKRelativeAltitude(metersAboveGroundAtTakeoff: altitude)
-    //            let currentLocObject = DCKCoordinate3D(latitude: location.latitude, longitude: location.longitude, altitude: relativeAltObject)
-    //
-    //            fulfill(currentLocObject)
-    //        }
-    //    }
-    //
-    //    public func currentOrientation() -> Promise<DCKOrientation> {
-    //        return Promise {fulfill, reject in
-    //            guard let attitude = flightControllerDelegate.currentState?.attitude else {
-    //                reject(DroneTokenError.FailureRetrievingState)
-    //            }
-    //
-    //            let yaw = DCKAngle(degrees: attitude.yaw)
-    //            let pitch = DCKAngle(degrees: attitude.pitch)
-    //            let roll = DCKAngle(degrees: attitude.roll)
-    //            let attitudeObj = DCKOrientation(yaw: yaw, pitch: pitch, roll: roll)
-    //
-    //            fulfill(attitudeObj)
-    //        }
-    //    }
-    //
-    //    public func hover(withYaw yaw: DCKAngle?) -> Promise<Void> {
-    //        // TODO: cancel everything & hover
-    //
-    //        if let desiredYaw = yaw?.degrees,
-    //            let currentYaw = flightControllerDelegate.currentState?.attitude.yaw {
-    //            let motionYaw = desiredYaw - currentYaw
-    //
-    //
-    //            let flightControlData = DJIVirtualStickFlightControlData(pitch: 0, roll: 0, yaw: Float(motionYaw), verticalThrottle: 0)
-    //
-    ////            aircraft.flightController.
-    //
-    //            return
-    //                firstly {
-    //                    PromiseKit.wrap { aircraft.flightController?.setControlMode(DJIVirtualStickYawControlMode.angle, withCompletion: $0) }
-    //                    }.then { _ in
-    //                        PromiseKit.wrap { aircraft.flightController?.enableVirtualStickControlMode(completion: $0) }
-    //                    }.then { _ in
-    //                        PromiseKit.wrap { aircraft.flightController?.send(controlData: flightControlData, withCompletion: $0) }
-    //                    }.then  { _ in
-    //                        PromiseKit.wrap { aircraft.flightController?.disableVirtualStickControlMode(completion: $0) }
-    //            }
-    //        }
-    //
-    //        return Promise.empty()
-    //    }
-    //
-    //
-    //    // --------------
-    //
-    //
-    //    public func takeOff() -> Promise<Void> {
-    //        print("drone taking off!")
-    //        return PromiseKit.wrap {
-    //            aircraft.flightController?.takeoff(completion: $0)
-    //        }
-    //    }
-    //
-    //    public func takeOff(climbingTo altitude: Double) -> Promise<Void> {
-    //        print("drone taking off and climbing to altitude \(altitude)")
-    //
-    //        guard let state = self.flightControllerDelegate.currentState else {
-    //            return Promise(error: DJIDroneTokenError.indeterminateCurrentState)
-    //        }
-    //
-    //        let mission = DJIWaypointMission()
-    //        mission.finishedAction = .noAction
-    //        mission.headingMode = .auto
-    //        mission.flightPathMode = .normal
-    //
-    //        // create a waypoint to the current coordinate
-    //        let waypoint = DJIWaypoint(coordinate: state.aircraftLocation)
-    //
-    //        // with the requested altitude
-    //        waypoint.altitude = Float(altitude)
-    //
-    //        // add it to the mission
-    //        mission.add(waypoint)
-    //
-    //        // execute it
-    //        return self.executeWaypointMission(mission: mission)
-    //    }
-    //
-    //    public func fly(to coordinate: DCKCoordinate2D, atSpeed speed: Double = Defaults.speed) -> Promise<Void> {
-    //        let path = DCKCoordinate2DPath(path: [coordinate])
-    //        return self.fly(on: path, atSpeed: speed)
-    //    }
-    //
-    //    public func fly(to coordinate: DCKCoordinate3D, atSpeed speed: Double = Defaults.speed) -> Promise<Void> {
-    //        let path = DCKCoordinate3DPath(path: [coordinate])
-    //        return self.fly(on: path, atSpeed: speed)
-    //    }
-    //
-    //    public func fly(on path: DCKCoordinate2DPath, atSpeed speed: Double = Defaults.speed) -> Promise<Void> {
-    //        print("drone flying on path: [\(path)] at current altitude at speed \(speed)")
-    //
-    //        let mission = DJIWaypointMission()
-    //        mission.finishedAction = .noAction
-    //        mission.headingMode = .auto
-    //        mission.flightPathMode = .normal
-    //
-    //        if speed > 0 {
-    //            mission.autoFlightSpeed = Float(speed)
-    //        }
-    //
-    //        for coordinate in path.path {
-    //            // create a waypoint to each destination
-    //            let c = CLLocationCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude)
-    //            let waypoint = DJIWaypoint(coordinate: c)
-    //
-    //            // add it to the mission
-    //            mission.add(waypoint)
-    //        }
-    //
-    //        // execute it
-    //        return self.executeWaypointMission(mission: mission)
-    //    }
-    //
-    //    public func fly(on path: DCKCoordinate3DPath, atSpeed speed: Double = Defaults.speed) -> Promise<Void> {
-    //        print("drone flying on path: [\(path)] at speed \(speed)")
-    //
-    //        let mission = DJIWaypointMission()
-    //        mission.finishedAction = .noAction
-    //        mission.headingMode = .auto
-    //        mission.flightPathMode = .normal
-    //
-    //        if speed > 0 {
-    //            mission.autoFlightSpeed = Float(speed)
-    //        }
-    //
-    //        for coordinate in path.path {
-    //            // create a waypoint to each destination
-    //            let c = CLLocationCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude)
-    //            let waypoint = DJIWaypoint(coordinate: c)
-    //            waypoint.altitude = Float(coordinate.altitude.metersAboveSeaLevel)
-    //
-    //            // add it to the mission
-    //            mission.add(waypoint)
-    //        }
-    //
-    //        // execute it
-    //        return self.executeWaypointMission(mission: mission)
-    //    }
-    //
-    //    public func returnHome() -> Promise<Void> {
-    //        print("drone returning home!")
-    //
-    //        let goHome = DJIGoHomeStep()
-    //        return self.execute(missionSteps: [goHome])
-    //    }
-    //
-    //    public func land() -> Promise<Void> {
-    //        print("drone landing!")
-    //
-    //        return PromiseKit.wrap {
-    //            aircraft.flightController?.autoLanding(completion: $0)
-    //        }
-    //    }
-    //
-    //    //MARK: Instance Methods
-    //
-    //    private func executeWaypointMission(mission: DJIWaypointMission) -> Promise<Void> {
-    //        // create a waypoint step
-    //        guard let step = DJIWaypointStep(waypointMission: mission) else {
-    //            return Promise(error: DJIDroneTokenError.failedToInstantiateWaypointStep)
-    //        }
-    //
-    //        // execute it
-    //        return self.execute(missionSteps: [step])
-    //    }
-    //
-    //    private func execute(missionSteps: [DJIMissionStep]) -> Promise<Void> {
-    //        guard let mission = DJICustomMission(steps: missionSteps) else {
-    //            return Promise(error: DJIDroneTokenError.failedToInstantiateCustomMission)
-    //        }
-    //
-    //        guard let missionManager = DJIMissionManager.sharedInstance() else {
-    //            return Promise(error: DJIDroneTokenError.failedToInstantiateMissionManager)
-    //        }
-    //
-    //        return PromiseKit.wrap {
-    //            missionManager.prepare(mission, withProgress: nil, withCompletion: $0)
-    //            }.then {
-    //                PromiseKit.wrap { missionManager.startMissionExecution(completion: $0) }
-    //        }
-    //    }
-    //
-    //
-    //    public func location() -> DCKCoordinate2D {
-    //        fatalError("Not Implemented")
-    //    }
-    //
-    //    public func landingGear(down: Bool) -> Promise<Void> {
-    //        fatalError("Not Implemented")
-    //    }
-    //
-    //    public func getHome() -> DCKCoordinate2D {
-    //        fatalError("Not Implemented")
-    //    }
-    //
-    //    public func setHome(location: DCKCoordinate2D) {
-    //        fatalError("Not Implemented")
-    //    }
-    //
-    //    public func takeOffCancel() -> Promise<Void> {
-    //        fatalError("Not Implemented")
-    //    }
-    //
-    //    public func returnHomeCancel() -> Promise<Void> {
-    //        fatalError("Not Implemented")
-    //    }
-    //
-    //    public func landCancel() -> Promise<Void> {
-    //        fatalError("Not Implemented")
-    //    }
 }
 
 //MARK:- DJIDroneTokenDefaults
@@ -450,7 +282,6 @@ public enum DJIDroneTokenError: Error {
     case failedToInstantiateWaypointStep
     case indeterminateCurrentState
 }
-
 
 //MARK:- FlightControllerDelegate
 
