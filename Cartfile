@@ -1,4 +1,4 @@
-git "git@github.ibm.com:CMER/drone-card-kit.git" "dji_drone_token"
+git "git@github.ibm.com:CMER/drone-card-kit.git" "feature/dji_drone_token"
 github "mxcl/PromiseKit" ~> 4.0
 
 # this is being included manually
