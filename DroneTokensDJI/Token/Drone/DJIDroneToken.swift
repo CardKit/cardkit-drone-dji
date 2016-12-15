@@ -61,8 +61,8 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     
     
     public func turnMotorsOn() -> Promise<Void> {
-        return PromiseKit.wrap{
-            aircraft.flightController?.turnOnMotors(completion: $0)
+        return PromiseKit.wrap {
+            return aircraft.flightController?.turnOnMotors(completion: $0)
         }
     }
     
