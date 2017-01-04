@@ -11,7 +11,6 @@ import Foundation
 import CardKit
 import CardKitRuntime
 import DroneCardKit
-import PromiseKit
 
 public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
     let prefix = ">> "

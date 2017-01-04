@@ -1,5 +1,4 @@
-github "bignerdranch/Freddy" "3.0.1"
-github "mxcl/PromiseKit" "4.1.0"
+github "bignerdranch/Freddy" "3.0.2"
 git "git@github.ibm.com:CMER/card-kit.git" "5c723a315f2ad05bcd9b3bf790a4174d17aafd2a"
-git "git@github.ibm.com:CMER/card-kit-runtime.git" "760fd2c582ae58004e336d57f83c436caaf17cce"
-git "git@github.ibm.com:CMER/drone-card-kit.git" "8a976134537568ce1f5c8aa2cd8613cd934b07d0"
+git "git@github.ibm.com:CMER/card-kit-runtime.git" "b27b2fd769a849921ea57e02f7265bc31cc77161"
+git "git@github.ibm.com:CMER/drone-card-kit.git" "b548f8cedb7c9091ed42c98289bd1b6834280fd4"
