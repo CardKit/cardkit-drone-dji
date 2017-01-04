@@ -17,6 +17,8 @@ import DJISDK
 //MARK: DJIGimbalToken
 
 public class DJIGimbalToken: ExecutableTokenCard { // , GimbalToken {
+        /*
+    
     private let gimbal: DJIGimbal
     private let gimbalDelegate = GimbalDelegate()
     
@@ -25,7 +27,7 @@ public class DJIGimbalToken: ExecutableTokenCard { // , GimbalToken {
         self.gimbal.delegate = self.gimbalDelegate
         super.init(with: card)
     }
-    
+
     //MARK: GimbalToken
     
     public func reset() -> Promise<Void> {
@@ -82,4 +84,5 @@ fileprivate class GimbalDelegate: NSObject, DJIGimbalDelegate {
     func gimbal(_ gimbal: DJIGimbal, didUpdateGimbalBatteryRemainingEnergy energy: Int) {
         self.currentGimbalBateryEnergy = energy
     }
+ */
 }
