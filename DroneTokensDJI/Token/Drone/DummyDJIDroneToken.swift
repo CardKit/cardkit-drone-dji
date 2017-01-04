@@ -14,6 +14,7 @@ import DroneCardKit
 import PromiseKit
 
 public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
+    let prefix = ">> "
     let delay: TimeInterval = 3.0
     
     public var homeLocation: DCKCoordinate2D?
@@ -41,6 +42,7 @@ public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
     // MARK: Instance Methods
     // MARK: DroneToken
     public func turnMotorsOn(completionHandler: DroneTokenCompletionHandler?) {
+        print("\(prefix) DummyDJIDroneToken > turnMotorsOn()")
         Thread.sleep(forTimeInterval: delay)
         
         areMotorsOn = true
@@ -48,6 +50,7 @@ public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
     }
     
     public func turnMotorsOff(completionHandler: DroneTokenCompletionHandler?) {
+        print("\(prefix) DummyDJIDroneToken > turnMotorsOff()")
         Thread.sleep(forTimeInterval: delay)
         
         areMotorsOn = false
@@ -55,6 +58,7 @@ public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
     }
     
     public func takeOff(at altitude: DCKRelativeAltitude?, completionHandler: DroneTokenCompletionHandler?) {
+        print("\(prefix) DummyDJIDroneToken > takeOff(at: \(altitude))")
         Thread.sleep(forTimeInterval: delay)
         
         turnMotorsOn { (error) in
@@ -83,6 +87,7 @@ public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
     }
     
     public func hover(at altitude: DCKRelativeAltitude?, withYaw yaw: DCKAngle?, completionHandler: DroneTokenCompletionHandler?) {
+        print("\(prefix) DummyDJIDroneToken > hover(at: \(altitude), withYaw: \(yaw))")
         Thread.sleep(forTimeInterval: delay)
         
         if let specifiedAltitude = altitude {
@@ -93,6 +98,7 @@ public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
     }
     
     public func fly(to coordinate: DCKCoordinate2D, atYaw yaw: DCKAngle?, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: DroneTokenCompletionHandler?) {
+        print("\(prefix) DummyDJIDroneToken > fly(to: \(coordinate), atYaw: \(yaw), atAltitude: \(altitude), atSpeed: \(speed))")
         Thread.sleep(forTimeInterval: delay)
         
         let newYaw: DCKAngle
@@ -117,6 +123,7 @@ public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
     }
     
     public func fly(on path: DCKCoordinate2DPath, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: DroneTokenCompletionHandler?) {
+        print("\(prefix) DummyDJIDroneToken > fly(on: \(path), atAltitude: \(altitude), atSpeed: \(speed))")
         Thread.sleep(forTimeInterval: delay)
         
         var error: Error? = nil
@@ -141,6 +148,7 @@ public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
     }
     
     public func fly(on path: DCKCoordinate3DPath, atSpeed speed: DCKSpeed?, completionHandler: DroneTokenCompletionHandler?) {
+        print("\(prefix) DummyDJIDroneToken > fly(on: \(path), atSpeed: \(speed))")
         Thread.sleep(forTimeInterval: delay)
         
         var error: Error? = nil
@@ -166,6 +174,7 @@ public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
     }
     
     public func returnHome(atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: DroneTokenCompletionHandler?) {
+        print("\(prefix) DummyDJIDroneToken > returnHome(atAltitude: \(altitude), atSpeed: \(speed))")
         Thread.sleep(forTimeInterval: delay)
         
         self.fly(to: self.homeLocation!) { error in
@@ -174,12 +183,14 @@ public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
     }
     
     public func landingGear(down: Bool, completionHandler: DroneTokenCompletionHandler?) {
+        print("\(prefix) DummyDJIDroneToken > landingGear(down: \(down))")
         Thread.sleep(forTimeInterval: delay)
         
         self.isLandingGearDown = down
     }
     
     public func land(completionHandler: DroneTokenCompletionHandler?) {
+        print("\(prefix) DummyDJIDroneToken > land()")
         Thread.sleep(forTimeInterval: delay)
         
         let newAltitude = DCKRelativeAltitude(metersAboveGroundAtTakeoff: 0)
