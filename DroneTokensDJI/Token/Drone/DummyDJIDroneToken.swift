@@ -13,7 +13,7 @@ import CardKitRuntime
 import DroneCardKit
 import PromiseKit
 
-public class DummyDJIDroneToken: ExecutableTokenCard { //, DroneToken {
+public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
     let delay: TimeInterval = 3.0
     
     public var homeLocation: DCKCoordinate2D?
@@ -40,138 +40,150 @@ public class DummyDJIDroneToken: ExecutableTokenCard { //, DroneToken {
     
     // MARK: Instance Methods
     // MARK: DroneToken
-    public func turnMotorsOn(completionHandler: DroneTokenCompletionHandler) -> Void {
+    public func turnMotorsOn(completionHandler: DroneTokenCompletionHandler?) {
+        Thread.sleep(forTimeInterval: delay)
+        
         areMotorsOn = true
-        Thread.sleep(forTimeInterval: 3.0)
-        completionHandler(nil)
+        completionHandler?(nil)
     }
     
-    /*
-    
-    public func turnMotorsOnPV() -> Promise<Void> {
-        return Promise<Void>.empty(result: (), secondsToWait: delay).then {
-            self.areMotorsOn = true
-            return Promise<Void>.empty(result: ())
-        }
-    }
-    
-    public func turnMotorsOff() -> Promise<Void> {
-        return Promise<Void>.empty(result: (), secondsToWait: delay).then {
-            self.areMotorsOn = false
-            return Promise<Void>.empty(result: ())
-        }
-    }
-    
-    public func takeOff(at altitude: DCKRelativeAltitude?) -> Promise<Void> {
-        return Promise<Void>.empty(result: (), secondsToWait: delay).then {
-            let _ = self.turnMotorsOnPV()
-            let _ = self.landingGear(down: false)
-            
-            var newAltitude = DCKRelativeAltitude(metersAboveGroundAtTakeoff: 1)
-            
-            if let specifiedAltitude = altitude {
-                newAltitude = specifiedAltitude
-            }
-            
-            self.currentAltitude = newAltitude
-            
-            return Promise<Void>.empty(result: ())
-        }
-    }
-    
-    public func hover(at altitude: DCKRelativeAltitude?, withYaw yaw: DCKAngle?) -> Promise<Void> {
-        return Promise<Void>.empty(result: (), secondsToWait: delay).then {
-            if let specifiedAltitude = altitude {
-                self.currentAltitude = specifiedAltitude
-            }
-            
-            return Promise<Void>.empty(result: ())
-        }
-    }
-    
-    public func fly(to coordinate: DCKCoordinate2D, atYaw yaw: DCKAngle?, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?) -> Promise<Void> {
+    public func turnMotorsOff(completionHandler: DroneTokenCompletionHandler?) {
+        Thread.sleep(forTimeInterval: delay)
         
-        return Promise<Void>.empty(result: (), secondsToWait: delay).then {
-            let newYaw: DCKAngle
-            if let yaw = yaw {
-                newYaw = yaw
-            } else {
-                newYaw = self.currentAttitude!.yaw
+        areMotorsOn = false
+        completionHandler?(nil)
+    }
+    
+    public func takeOff(at altitude: DCKRelativeAltitude?, completionHandler: DroneTokenCompletionHandler?) {
+        Thread.sleep(forTimeInterval: delay)
+        
+        turnMotorsOn { (error) in
+            if let error = error {
+                completionHandler?(error)
+                return
             }
-            
-            let newCoord = DCKCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude)
-            self.currentLocation = newCoord
-            
-            if let altitude = altitude {
-                self.currentAltitude = altitude
-            }
-            
-            let newAttitude = DCKAttitude(yaw: newYaw, pitch: self.currentAttitude!.pitch, roll: self.currentAttitude!.roll)
-            self.currentAttitude = newAttitude
-            
-            return Promise<Void>.empty(result: ())
         }
         
-     
-    }
-    
-    public func fly(on path: DCKCoordinate2DPath, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?) -> Promise<Void> {
-        return Promise<Void>.empty(result: (), secondsToWait: delay).then {
-            var flightPromise: Promise<Void> = firstly {
-                return Promise<Void>.empty(result: ())
+        landingGear(down: false) { (error) in
+            if let error = error {
+                completionHandler?(error)
+                return
             }
-            
-            for coord in path.path {
-                flightPromise = flightPromise.then {
-                    self.fly(to: coord, atAltitude: altitude, atSpeed: speed)
-                }
-            }
-            
-            return flightPromise
-        }
-    }
-    
-    public func fly(on path: DCKCoordinate3DPath, atSpeed speed: DCKSpeed?) -> Promise<Void> {
-        return Promise<Void>.empty(result: (), secondsToWait: delay).then {
-            var flightPromise: Promise<Void> = firstly {
-                return Promise<Void>.empty(result: ())
-            }
-            
-            for coord in path.path {
-                flightPromise = flightPromise.then {
-                    _ -> Promise<Void> in
-                    self.fly(to: coord.as2D(), atAltitude: coord.altitude, atSpeed: speed)
-                }
-            }
-            
-            return flightPromise
         }
         
-
-    }
-    
-    public func returnHome(atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?) -> Promise<Void> {
-        return Promise<Void>.empty(result: (), secondsToWait: delay).then {
-            self.fly(to: self.homeLocation!)
+        var newAltitude = DCKRelativeAltitude(metersAboveGroundAtTakeoff: 1)
+        
+        if let specifiedAltitude = altitude {
+            newAltitude = specifiedAltitude
         }
+        
+        self.currentAltitude = newAltitude
+        
+        completionHandler?(nil)
     }
     
-    public func landingGear(down: Bool) -> Promise<Void> {
-        return Promise<Void>.empty(result: (), secondsToWait: delay).then {
-            self.isLandingGearDown = down
+    public func hover(at altitude: DCKRelativeAltitude?, withYaw yaw: DCKAngle?, completionHandler: DroneTokenCompletionHandler?) {
+        Thread.sleep(forTimeInterval: delay)
+        
+        if let specifiedAltitude = altitude {
+            self.currentAltitude = specifiedAltitude
+        }
+        
+        completionHandler?(nil)
+    }
+    
+    public func fly(to coordinate: DCKCoordinate2D, atYaw yaw: DCKAngle?, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: DroneTokenCompletionHandler?) {
+        Thread.sleep(forTimeInterval: delay)
+        
+        let newYaw: DCKAngle
+        
+        if let yaw = yaw {
+            newYaw = yaw
+        } else {
+            newYaw = self.currentAttitude!.yaw
+        }
+        
+        let newCoord = DCKCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        self.currentLocation = newCoord
+        
+        if let altitude = altitude {
+            self.currentAltitude = altitude
+        }
+        
+        let newAttitude = DCKAttitude(yaw: newYaw, pitch: self.currentAttitude!.pitch, roll: self.currentAttitude!.roll)
+        self.currentAttitude = newAttitude
+        
+        completionHandler?(nil)
+    }
+    
+    public func fly(on path: DCKCoordinate2DPath, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: DroneTokenCompletionHandler?) {
+        Thread.sleep(forTimeInterval: delay)
+        
+        var error: Error? = nil
+        for coord in path.path {
             
-            return Promise<Void>.empty(result: ())
+            let semaphore = DispatchSemaphore(value: 0)
+            
+            self.fly(to: coord, atAltitude: altitude, atSpeed: speed) { e in
+                error = e
+                semaphore.signal()
+            }
+            
+            semaphore.wait()
+            
+            if let error = error {
+                completionHandler?(error)
+                return
+            }
+        }
+        
+        completionHandler?(nil)
+    }
+    
+    public func fly(on path: DCKCoordinate3DPath, atSpeed speed: DCKSpeed?, completionHandler: DroneTokenCompletionHandler?) {
+        Thread.sleep(forTimeInterval: delay)
+        
+        var error: Error? = nil
+        for coord in path.path {
+            
+            let semaphore = DispatchSemaphore(value: 0)
+            
+            self.fly(to: coord.as2D(), atAltitude: coord.altitude, atSpeed: speed) { e in
+                error = e
+                semaphore.signal()
+            }
+            
+            semaphore.wait()
+            
+            if let error = error {
+                completionHandler?(error)
+                return
+            }
+        }
+        
+        completionHandler?(nil)
+        
+    }
+    
+    public func returnHome(atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: DroneTokenCompletionHandler?) {
+        Thread.sleep(forTimeInterval: delay)
+        
+        self.fly(to: self.homeLocation!) { error in
+            completionHandler?(error)
         }
     }
     
-    public func land() -> Promise<Void> {
-        return Promise<Void>.empty(result: (), secondsToWait: delay).then {
-            let newAltitude = DCKRelativeAltitude(metersAboveGroundAtTakeoff: 0)
-            self.currentAltitude = newAltitude
-            
-            return Promise<Void>.empty(result: ())
-        }
+    public func landingGear(down: Bool, completionHandler: DroneTokenCompletionHandler?) {
+        Thread.sleep(forTimeInterval: delay)
+        
+        self.isLandingGearDown = down
     }
- 
- */
+    
+    public func land(completionHandler: DroneTokenCompletionHandler?) {
+        Thread.sleep(forTimeInterval: delay)
+        
+        let newAltitude = DCKRelativeAltitude(metersAboveGroundAtTakeoff: 0)
+        self.currentAltitude = newAltitude
+        completionHandler?(nil)
+    }
 }
