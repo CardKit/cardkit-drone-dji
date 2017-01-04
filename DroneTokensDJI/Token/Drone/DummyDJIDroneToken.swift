@@ -40,19 +40,11 @@ public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
     
     // MARK: Instance Methods
     // MARK: DroneToken
-    public func turnMotorsOn(completionHandler: DroneTokenCompletionHandler?) {
+    public func spinMotors(on: Bool, completionHandler: DroneTokenCompletionHandler?) {
         print("\(prefix) DummyDJIDroneToken > turnMotorsOn()")
         Thread.sleep(forTimeInterval: delay)
         
-        areMotorsOn = true
-        completionHandler?(nil)
-    }
-    
-    public func turnMotorsOff(completionHandler: DroneTokenCompletionHandler?) {
-        print("\(prefix) DummyDJIDroneToken > turnMotorsOff()")
-        Thread.sleep(forTimeInterval: delay)
-        
-        areMotorsOn = false
+        areMotorsOn = on
         completionHandler?(nil)
     }
     
@@ -60,7 +52,7 @@ public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
         print("\(prefix) DummyDJIDroneToken > takeOff(at: \(altitude))")
         Thread.sleep(forTimeInterval: delay)
         
-        turnMotorsOn { (error) in
+        spinMotors(on: true) { (error) in
             if let error = error {
                 completionHandler?(error)
                 return

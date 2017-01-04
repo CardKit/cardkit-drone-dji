@@ -78,12 +78,13 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     
     // MARK: Instance Methods
     // MARK: DroneToken
-    public func turnMotorsOn(completionHandler: DroneTokenCompletionHandler?) {
-        aircraft.flightController?.turnOnMotors(completion: completionHandler)
-    }
-    
-    public func turnMotorsOff(completionHandler: DroneTokenCompletionHandler?) {
-        aircraft.flightController?.turnOffMotors(completion: completionHandler)
+    public func spinMotors(on: Bool, completionHandler: DroneTokenCompletionHandler?) {
+        if on {
+            aircraft.flightController?.turnOnMotors(completion: completionHandler)
+        }
+        else {
+            aircraft.flightController?.turnOffMotors(completion: completionHandler)
+        }
     }
     
     public func takeOff(at altitude: DCKRelativeAltitude?, completionHandler: DroneTokenCompletionHandler?) {
