@@ -16,7 +16,8 @@ import DJISDK
 import PromiseKit
 
 //MARK: DJIDroneToken
-public class DJIDroneToken: ExecutableTokenCard, DroneToken {
+public class DJIDroneToken: ExecutableTokenCard { //, DroneToken {
+    /*
     
     private let aircraft: DJIAircraft
     private let flightControllerDelegate: FlightControllerDelegate = FlightControllerDelegate()
@@ -272,6 +273,8 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
                 PromiseKit.wrap { missionManager.startMissionExecution(completion: $0) }
         }
     }
+ 
+ */
 }
 
 //MARK:- DJIDroneTokenDefaults

@@ -13,7 +13,7 @@ import CardKitRuntime
 import DroneCardKit
 import PromiseKit
 
-public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
+public class DummyDJIDroneToken: ExecutableTokenCard { //, DroneToken {
     let delay: TimeInterval = 3.0
     
     public var homeLocation: DCKCoordinate2D?
@@ -40,8 +40,16 @@ public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
     
     // MARK: Instance Methods
     // MARK: DroneToken
-    public func turnMotorsOn() -> Promise<Void> {
-        return Promise<Void>.empty(result: (), secondsToWait: delay).then(on: DispatchQueue.global(qos: .background)) { _ in
+    public func turnMotorsOn(completionHandler: DroneTokenCompletionHandler) -> Void {
+        areMotorsOn = true
+        Thread.sleep(forTimeInterval: 3.0)
+        completionHandler(nil)
+    }
+    
+    /*
+    
+    public func turnMotorsOnPV() -> Promise<Void> {
+        return Promise<Void>.empty(result: (), secondsToWait: delay).then {
             self.areMotorsOn = true
             return Promise<Void>.empty(result: ())
         }
@@ -56,7 +64,7 @@ public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
     
     public func takeOff(at altitude: DCKRelativeAltitude?) -> Promise<Void> {
         return Promise<Void>.empty(result: (), secondsToWait: delay).then {
-            let _ = self.turnMotorsOn()
+            let _ = self.turnMotorsOnPV()
             let _ = self.landingGear(down: false)
             
             var newAltitude = DCKRelativeAltitude(metersAboveGroundAtTakeoff: 1)
@@ -164,4 +172,6 @@ public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
             return Promise<Void>.empty(result: ())
         }
     }
+ 
+ */
 }
