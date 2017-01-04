@@ -138,13 +138,12 @@ public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
             
             semaphore.wait()
             
-            if let error = error {
-                completionHandler?(error)
-                return
+            if error != nil {
+                break
             }
         }
         
-        completionHandler?(nil)
+        completionHandler?(error)
     }
     
     public func fly(on path: DCKCoordinate3DPath, atSpeed speed: DCKSpeed?, completionHandler: DroneTokenCompletionHandler?) {
@@ -163,14 +162,12 @@ public class DummyDJIDroneToken: ExecutableTokenCard, DroneToken {
             
             semaphore.wait()
             
-            if let error = error {
-                completionHandler?(error)
-                return
+            if error != nil {
+                break
             }
         }
         
-        completionHandler?(nil)
-        
+        completionHandler?(error)
     }
     
     public func returnHome(atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: DroneTokenCompletionHandler?) {

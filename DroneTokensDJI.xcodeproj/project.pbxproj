@@ -14,7 +14,6 @@
 		685338B81DF4C251003F1DA5 /* CardKitRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */; };
 		685338B91DF4C251003F1DA5 /* DroneCardKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B41DF4C251003F1DA5 /* DroneCardKit.framework */; };
 		685338BA1DF4C251003F1DA5 /* Freddy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B51DF4C251003F1DA5 /* Freddy.framework */; };
-		685338BB1DF4C251003F1DA5 /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B61DF4C251003F1DA5 /* PromiseKit.framework */; };
 		6872EF3A1E1C578E0007EC21 /* DummyDJIDroneToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6872EF391E1C578E0007EC21 /* DummyDJIDroneToken.swift */; };
 		689498E31DF4C30A007D765A /* DJIDroneToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689498E11DF4C30A007D765A /* DJIDroneToken.swift */; };
 		689498E41DF4C30A007D765A /* DJIGimbalToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689498E21DF4C30A007D765A /* DJIGimbalToken.swift */; };
@@ -76,7 +75,6 @@
 			files = (
 				689498E81DF4C373007D765A /* DJISDK.framework in Frameworks */,
 				685338BA1DF4C251003F1DA5 /* Freddy.framework in Frameworks */,
-				685338BB1DF4C251003F1DA5 /* PromiseKit.framework in Frameworks */,
 				685338B71DF4C251003F1DA5 /* CardKit.framework in Frameworks */,
 				685338B81DF4C251003F1DA5 /* CardKitRuntime.framework in Frameworks */,
 				685338B91DF4C251003F1DA5 /* DroneCardKit.framework in Frameworks */,
@@ -289,7 +287,6 @@
 			);
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/Freddy.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/PromiseKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/CardKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/CardKitRuntime.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/DroneCardKit.framework",
