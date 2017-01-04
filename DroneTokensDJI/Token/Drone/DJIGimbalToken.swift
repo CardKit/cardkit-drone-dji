@@ -13,11 +13,10 @@ import CardKitRuntime
 import DroneCardKit
 
 import DJISDK
-import PromiseKit
 
 //MARK: DJIGimbalToken
 
-public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
+public class DJIGimbalToken: ExecutableTokenCard { // , GimbalToken {
     private let gimbal: DJIGimbal
     private let gimbalDelegate = GimbalDelegate()
     
