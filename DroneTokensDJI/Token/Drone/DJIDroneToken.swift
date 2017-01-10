@@ -87,12 +87,6 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         }
     }
     
-    
-    /// Take off using DJITakeoffStep and change altitude using DJIGoToStep
-    ///
-    /// - Parameters:
-    ///   - altitude: the altitude the drone will climb to. if nil, the drone will take off to it's default take off altitude.
-    ///   - completionHandler: DroneTokenCompletionHandler
     public func takeOff(at altitude: DCKRelativeAltitude?, completionHandler: DroneTokenCompletionHandler?) {
         print("drone taking off and climbing to altitude \(altitude)")
         
@@ -165,17 +159,6 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         completionHandler?(error)
     }
     
-    
-    /// Fly to a coordinate at an altitude, speed, and yaw. The drone will change its yaw angle and then fly to the location. 
-    /// The yaw angle will be updated by calling the hover(withYaw:) function. The altitude and location are modified by creating
-    /// custom mission steps from `DJIGoToStep`.
-    ///
-    /// - Parameters:
-    ///   - coordinate: the location the drone needs to fly to
-    ///   - yaw: the angle the drone should be facing. if nil, the yaw will not change.
-    ///   - altitude: the height the drone should be at. if nil, the altitude will not change.
-    ///   - speed: the speed the drone should be flying. if nil, the default speed will be used (8 m/s)
-    ///   - completionHandler: DroneTokenCompletionHandler
     public func fly(to coordinate: DCKCoordinate2D, atYaw yaw: DCKAngle?, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: DroneTokenCompletionHandler?) {
         DispatchQueue.global(qos: .default).async {
             let semaphore = DispatchSemaphore(value: 0)
