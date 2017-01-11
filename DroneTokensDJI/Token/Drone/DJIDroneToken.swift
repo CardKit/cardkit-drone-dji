@@ -17,6 +17,7 @@ import DJISDK
 
 //MARK: DJIDroneToken
 public class DJIDroneToken: ExecutableTokenCard, DroneToken {
+    private let sleepTimeInSeconds = 2.0 //in seconds
     private let aircraft: DJIAircraft
     private let flightControllerDelegate = FlightControllerDelegate()
     private let missionManagerDelegate = MissionManagerDelegate()
@@ -111,52 +112,57 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     }
     
     public func hover(at altitude: DCKRelativeAltitude?, withYaw yaw: DCKAngle?, completionHandler: DroneTokenCompletionHandler?) {
-        let semaphore = DispatchSemaphore(value: 0)
-        var error: Error?
-        
-        // stop all tasks
-        if error == nil {
-            DJIMissionManager.sharedInstance()?.stopMissionExecution() { (djiError) in
-                semaphore.signal()
-                error = djiError
+        DispatchQueue.global(qos: .default).async {
+            let semaphore = DispatchSemaphore(value: 0)
+            var error: Error?
+            
+            // stop all current missions
+            // we have to check if we are currently executing a mission before we stop it, or this occurs:
+            
+            // (Error Domain=DJISDKMissionErrorDomain Code=-5016 "Aircraft is not running a mission or current
+            // mission object in mission manager is empty.(code:-5016)" UserInfo={NSLocalizedDescription=Aircraft
+            // is not running a mission or current mission object in mission manager is empty.(code:-5016)})
+            
+            if error == nil && DJIMissionManager.sharedInstance()?.currentExecutingMission() != nil {
+                DJIMissionManager.sharedInstance()?.stopMissionExecution() { (djiError) in
+                    semaphore.signal()
+                    error = djiError
+                }
+                
+                semaphore.wait()
             }
             
-            semaphore.wait()
-        }
-        
-        // change altitude (if specified)
-        if error == nil, let altitudeInMeters = altitude?.metersAboveGroundAtTakeoff {
-            var missionSteps: [DJIMissionStep] = []
-            
-            if let altitudeStep = DJIGoToStep(altitude: Float(altitudeInMeters)) {
-                missionSteps.append(altitudeStep)
-            }
-            
-            self.executeMission(missionSteps: missionSteps) { (djiError) in
-                error = djiError
-                semaphore.signal()
-            }
-            
-            semaphore.wait()
-        }
-        
-        // change yaw (if specified)
-        if error == nil, let yawAngleInDegrees = yaw?.degrees {
-            var ctrlData: DJIVirtualStickFlightControlData = DJIVirtualStickFlightControlData()
-            ctrlData.yaw = Float(yawAngleInDegrees)
-            
-            if let isVirtualStickAvailable = self.aircraft.flightController?.isVirtualStickControlModeAvailable(),
-                isVirtualStickAvailable == true {
-                self.aircraft.flightController?.send(ctrlData) { (djiError) in
+            // take off (incase if the drone is on the ground) and change altitude
+            if error == nil {
+                self.takeOff(at: altitude) { (djiError) in
                     error = djiError
                     semaphore.signal()
                 }
+                
+                semaphore.wait()
             }
             
-            semaphore.wait()
+            // change yaw (if specified)
+            // TODO: this method of controlling yaw does not work
+            // it "freezes" the drone and does not allow for other commands to be sent (e.g. land)
+//            if error == nil { //, let yawAngleInDegrees = yaw?.degrees {
+//                let yawAngleInDegrees = 90
+//                var ctrlData: DJIVirtualStickFlightControlData = DJIVirtualStickFlightControlData()
+//                ctrlData.yaw = Float(yawAngleInDegrees)
+//                
+//                if let isVirtualStickAvailable = self.aircraft.flightController?.isVirtualStickControlModeAvailable(),
+//                    isVirtualStickAvailable == true {
+//                    self.aircraft.flightController?.send(ctrlData) { (djiError) in
+//                        error = djiError
+//                        semaphore.signal()
+//                    }
+//                }
+//                
+//                semaphore.wait()
+//            }
+            
+            completionHandler?(error)
         }
-        
-        completionHandler?(error)
     }
     
     public func fly(to coordinate: DCKCoordinate2D, atYaw yaw: DCKAngle?, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: DroneTokenCompletionHandler?) {
@@ -186,6 +192,10 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
                 }
                 
                 if let flyStep = DJIGoToStep(coordinate: coord) {
+                    if let speedInMetersPerSecond = speed?.metersPerSecond, speedInMetersPerSecond > 0 {
+                        flyStep.flightSpeed = Float(speedInMetersPerSecond)
+                    }
+                    
                     missionSteps.append(flyStep)
                 } else {
                     error = DJIDroneTokenError.failedToInstantiateCustomMission
@@ -275,12 +285,46 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         }
     }
     
+    
     public func land(completionHandler: DroneTokenCompletionHandler?) {
-        self.aircraft.flightController?.autoLanding(completion: completionHandler)
+        DispatchQueue.global(qos: .default).async {
+            var error: Error?
+            var semaphore = DispatchSemaphore(value: 0)
+            
+            /*
+             Before we auto land, we need to stop any current missions. If this fails, we should
+             still try to autoland. Maybe autoland will force the missions to stop executing.
+             Therefore, since we are going to autoland anyways, we are ignoring the error in
+             stopMissionExecution().
+             */
+            
+            if error == nil {
+                DJIMissionManager.sharedInstance()?.stopMissionExecution() { _ in
+                    semaphore.signal()
+                }
+                
+                semaphore.wait()
+            }
+            
+            if error == nil {
+                self.aircraft.flightController?.autoLanding(completion: { (djiError) in
+                    error = djiError
+                    semaphore.signal()
+                })
+                semaphore.wait()
+            }
+            
+            if error == nil {
+                while let isFlying = self.flightControllerDelegate.currentState?.isFlying, isFlying {
+                    Thread.sleep(forTimeInterval: self.sleepTimeInSeconds)
+                }
+            }
+            
+            completionHandler?(error)
+        }
     }
  
     // MARK: - Instance Methods
-    
     private func executeWaypointMission(mission: DJIWaypointMission, completionHandler: DroneTokenCompletionHandler?) {
         // create a waypoint step
         guard let step = DJIWaypointStep(waypointMission: mission) else {
@@ -348,7 +392,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         }
         
         while(missionManagerDelegate.isExecuting) {
-            Thread.sleep(forTimeInterval: 2)
+            Thread.sleep(forTimeInterval: sleepTimeInSeconds)
         }
         
         error = missionManagerDelegate.executionError
