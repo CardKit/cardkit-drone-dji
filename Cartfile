@@ -1,5 +1,4 @@
 git "git@github.ibm.com:CMER/drone-card-kit.git" "master"
-github "mxcl/PromiseKit" ~> 4.0
 
 # this is being included manually
 # github "dji-sdk/Mobile-SDK-iOS" ~> 3.4
