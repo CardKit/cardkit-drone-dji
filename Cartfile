@@ -1,4 +1,4 @@
-git "git@github.ibm.com:CMER/drone-card-kit.git" "master"
+git "git@github.ibm.com:ETX-CardKit/drone-card-kit.git" "master"
 
 # this is being included manually
 # github "dji-sdk/Mobile-SDK-iOS" ~> 3.4
