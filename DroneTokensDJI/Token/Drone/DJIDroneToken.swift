@@ -6,6 +6,9 @@
 //  Copyright © 2016 IBM. All rights reserved.
 //
 
+// swiftlint:disable variable_name
+// swiftlint:disable weak_delegate
+
 import Foundation
 
 import CardKit
