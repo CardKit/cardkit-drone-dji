@@ -9,7 +9,11 @@ from zipfile import ZipFile
 from StringIO import StringIO
 
 PODSPEC_URL = "https://raw.githubusercontent.com/dji-sdk/Mobile-SDK-iOS/master/DJI-SDK-iOS.podspec"
-SDK_URL = ""
+# Hard-coding to use SDK 3.5.1 for now. 
+# If you want to use the latest SDK, please set SDK_URL = ""
+SDK_URL = "http://dh7g4ai1w5iq6.cloudfront.net/ios_sdk/iOS_Mobile_SDK_3.5.1_170116.zip"
+#SDK_URL = ""
+
 FRAMEWORK_PATH = "Frameworks/DJISDK.framework"
 
 # check if the framework is present
@@ -22,15 +26,18 @@ podspec = urllib2.urlopen(PODSPEC_URL)
 
 pattern = re.compile(".*?\"(.*?)\".*?")
 
-for line in podspec:
-	if line.lstrip().startswith("s.source"):
-		match = pattern.match(line)
-		if not match is None:
-			SDK_URL = match.group(1)
+# if SDK_URL is empty, fetch the latest SDK source URL.
+if SDK_URL == "":
+	for line in podspec:
+		if line.lstrip().startswith("s.source"):
+			match = pattern.match(line)
+			if not match is None:
+				SDK_URL = match.group(1)
 
 if SDK_URL == "":
 	print("error finding DJI SDK URL from podspec")
 	sys.exit(1)
+
 
 # download SDK
 print("downloading latest DJI SDK from %s" % SDK_URL)
