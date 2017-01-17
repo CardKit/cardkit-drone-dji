@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0810"
+   LastUpgradeVersion = "0820"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -17,7 +17,7 @@
                BlueprintIdentifier = "685338961DF4C219003F1DA5"
                BuildableName = "DroneTokensDJI.framework"
                BlueprintName = "DroneTokensDJI iOS"
-               ReferencedContainer = "container:DroneTokensDJI.xcodeproj">
+               ReferencedContainer = "container: .xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
                BlueprintIdentifier = "6853389F1DF4C219003F1DA5"
                BuildableName = "DroneTokensDJITests iOS.xctest"
                BlueprintName = "DroneTokensDJITests iOS"
-               ReferencedContainer = "container:DroneTokensDJI.xcodeproj">
+               ReferencedContainer = "container: .xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -45,7 +45,7 @@
             BlueprintIdentifier = "685338961DF4C219003F1DA5"
             BuildableName = "DroneTokensDJI.framework"
             BlueprintName = "DroneTokensDJI iOS"
-            ReferencedContainer = "container:DroneTokensDJI.xcodeproj">
+            ReferencedContainer = "container: .xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -67,7 +67,7 @@
             BlueprintIdentifier = "685338961DF4C219003F1DA5"
             BuildableName = "DroneTokensDJI.framework"
             BlueprintName = "DroneTokensDJI iOS"
-            ReferencedContainer = "container:DroneTokensDJI.xcodeproj">
+            ReferencedContainer = "container: .xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -85,7 +85,7 @@
             BlueprintIdentifier = "685338961DF4C219003F1DA5"
             BuildableName = "DroneTokensDJI.framework"
             BlueprintName = "DroneTokensDJI iOS"
-            ReferencedContainer = "container:DroneTokensDJI.xcodeproj">
+            ReferencedContainer = "container: .xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>
