@@ -6,8 +6,6 @@
 //  Copyright © 2016 IBM. All rights reserved.
 //
 
-//swiftlint:disable variable_name
-
 import Foundation
 
 import CardKit
@@ -31,7 +29,6 @@ import DJISDK
 //                     \\                 //
 //                      \\               //
 //                        [DJIDroneToken]
-//swiftlint:disable weak_delegate
 
 
 // MARK: DJIDroneToken
