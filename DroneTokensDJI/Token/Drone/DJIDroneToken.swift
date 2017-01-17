@@ -6,6 +6,9 @@
 //  Copyright © 2016 IBM. All rights reserved.
 //
 
+// swiftlint:disable variable_name
+// swiftlint:disable weak_delegate
+
 import Foundation
 
 import CardKit
@@ -14,13 +17,30 @@ import DroneCardKit
 
 import DJISDK
 
+// swiftlint complains that the FlightControllerDelegate and MissionManagerDelegate should be weak to avoid reference cycles
+// However, I feel that this is not necessary with the way we are handing delegates in this class..
 
-//MARK: DJIDroneToken
+// We need to hold a strong reference to [MissionManagerDelegate] as [DJIMissionManager] is most likely holding a weak reference to [MissionManagerDelegate].
+// [MissionManagerDelegate] stays in memory until [DJIDroneToken] gets deallocated. If we held a weak reference to [MissionManagerDelegate], then
+// there is nothing stopping ARC from deallocating [MissionManagerDelegate].
+//
+//  Example: (single line indicates weak reference, double line indicates strong reference)
+//
+//    [MissionManagerDelegate]  <------  [DJIMissionManager]
+//                    /\                    /\
+//                    \\                   //
+//                     \\                 //
+//                      \\               //
+//                        [DJIDroneToken]
+
+
+// MARK: DJIDroneToken
 public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     private let sleepTimeInSeconds = 2.0 //in seconds
     private let aircraft: DJIAircraft
     private let flightControllerDelegate = FlightControllerDelegate()
     private let missionManagerDelegate = MissionManagerDelegate()
+    private let missionManager = DJIMissionManager.sharedInstance()
     
     // MARK: Computed Properties
     
@@ -62,7 +82,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     
     public var isLandingGearDown: Bool? {
         guard let landingGear = self.aircraft.flightController?.landingGear else {
-            return false;
+            return false
         }
         
         return landingGear.status == .deployed
@@ -73,7 +93,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     public init(with card: TokenCard, for aircraft: DJIAircraft) {
         self.aircraft = aircraft
         self.aircraft.flightController?.delegate = self.flightControllerDelegate
-        DJIMissionManager.sharedInstance()?.delegate = missionManagerDelegate
+        missionManager?.delegate = missionManagerDelegate
         super.init(with: card)
     }
     
@@ -82,8 +102,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     public func spinMotors(on: Bool, completionHandler: DroneTokenCompletionHandler?) {
         if on {
             aircraft.flightController?.turnOnMotors(completion: completionHandler)
-        }
-        else {
+        } else {
             aircraft.flightController?.turnOffMotors(completion: completionHandler)
         }
     }
@@ -123,8 +142,8 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
             // mission object in mission manager is empty.(code:-5016)" UserInfo={NSLocalizedDescription=Aircraft
             // is not running a mission or current mission object in mission manager is empty.(code:-5016)})
             
-            if error == nil && DJIMissionManager.sharedInstance()?.currentExecutingMission() != nil {
-                DJIMissionManager.sharedInstance()?.stopMissionExecution() { (djiError) in
+            if error == nil && self.missionManager?.currentExecutingMission() != nil {
+                self.missionManager?.stopMissionExecution { (djiError) in
                     semaphore.signal()
                     error = djiError
                 }
@@ -277,10 +296,9 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     }
     
     public func landingGear(down: Bool, completionHandler: DroneTokenCompletionHandler?) {
-        if(down) {
+        if down {
             aircraft.flightController?.landingGear?.deployLandingGear(completion: completionHandler)
-        }
-        else {
+        } else {
             aircraft.flightController?.landingGear?.retractLandingGear(completion: completionHandler)
         }
     }
@@ -289,7 +307,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     public func land(completionHandler: DroneTokenCompletionHandler?) {
         DispatchQueue.global(qos: .default).async {
             var error: Error?
-            var semaphore = DispatchSemaphore(value: 0)
+            let semaphore = DispatchSemaphore(value: 0)
             
             /*
              Before we auto land, we need to stop any current missions. If this fails, we should
@@ -299,7 +317,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
              */
             
             if error == nil {
-                DJIMissionManager.sharedInstance()?.stopMissionExecution() { _ in
+                self.missionManager?.stopMissionExecution { _ in
                     semaphore.signal()
                 }
                 
@@ -348,7 +366,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
             return DJIDroneTokenError.failedToInstantiateCustomMission
         }
         
-        guard let missionManager = DJIMissionManager.sharedInstance() else {
+        guard let missionManager = missionManager else {
             return DJIDroneTokenError.failedToInstantiateMissionManager
         }
         
@@ -368,8 +386,8 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         
         semaphore.wait()
         
-        if(error == nil) {
-            missionManager.startMissionExecution() { djiError in
+        if error == nil {
+            missionManager.startMissionExecution { djiError in
                 error = djiError
                 semaphore.signal()
             }
@@ -377,8 +395,8 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
             semaphore.wait()
         }
         
-        if(error == nil) {
-            missionManager.startMissionExecution() { djiError in
+        if error == nil {
+            missionManager.startMissionExecution { djiError in
                 error = djiError
                 
                 if error != nil {
@@ -391,7 +409,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
             semaphore.wait()
         }
         
-        while(missionManagerDelegate.isExecuting) {
+        while missionManagerDelegate.isExecuting {
             Thread.sleep(forTimeInterval: sleepTimeInSeconds)
         }
         
@@ -406,14 +424,14 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
 
 }
 
-//MARK:- DJIDroneTokenDefaults
+// MARK: - DJIDroneTokenDefaults
 
 fileprivate struct Defaults {
     static let speed: Double = 2.0
 }
 
 
-//MARK:- DJIDroneTokenError
+// MARK: - DJIDroneTokenError
 
 public enum DJIDroneTokenError: Error {
     case failedToInstantiateCustomMission
@@ -423,7 +441,7 @@ public enum DJIDroneTokenError: Error {
     case anotherMissionCurrentlyExecuting
 }
 
-//MARK:- FlightControllerDelegate
+// MARK: - FlightControllerDelegate
 
 // DJIFlightControllerDelegates must inherit from NSObject. We can't make DJIDroneToken inherit from
 // NSObject since it inherits from ExecutableTokenCard (which isn't an NSObject), so we use a private
@@ -448,7 +466,7 @@ fileprivate class MissionManagerDelegate: NSObject, DJIMissionManagerDelegate {
     }
     
     public func missionManager(_ manager: DJIMissionManager, didFinishMissionExecution error: Error?) {
-        if (error != nil) {
+        if error != nil {
             print("Mission Finished with error:\(error!)")
         } else {
             print("Mission Finished!")
@@ -459,7 +477,7 @@ fileprivate class MissionManagerDelegate: NSObject, DJIMissionManagerDelegate {
     }
     
     public func missionManager(_ manager: DJIMissionManager, missionProgressStatus missionProgress: DJIMissionProgressStatus) {
-        if (missionProgress is DJICustomMissionStatus) {
+        if missionProgress is DJICustomMissionStatus {
             let customMissionStatus: DJICustomMissionStatus = (missionProgress as? DJICustomMissionStatus)!
             let currentExecStep: DJIMissionStep = customMissionStatus.currentExecutingStep!
             print("Mission Status -- error: \(missionProgress.error) -- currentStep: \(currentExecStep)")
@@ -468,4 +486,3 @@ fileprivate class MissionManagerDelegate: NSObject, DJIMissionManagerDelegate {
         progressStatus = missionProgress
     }
 }
-
