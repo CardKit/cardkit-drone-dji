@@ -226,7 +226,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0810;
-				LastUpgradeCheck = 0820;
+				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = IBM;
 				TargetAttributes = {
 					685338961DF4C219003F1DA5 = {
@@ -241,7 +241,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 685338911DF4C219003F1DA5 /* Build configuration list for PBXProject " " */;
+			buildConfigurationList = 685338911DF4C219003F1DA5 /* Build configuration list for PBXProject "DroneTokensDJI" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -386,7 +386,6 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -440,7 +439,6 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -472,7 +470,7 @@
 		685338AC1DF4C219003F1DA5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = NO;
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 76CMF53Q35;
@@ -498,7 +496,7 @@
 		685338AD1DF4C219003F1DA5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = NO;
+				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 76CMF53Q35;
@@ -560,7 +558,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		685338911DF4C219003F1DA5 /* Build configuration list for PBXProject " " */ = {
+		685338911DF4C219003F1DA5 /* Build configuration list for PBXProject "DroneTokensDJI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				685338A91DF4C219003F1DA5 /* Debug */,
