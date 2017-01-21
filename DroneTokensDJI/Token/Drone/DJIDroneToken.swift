@@ -332,6 +332,21 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
                 semaphore.wait()
             }
             
+            // wait for drone to reach the height to ask for landing confirmation
+            // TODO: fix the busy wait
+            if error == nil {
+                while let isFlying = self.flightControllerDelegate.currentState?.isLandingConfirmationNeeded, !isFlying {
+                    Thread.sleep(forTimeInterval: self.sleepTimeInSeconds)
+                }
+            }
+            if error == nil {
+                self.aircraft.flightController?.confirmLanding(completion: { (djiError) in
+                    error = djiError
+                    semaphore.signal()
+                })
+                semaphore.wait()
+            }
+            
             if error == nil {
                 while let isFlying = self.flightControllerDelegate.currentState?.isFlying, isFlying {
                     Thread.sleep(forTimeInterval: self.sleepTimeInSeconds)
