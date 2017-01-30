@@ -118,9 +118,9 @@
 		685338991DF4C219003F1DA5 /* DroneTokensDJI */ = {
 			isa = PBXGroup;
 			children = (
-				689498DF1DF4C30A007D765A /* Token */,
 				6853389A1DF4C219003F1DA5 /* DroneTokensDJI.h */,
 				6853389B1DF4C219003F1DA5 /* Info.plist */,
+				689498DF1DF4C30A007D765A /* Token */,
 			);
 			path = DroneTokensDJI;
 			sourceTree = "<group>";
