@@ -7,8 +7,9 @@
 //
 
 import XCTest
-@testable import DroneTokensDJI
+
 @testable import CardKit
+@testable import DroneTokensDJI
 
 class DroneTokensDJITests: XCTestCase {
     
@@ -21,4 +22,5 @@ class DroneTokensDJITests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
+
 }

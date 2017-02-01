@@ -20,7 +20,6 @@
 		689498EA1DF4C391007D765A /* CardKitRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */; };
 		689498EB1DF4C391007D765A /* DroneCardKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B41DF4C251003F1DA5 /* DroneCardKit.framework */; };
 		689498EC1DF4C391007D765A /* Freddy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B51DF4C251003F1DA5 /* Freddy.framework */; };
-		689498ED1DF4C391007D765A /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B61DF4C251003F1DA5 /* PromiseKit.framework */; };
 		689498F11DF4C5AB007D765A /* DJISDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 689498E71DF4C373007D765A /* DJISDK.framework */; };
 		689498F31DF4C62F007D765A /* DJISDK.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 689498E71DF4C373007D765A /* DJISDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CC64ECA21E40EA1900F7010D /* TestDJIGimbalToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC64ECA11E40EA1900F7010D /* TestDJIGimbalToken.swift */; };
@@ -95,7 +94,6 @@
 				689498EA1DF4C391007D765A /* CardKitRuntime.framework in Frameworks */,
 				689498EB1DF4C391007D765A /* DroneCardKit.framework in Frameworks */,
 				689498EC1DF4C391007D765A /* Freddy.framework in Frameworks */,
-				689498ED1DF4C391007D765A /* PromiseKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
