@@ -29,7 +29,7 @@ class TestDJIGimbalToken: XCTestCase {
         let gimbal: DJIGimbal = DJIGimbal()
         
         print("gimbal capabilities:")
-        for (k,v) in gimbal.gimbalCapability {
+        for (k, v) in gimbal.gimbalCapability {
             print("\(k): \(v)")
         }
     }

@@ -18,6 +18,8 @@ import DJISDK
 
 public class DJICameraToken: ExecutableTokenCard {
     private let camera: DJICamera
+    
+    //swiftlint:disable:next weak_delegate
     private let cameraDelegate: CameraDelegate = CameraDelegate()
     
     public init(with card: TokenCard, for camera: DJICamera) {
@@ -30,12 +32,9 @@ public class DJICameraToken: ExecutableTokenCard {
         self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: nil, aspectRatio: aspectRatio, quality: quality, completionHandler: completionHandler)
     }
     
-    //swiftlint:disable:next function_parameter_count
-    //swiftlint:disable:next function_body_length
+    //swiftlint:disable:next function_parameter_count function_body_length
     func takePhoto(cameraMode: DJICameraMode, shootMode: DJICameraShootPhotoMode, interval: DJICameraPhotoIntervalParam?, aspectRatio: DJICameraPhotoAspectRatio?, quality: DJICameraPhotoQuality?, completionHandler: CameraTokenCompletionHandler?) {
-        self.camera.setCameraMode(cameraMode, withCompletion: {
-            error in
-            
+        self.camera.setCameraMode(cameraMode, withCompletion: { error in
             if error != nil {
                 completionHandler?(DJICameraTokenError.failedToSetCameraModeToPhoto)
                 return
@@ -57,8 +56,7 @@ public class DJICameraToken: ExecutableTokenCard {
                 let semaphore = DispatchSemaphore(value: 0)
                 var djiError: Error? = nil
                 
-                self.camera.setPhotoRatio(aspectRatio, withCompletion: {
-                    error in
+                self.camera.setPhotoRatio(aspectRatio, withCompletion: { error in
                     djiError = error
                     semaphore.signal()
                 })
@@ -78,8 +76,7 @@ public class DJICameraToken: ExecutableTokenCard {
                 let semaphore = DispatchSemaphore(value: 0)
                 var djiError: Error? = nil
                 
-                self.camera.setPhotoQuality(quality, withCompletion: {
-                    error in
+                self.camera.setPhotoQuality(quality, withCompletion: { error in
                     djiError = error
                     semaphore.signal()
                 })
@@ -99,8 +96,7 @@ public class DJICameraToken: ExecutableTokenCard {
                 let semaphore = DispatchSemaphore(value: 0)
                 var djiError: Error? = nil
                 
-                self.camera.setPhotoIntervalParam(interval, withCompletion: {
-                    error in
+                self.camera.setPhotoIntervalParam(interval, withCompletion: { error in
                     djiError = error
                     semaphore.signal()
                 })
@@ -116,16 +112,14 @@ public class DJICameraToken: ExecutableTokenCard {
             }
             
             // take the photo
-            self.camera.startShootPhoto(shootMode, withCompletion: {
-                error in
+            self.camera.startShootPhoto(shootMode, withCompletion: { error in
                 completionHandler?(error)
             })
         })
     }
     
     func stopPhotos(completionHandler: CameraTokenCompletionHandler?) {
-        self.camera.stopShootPhoto(completion: {
-            error in
+        self.camera.stopShootPhoto(completion: { error in
             completionHandler?(error)
         })
     }
