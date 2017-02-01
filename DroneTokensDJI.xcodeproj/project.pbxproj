@@ -14,6 +14,7 @@
 		685338B81DF4C251003F1DA5 /* CardKitRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */; };
 		685338B91DF4C251003F1DA5 /* DroneCardKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B41DF4C251003F1DA5 /* DroneCardKit.framework */; };
 		685338BA1DF4C251003F1DA5 /* Freddy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B51DF4C251003F1DA5 /* Freddy.framework */; };
+		688EA0611E424A85008559F8 /* DJIAttitudeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688EA0601E424A85008559F8 /* DJIAttitudeExtension.swift */; };
 		689498E81DF4C373007D765A /* DJISDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 689498E71DF4C373007D765A /* DJISDK.framework */; };
 		689498E91DF4C391007D765A /* CardKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B21DF4C251003F1DA5 /* CardKit.framework */; };
 		689498EA1DF4C391007D765A /* CardKitRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */; };
@@ -63,6 +64,7 @@
 		685338B41DF4C251003F1DA5 /* DroneCardKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DroneCardKit.framework; path = Carthage/Build/iOS/DroneCardKit.framework; sourceTree = "<group>"; };
 		685338B51DF4C251003F1DA5 /* Freddy.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Freddy.framework; path = Carthage/Build/iOS/Freddy.framework; sourceTree = "<group>"; };
 		685338B61DF4C251003F1DA5 /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromiseKit.framework; path = Carthage/Build/iOS/PromiseKit.framework; sourceTree = "<group>"; };
+		688EA0601E424A85008559F8 /* DJIAttitudeExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DJIAttitudeExtension.swift; path = Extensions/DJIAttitudeExtension.swift; sourceTree = "<group>"; };
 		689498E71DF4C373007D765A /* DJISDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DJISDK.framework; path = Frameworks/DJISDK.framework; sourceTree = "<group>"; };
 		CC64ECA11E40EA1900F7010D /* TestDJIGimbalToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestDJIGimbalToken.swift; sourceTree = "<group>"; };
 		CC64ECA51E415B2200F7010D /* DJICameraToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJICameraToken.swift; sourceTree = "<group>"; };
@@ -125,6 +127,7 @@
 				6853389A1DF4C219003F1DA5 /* DroneTokensDJI.h */,
 				6853389B1DF4C219003F1DA5 /* Info.plist */,
 				CC64ECA31E415B2200F7010D /* Token */,
+				688EA05F1E424A7B008559F8 /* Extensions */,
 			);
 			path = DroneTokensDJI;
 			sourceTree = "<group>";
@@ -150,6 +153,14 @@
 				689498E71DF4C373007D765A /* DJISDK.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		688EA05F1E424A7B008559F8 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				688EA0601E424A85008559F8 /* DJIAttitudeExtension.swift */,
+			);
+			name = Extensions;
 			sourceTree = "<group>";
 		};
 		CC64EC9F1E40EA1900F7010D /* Token */ = {
@@ -383,6 +394,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CC64ECAB1E415B2200F7010D /* DJIDroneToken.swift in Sources */,
+				688EA0611E424A85008559F8 /* DJIAttitudeExtension.swift in Sources */,
 				CC64ECAC1E415B2200F7010D /* DJIGimbalToken.swift in Sources */,
 				CC64ECAA1E415B2200F7010D /* DJICameraToken.swift in Sources */,
 			);
