@@ -73,7 +73,8 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
             return nil
         }
         
-        return DCKAttitude(yaw: DCKAngle(degrees: attitude.yaw), pitch: DCKAngle(degrees: attitude.pitch), roll: DCKAngle(degrees: attitude.roll))
+        let normalizedAttitude = attitude.normalize()
+        return DCKAttitude(yaw: DCKAngle(degrees: normalizedAttitude.yaw), pitch: DCKAngle(degrees: normalizedAttitude.pitch), roll: DCKAngle(degrees: normalizedAttitude.roll))
     }
     
     public var areMotorsOn: Bool? {
