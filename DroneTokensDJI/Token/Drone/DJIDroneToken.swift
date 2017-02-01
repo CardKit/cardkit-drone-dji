@@ -162,7 +162,8 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
             }
             
             // change yaw (if specified)
-            // TODO: this method of controlling yaw does not work
+            // NOTE: WILL NEED TO LOOK AT THIS
+            //this method of controlling yaw does not work
             // it "freezes" the drone and does not allow for other commands to be sent (e.g. land)
 //            if error == nil { //, let yawAngleInDegrees = yaw?.degrees {
 //                let yawAngleInDegrees = 90
