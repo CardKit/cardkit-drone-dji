@@ -155,6 +155,14 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
         })
     }
     
+    public func orient(to position: GimbalOrientation, completionHandler: AsyncExecutionCompletionHandler?) {
+        let yaw = DCKAngle(degrees: position.yawOrientationInDegrees)
+        let pitch = DCKAngle(degrees: position.pitchOrientationInDegrees)
+        let roll = DCKAngle(degrees: position.rollOrientationInDegrees)
+        
+        self.rotate(yaw: yaw, pitch: pitch, roll: roll, relativeToDrone: false, withinTimeInSeconds: nil, completionHandler: completionHandler)
+    }
+    
     /// Normalize the given angle to the given gimbal rotation range. The given angle is first normalized to the
     /// domain of [0, 360). Next it is mapped into the range [range.min, range.max).
     fileprivate func normalize(angle: Double, to range: GimbalRotationRange) -> Float {
@@ -219,18 +227,31 @@ extension DCKRotationDirection {
     }
 }
 
+// MARK: - GimbalOrientation Extensions
+
+extension GimbalOrientation {
+    var yawOrientationInDegrees: Double {
+        return 0.0
+    }
+    
+    var pitchOrientationInDegrees: Double {
+        switch self {
+        case .facingForward:
+            return 90.0
+        case .facingDownward:
+            return 0.0
+        }
+    }
+    
+    var rollOrientationInDegrees: Double {
+        return 0.0
+    }
+}
+
 // MARK: - GimbalRotationRange
 
 fileprivate struct GimbalRotationRange {
     var axisEnabled: Bool
     var min: Double
     var max: Double
-}
-
-// MARK: - GimbalStopPoint
-
-fileprivate enum GimbalStopPoint: Double {
-    case facingForward = 90.0
-    case facingDownward = 0.0
-    case facingBackward = -90.0
 }
