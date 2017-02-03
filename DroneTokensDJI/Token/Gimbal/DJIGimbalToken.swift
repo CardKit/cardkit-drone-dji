@@ -57,6 +57,10 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
             }
         }
         
+        print("yawRange: \(yawRange)")
+        print("pitchRange: \(pitchRange)")
+        print("rollRange: \(rollRange)")
+        
         // set the gimbal work mode to Free
         self.gimbal.setGimbalWorkMode(.freeMode, withCompletion: { _ in
             print("error: could not set gimbal to Free mode")
@@ -97,17 +101,17 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
         var djiRoll: DJIGimbalAngleRotation = DJIGimbalAngleRotation(enabled: false, angle: 0, direction: .clockwise)
         
         if let yaw = yaw {
-            djiYaw.enabled = true
+            djiYaw.enabled = ObjCBool(self.yawRange.axisEnabled)
             djiYaw.angle = relativeToDrone ? Float(yaw.degrees) : self.normalize(angle: yaw.degrees, to: self.yawRange)
         }
         
         if let pitch = pitch {
-            djiPitch.enabled = true
+            djiPitch.enabled = ObjCBool(self.pitchRange.axisEnabled)
             djiPitch.angle = relativeToDrone ? Float(pitch.degrees) : self.normalize(angle: pitch.degrees, to: self.pitchRange)
         }
         
         if let roll = roll {
-            djiRoll.enabled = true
+            djiRoll.enabled = ObjCBool(self.rollRange.axisEnabled)
             djiRoll.angle = relativeToDrone ? Float(roll.degrees) : self.normalize(angle: roll.degrees, to: self.rollRange)
         }
         
@@ -118,6 +122,10 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
         if let duration = duration {
             self.gimbal.completionTimeForControlAngleAction = clamp(value: duration, min: 0.1, max: 25.5)
         }
+        
+        print("djiYaw: \(djiYaw)")
+        print("djiPitch: \(djiPitch)")
+        print("djiRoll: \(djiRoll)")
         
         // rotate the gimbal
         self.gimbal.rotateGimbal(with: rotateAngleMode, pitch: djiPitch, roll: djiRoll, yaw: djiYaw, withCompletion: { error in
@@ -164,12 +172,20 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
     }
     
     /// Normalize the given angle to the given gimbal rotation range. The given angle is first normalized to the
-    /// domain of [0, 360). Next it is mapped into the range [range.min, range.max).
+    /// domain of [0, 360). Next it is clamped to the range [range.min, range.max].
     fileprivate func normalize(angle: Double, to range: GimbalRotationRange) -> Float {
-        let slope: Double = (range.max - range.min) / 360
-        var mappedAngle: Double = range.min + slope * angle
-        mappedAngle.round(.down)
-        return Float(mappedAngle)
+        //We multiply by -1 as DJI represents angles in an inverted fashion
+        //For example, DJI pitch ranges from [-90, 30]. -90 moves the gimbal down by 90 degrees.
+        //We represent our rotation angles in the opposite mannner. Where moving the gimbal down 90 degrees
+        //is represented with +90. See header doc for the rotate function for more details
+    
+        var normalizedAngle = DCKAngle(degrees: angle * -1).normalized().degrees
+        
+        if normalizedAngle > 180 {
+            normalizedAngle -= 360
+        }
+        
+        return Float(clamp(value: normalizedAngle, min: range.min, max: range.max))
     }
     
     /// Returns the absolute angle; e.g. negative angles (-90) are returned as positive ones (270).
