@@ -86,7 +86,6 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
     
     //swiftlint:disable:next function_parameter_count
     public func rotate(yaw: DCKAngle?, pitch: DCKAngle?, roll: DCKAngle?, relativeToDrone: Bool, withinTimeInSeconds duration: Double?, completionHandler: AsyncExecutionCompletionHandler?) {
-        //We multiply by the relative angle by -1 as DJI represents angles inverted(see below)
         let rotateAngleMode: DJIGimbalRotateAngleMode = relativeToDrone ? .angleModeRelativeAngle : .angleModeAbsoluteAngle
         
         var djiYaw: DJIGimbalAngleRotation = DJIGimbalAngleRotation(enabled: false, angle: 0, direction: .clockwise)
@@ -95,17 +94,17 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
         
         if let yaw = yaw {
             djiYaw.enabled = ObjCBool(self.yawRange.axisEnabled)
-            djiYaw.angle = relativeToDrone ? -1*Float(yaw.degrees) : self.normalize(angle: yaw.degrees, to: self.yawRange)
+            djiYaw.angle = relativeToDrone ? self.normalizeRelativeAngle(yaw.degrees) : self.normalizeAbsoluteAngle( yaw.degrees, to: self.yawRange)
         }
         
         if let pitch = pitch {
             djiPitch.enabled = ObjCBool(self.pitchRange.axisEnabled)
-            djiPitch.angle = relativeToDrone ? -1*Float(pitch.degrees) : self.normalize(angle: pitch.degrees, to: self.pitchRange)
+            djiPitch.angle = relativeToDrone ? self.normalizeRelativeAngle(pitch.degrees) : self.normalizeAbsoluteAngle( pitch.degrees, to: self.pitchRange)
         }
         
         if let roll = roll {
             djiRoll.enabled = ObjCBool(self.rollRange.axisEnabled)
-            djiRoll.angle = relativeToDrone ? -1*Float(roll.degrees) : self.normalize(angle: roll.degrees, to: self.rollRange)
+            djiRoll.angle = relativeToDrone ? self.normalizeRelativeAngle(roll.degrees) : self.normalizeAbsoluteAngle( roll.degrees, to: self.rollRange)
         }
         
         // default to rotate as fast as possible
@@ -113,12 +112,8 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
         
         // range is [0.1, 25.5] seconds
         if let duration = duration {
-            self.gimbal.completionTimeForControlAngleAction = clamp(value: duration, min: 0.1, max: 25.5)
+            self.gimbal.completionTimeForControlAngleAction = Double(clamp(value: duration, min: 0.1, max: 25.5))
         }
-        
-        print("djiYaw: \(djiYaw)")
-        print("djiPitch: \(djiPitch)")
-        print("djiRoll: \(djiRoll)")
         
         // rotate the gimbal
         self.gimbal.rotateGimbal(with: rotateAngleMode, pitch: djiPitch, roll: djiRoll, yaw: djiYaw, withCompletion: { error in
@@ -133,24 +128,24 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
         
         // gimbal rotation angular velocity is in degrees/second with a range of [0, 120]
         if let yaw = yaw {
-            djiYawSpeed.angleVelocity = Float(clamp(value: abs(yaw.degreesPerSecond), min: 0, max: 120))
+            djiYawSpeed.angleVelocity = clamp(value: abs(yaw.degreesPerSecond), min: 0, max: 120)
             djiYawSpeed.direction = yaw.rotationDirection.djiRotateDirection
         }
         
         if let pitch = pitch {
-            djiPitchSpeed.angleVelocity = Float(clamp(value: abs(pitch.degreesPerSecond), min: 0, max: 120))
+            djiPitchSpeed.angleVelocity = clamp(value: abs(pitch.degreesPerSecond), min: 0, max: 120)
             djiPitchSpeed.direction = pitch.rotationDirection.djiRotateDirection
         }
         
         if let roll = roll {
-            djiRollSpeed.angleVelocity = Float(clamp(value: abs(roll.degreesPerSecond), min: 0, max: 120))
+            djiRollSpeed.angleVelocity = clamp(value: abs(roll.degreesPerSecond), min: 0, max: 120)
             djiRollSpeed.direction = roll.rotationDirection.djiRotateDirection
         }
         
         // range is [0.1, 25.5] seconds
         //TODO: this does not work for some reason
-        self.gimbal.completionTimeForControlAngleAction = clamp(value: duration, min: 0.1, max: 25.5)
-        print(self.gimbal.completionTimeForControlAngleAction)
+        self.gimbal.completionTimeForControlAngleAction = Double(clamp(value: duration, min: 0.1, max: 25.5))
+        
         // rotate the gimbal
         self.gimbal.rotateGimbalBySpeed(withPitch: djiPitchSpeed, roll: djiRollSpeed, yaw: djiYawSpeed, withCompletion: { error in
             completionHandler?(error)
@@ -167,7 +162,7 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
     
     /// Normalize the given angle to the given gimbal rotation range. The given angle is first normalized to the
     /// domain of [0, 360). Next it is clamped to the range [range.min, range.max].
-    fileprivate func normalize(angle: Double, to range: GimbalRotationRange) -> Float {
+    fileprivate func normalizeAbsoluteAngle(_ angle: Double, to range: GimbalRotationRange) -> Float {
         //We multiply by -1 as DJI represents angles in an inverted fashion
         //For example, DJI pitch ranges from [-90, 30]. -90 moves the gimbal down by 90 degrees.
         //We represent our rotation angles in the opposite mannner. Where moving the gimbal down 90 degrees
@@ -179,7 +174,12 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
             normalizedAngle -= 360
         }
         
-        return Float(clamp(value: normalizedAngle, min: range.min, max: range.max))
+        return clamp(value: normalizedAngle, min: range.min, max: range.max)
+    }
+    
+    /// We multiply by the relative angle by -1 as DJI represents angles inverted
+    fileprivate func normalizeRelativeAngle(_ angle: Double) -> Float {
+        return Float(-1*angle)
     }
     
     /// Returns the absolute angle; e.g. negative angles (-90) are returned as positive ones (270).
@@ -194,10 +194,10 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
     
     /// Clamp the given value to the range; values that fall below the range are held at the minimum,
     /// and values that fall above the range are held at the maximu.
-    fileprivate func clamp(value: Double, min: Double, max: Double) -> Double {
-        if value < min { return min }
-        if value > max { return max }
-        return value
+    fileprivate func clamp(value: Double, min: Double, max: Double) -> Float {
+        if value < min { return Float(min) }
+        if value > max { return Float(max) }
+        return Float(value)
     }
 }
 

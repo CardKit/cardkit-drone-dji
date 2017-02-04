@@ -53,7 +53,7 @@ class DJIGimbalTokenTests: DJIHardwareTokenTest {
         let zeroAngle = DCKAngle(degrees: 0)
         
         //test pitch absolute
-        self.gimbal?.rotate(yaw: zeroAngle, pitch: DCKAngle(degrees: 70), roll: zeroAngle, relativeToDrone: false, withinTimeInSeconds: 1, completionHandler: { (error) in
+        self.gimbal?.rotate(yaw: zeroAngle, pitch: DCKAngle(degrees: 70), roll: zeroAngle, relativeToDrone: false, withinTimeInSeconds: 10, completionHandler: { (error) in
             if let error = error {
                 XCTFail("could not update the pitch of the gimbal. error: \(error)")
             }
