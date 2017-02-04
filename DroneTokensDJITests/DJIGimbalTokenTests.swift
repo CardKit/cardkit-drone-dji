@@ -33,9 +33,9 @@ class DJIGimbalTokenTests: DJIHardwareTokenTest {
     func testPitchUsingVelocity() {
         var completed = false
         
-        let angularVelocity = DCKAngularVelocity(degreesPerSecond: -10)
+        let angularVelocity = DCKAngularVelocity(degreesPerSecond: 5)
         
-        self.gimbal?.rotate(pitch: angularVelocity, forTimeInSeconds: 24, completionHandler: { (error) in
+        self.gimbal?.rotate(pitch: angularVelocity, forTimeInSeconds: 10, completionHandler: { (error) in
             if let error = error {
                 XCTFail("could not update the pitch of the gimbal. error: \(error)")
             }
