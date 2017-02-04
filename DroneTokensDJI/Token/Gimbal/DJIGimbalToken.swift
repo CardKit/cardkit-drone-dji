@@ -57,15 +57,6 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
             }
         }
         
-        print("yawRange: \(yawRange)")
-        print("pitchRange: \(pitchRange)")
-        print("rollRange: \(rollRange)")
-        
-        // set the gimbal work mode to Free
-        self.gimbal.setGimbalWorkMode(.freeMode, withCompletion: { _ in
-            print("error: could not set gimbal to Free mode")
-        })
-        
         super.init(with: card)
     }
 
@@ -87,13 +78,15 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
     }
     
     public func reset(completionHandler: AsyncExecutionCompletionHandler?) {
-        self.gimbal.resetGimbal(completion: { error in
+        let zero = DCKAngle(degrees: 0)
+        self.rotate(yaw: zero, pitch: zero, roll: zero, relativeToDrone: false, withinTimeInSeconds: 1) { (error) in
             completionHandler?(error)
-        })
+        }
     }
     
     //swiftlint:disable:next function_parameter_count
     public func rotate(yaw: DCKAngle?, pitch: DCKAngle?, roll: DCKAngle?, relativeToDrone: Bool, withinTimeInSeconds duration: Double?, completionHandler: AsyncExecutionCompletionHandler?) {
+        //We multiply by the relative angle by -1 as DJI represents angles inverted(see below)
         let rotateAngleMode: DJIGimbalRotateAngleMode = relativeToDrone ? .angleModeRelativeAngle : .angleModeAbsoluteAngle
         
         var djiYaw: DJIGimbalAngleRotation = DJIGimbalAngleRotation(enabled: false, angle: 0, direction: .clockwise)
@@ -102,17 +95,17 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
         
         if let yaw = yaw {
             djiYaw.enabled = ObjCBool(self.yawRange.axisEnabled)
-            djiYaw.angle = relativeToDrone ? Float(yaw.degrees) : self.normalize(angle: yaw.degrees, to: self.yawRange)
+            djiYaw.angle = relativeToDrone ? -1*Float(yaw.degrees) : self.normalize(angle: yaw.degrees, to: self.yawRange)
         }
         
         if let pitch = pitch {
             djiPitch.enabled = ObjCBool(self.pitchRange.axisEnabled)
-            djiPitch.angle = relativeToDrone ? Float(pitch.degrees) : self.normalize(angle: pitch.degrees, to: self.pitchRange)
+            djiPitch.angle = relativeToDrone ? -1*Float(pitch.degrees) : self.normalize(angle: pitch.degrees, to: self.pitchRange)
         }
         
         if let roll = roll {
             djiRoll.enabled = ObjCBool(self.rollRange.axisEnabled)
-            djiRoll.angle = relativeToDrone ? Float(roll.degrees) : self.normalize(angle: roll.degrees, to: self.rollRange)
+            djiRoll.angle = relativeToDrone ? -1*Float(roll.degrees) : self.normalize(angle: roll.degrees, to: self.rollRange)
         }
         
         // default to rotate as fast as possible
@@ -140,23 +133,24 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
         
         // gimbal rotation angular velocity is in degrees/second with a range of [0, 120]
         if let yaw = yaw {
-            djiYawSpeed.angleVelocity = Float(clamp(value: yaw.degreesPerSecond, min: 0, max: 120))
+            djiYawSpeed.angleVelocity = Float(clamp(value: abs(yaw.degreesPerSecond), min: 0, max: 120))
             djiYawSpeed.direction = yaw.rotationDirection.djiRotateDirection
         }
         
         if let pitch = pitch {
-            djiPitchSpeed.angleVelocity = Float(clamp(value: pitch.degreesPerSecond, min: 0, max: 120))
+            djiPitchSpeed.angleVelocity = Float(clamp(value: abs(pitch.degreesPerSecond), min: 0, max: 120))
             djiPitchSpeed.direction = pitch.rotationDirection.djiRotateDirection
         }
         
         if let roll = roll {
-            djiRollSpeed.angleVelocity = Float(clamp(value: roll.degreesPerSecond, min: 0, max: 120))
+            djiRollSpeed.angleVelocity = Float(clamp(value: abs(roll.degreesPerSecond), min: 0, max: 120))
             djiRollSpeed.direction = roll.rotationDirection.djiRotateDirection
         }
         
         // range is [0.1, 25.5] seconds
+        //TODO: this does not work for some reason
         self.gimbal.completionTimeForControlAngleAction = clamp(value: duration, min: 0.1, max: 25.5)
-        
+        print(self.gimbal.completionTimeForControlAngleAction)
         // rotate the gimbal
         self.gimbal.rotateGimbalBySpeed(withPitch: djiPitchSpeed, roll: djiRollSpeed, yaw: djiYawSpeed, withCompletion: { error in
             completionHandler?(error)
@@ -234,11 +228,15 @@ fileprivate class GimbalDelegate: NSObject, DJIGimbalDelegate {
 
 extension DCKRotationDirection {
     var djiRotateDirection: DJIGimbalRotateDirection {
+        // This is reversed because DJI handles the rotation direction in an inverted manner
+        // For example, -10 degrees is specified as counter clockwise in our api where as 
+        // it would be clock wise for DJI
+        
         switch self {
         case .clockwise:
-            return .clockwise
-        case .counterClockwise:
             return .counterClockwise
+        case .counterClockwise:
+            return .clockwise
         }
     }
 }

@@ -18,21 +18,24 @@ class DJIGimbalTokenTests: DJIHardwareTokenTest {
     override func setUp() {
         super.setUp()
         
+        runLoop { self.aircraft?.gimbal != nil }
+        
         guard let gimbalHardware = self.aircraft?.gimbal else {
             XCTFail("Gimbal does not exist")
             return
         }
         
-        
         self.gimbal = DJIGimbalToken(with: DroneCardKit.Token.Gimbal.makeCard(), for: gimbalHardware)
     
     }
     
-    func testPitch() {
+    /// Test pitch control of drone using velocity
+    func testPitchUsingVelocity() {
         var completed = false
         
+        let angularVelocity = DCKAngularVelocity(degreesPerSecond: -10)
         
-        self.gimbal?.rotate(yaw: DCKAngle(degrees: 0), pitch: DCKAngle(degrees: 90), roll: DCKAngle(degrees: 0), relativeToDrone: false, withinTimeInSeconds: 1, completionHandler: { (error) in
+        self.gimbal?.rotate(pitch: angularVelocity, forTimeInSeconds: 24, completionHandler: { (error) in
             if let error = error {
                 XCTFail("could not update the pitch of the gimbal. error: \(error)")
             }
@@ -40,9 +43,54 @@ class DJIGimbalTokenTests: DJIHardwareTokenTest {
             completed = true
         })
         
-        while !completed {
-            RunLoop.current.run(mode: .defaultRunLoopMode, before: Date.distantFuture)
-        }
+        runLoop { completed }
+    }
+    
+    
+    /// Test pitch control of drone
+    func testPitchUsingAbsoluteAngle() {
+        var completed = false
+        let zeroAngle = DCKAngle(degrees: 0)
+        
+        //test pitch absolute
+        self.gimbal?.rotate(yaw: zeroAngle, pitch: DCKAngle(degrees: 70), roll: zeroAngle, relativeToDrone: false, withinTimeInSeconds: 1, completionHandler: { (error) in
+            if let error = error {
+                XCTFail("could not update the pitch of the gimbal. error: \(error)")
+            }
+            
+            completed = true
+        })
+        
+        runLoop { completed }
+    }
+    
+    func testPitchUsingRelativeAngle() {
+        var completed = false
+        let zeroAngle = DCKAngle(degrees: 0)
+        
+        self.gimbal?.rotate(yaw: zeroAngle, pitch: DCKAngle(degrees: -20), roll: zeroAngle, relativeToDrone: true, withinTimeInSeconds: 1, completionHandler: { (error) in
+            if let error = error {
+                XCTFail("could not update the pitch of the gimbal. error: \(error)")
+            }
+            
+            completed = true
+        })
+        
+        runLoop { completed }
+    }
+    
+    func testCalibrate() {
+        var completed = false
+        
+        self.gimbal?.calibrate(completionHandler: { (error) in
+            if let error = error {
+                XCTFail("could not reset the gimbal. error: \(error)")
+            }
+            
+            completed = true
+        })
+        
+        runLoop { completed }
     }
     
     func testReset() {
@@ -56,8 +104,6 @@ class DJIGimbalTokenTests: DJIHardwareTokenTest {
             completed = true
         })
         
-        while !completed {
-            RunLoop.current.run(mode: .defaultRunLoopMode, before: Date.distantFuture)
-        }
+        runLoop { completed }
     }
 }

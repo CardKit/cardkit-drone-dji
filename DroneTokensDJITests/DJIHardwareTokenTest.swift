@@ -34,9 +34,7 @@ class DJIHardwareTokenTest: XCTestCase, DJISDKManagerDelegate {
         
         DJISDKManager.registerApp(appKey, with: self)
         
-        while !registered {
-            RunLoop.current.run(mode: .defaultRunLoopMode, before: Date.distantFuture)
-        }
+        runLoop { registered }
         
         //asynchronous processes in setUp() must be handled with semaphores and not XCTestExpections
         /*let result = semaphore.wait(timeout: semaphoreTimeout)
@@ -73,19 +71,22 @@ class DJIHardwareTokenTest: XCTestCase, DJISDKManagerDelegate {
         print("Model: \((newProduct.model)!)")
         print("Product changed from: \(oldProduct?.model) to \((newProduct.model)!)")
         
-        while self.aircraft?.flightController == nil {
-            RunLoop.current.run(mode: .defaultRunLoopMode, before: Date.distantFuture)
+        //moving code to access specific hardware inside the tests that deal with that hardware (e.g. DJIGimbalTokenTests).
+        //left camera here for now as Krissy is still working on it.
+        if let camera = aircraft?.camera {
+            self.cameraTokenCard = DroneCardKit.Token.Camera.makeCard()
+            self.cameraExecutableTokenCard = DJICameraToken(with: self.cameraTokenCard!, for: camera)
         }
         
-        //setup camera
-        guard let camera = self.aircraft?.camera else {
-            XCTFail("No camera exists")
-            return
-        }
-        
-        self.cameraTokenCard = DroneCardKit.Token.Camera.makeCard()
-        self.cameraExecutableTokenCard = DJICameraToken(with: self.cameraTokenCard!, for: camera)
-        
+//        old code to setup camera
+//        guard let camera = self.aircraft?.camera else {
+//            XCTFail("No camera exists")
+//            return
+//        }
+//        
+//        self.cameraTokenCard = DroneCardKit.Token.Camera.makeCard()
+//        self.cameraExecutableTokenCard = DJICameraToken(with: self.cameraTokenCard!, for: camera)
+     
         //semaphore.signal()
         
         registered = true
@@ -120,4 +121,16 @@ class DJIHardwareTokenTest: XCTestCase, DJISDKManagerDelegate {
         }
     }
     
+    func runLoop(until: () -> Bool) {
+        while !until() {
+            let calendar = Calendar.current
+            var limitDate = Date.distantFuture
+            
+            if let date = calendar.date(byAdding: .second, value: 5, to: Date()) {
+                limitDate = date
+            }
+            
+            RunLoop.current.run(mode: .defaultRunLoopMode, before: limitDate)
+        }
+    }
 }
