@@ -29,13 +29,41 @@ class DJIGimbalTokenTests: DJIHardwareTokenTest {
     
     }
     
+    func testDownwardOrient() {
+        var completed = false
+        
+        self.gimbal?.orient(to: .facingDownward, completionHandler: { (error) in
+            if let error = error {
+                XCTFail("could not update the pitch of the gimbal. error: \(error)")
+            }
+            
+            completed = true
+        })
+        
+        runLoop { completed }
+    }
+    
+    func testForwardOrient() {
+        var completed = false
+        
+        self.gimbal?.orient(to: .facingForward, completionHandler: { (error) in
+            if let error = error {
+                XCTFail("could not update the pitch of the gimbal. error: \(error)")
+            }
+            
+            completed = true
+        })
+        
+        runLoop { completed }
+    }
+    
     /// Test pitch control of drone using velocity
     func testPitchUsingVelocity() {
         var completed = false
         
         let angularVelocity = DCKAngularVelocity(degreesPerSecond: 5)
         
-        self.gimbal?.rotate(pitch: angularVelocity, forTimeInSeconds: 10, completionHandler: { (error) in
+        self.gimbal?.rotate(pitch: angularVelocity, forTimeInSeconds: 5, completionHandler: { (error) in
             if let error = error {
                 XCTFail("could not update the pitch of the gimbal. error: \(error)")
             }

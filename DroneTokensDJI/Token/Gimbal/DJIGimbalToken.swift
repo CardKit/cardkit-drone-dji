@@ -271,9 +271,9 @@ extension GimbalOrientation {
     var pitchOrientationInDegrees: Double {
         switch self {
         case .facingForward:
-            return 90.0
-        case .facingDownward:
             return 0.0
+        case .facingDownward:
+            return 90.0
         }
     }
     
