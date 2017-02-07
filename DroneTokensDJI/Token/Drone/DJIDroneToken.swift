@@ -186,6 +186,8 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     }
     
     public func fly(to coordinate: DCKCoordinate2D, atYaw yaw: DCKAngle?, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: AsyncExecutionCompletionHandler?) {
+        print("drone fly to coordinate: [\(coordinate)] atAltitude: \(altitude) atSpeed: \(speed)")
+        
         DispatchQueue.global(qos: .default).async {
             let semaphore = DispatchSemaphore(value: 0)
             var error: Error? = nil
@@ -209,11 +211,21 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
                 if let altitudeInMeters = altitude?.metersAboveGroundAtTakeoff,
                     let altitudeStep = DJIGoToStep(altitude: Float(altitudeInMeters)) {
                     missionSteps.append(altitudeStep)
+                } else {
+                    if let currentAltitude: DCKRelativeAltitude = self.currentAltitude,
+                        let altitudeStep = DJIGoToStep(altitude: Float(currentAltitude.metersAboveGroundAtTakeoff)) {
+                        missionSteps.append(altitudeStep)
+                    }
                 }
+                
                 
                 if let flyStep = DJIGoToStep(coordinate: coord) {
                     if let speedInMetersPerSecond = speed?.metersPerSecond, speedInMetersPerSecond > 0 {
                         flyStep.flightSpeed = Float(speedInMetersPerSecond)
+                    } else {
+                        // default speed 4 meters/second.
+                        // we can change it later
+                        //flyStep.flightSpeed = Float (4)
                     }
                     
                     missionSteps.append(flyStep)
@@ -347,14 +359,13 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     }
 
     
-    public func returnHome(atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: AsyncExecutionCompletionHandler?) {
+    public func flyBackHome(atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: AsyncExecutionCompletionHandler?) {
         guard let homeCoordinates = self.homeLocation else {
             completionHandler?(DroneTokenError.FailureRetrievingDroneState)
             return
         }
         
         fly(to: homeCoordinates, atAltitude: altitude, atSpeed: speed, completionHandler: completionHandler)
-
     }
     
     public func landingGear(down: Bool, completionHandler: AsyncExecutionCompletionHandler?) {
@@ -367,6 +378,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     
     
     public func land(completionHandler: AsyncExecutionCompletionHandler?) {
+        print ("Drone landing..")
         DispatchQueue.global(qos: .default).async {
             var error: Error?
             let semaphore = DispatchSemaphore(value: 0)
@@ -513,16 +525,28 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
                 }
                 else if (status.executionState==DJIHotpointMissionExecutionState.moving)
                 {
+                    // guard current location
+                    guard let currentLocation: DCKCoordinate2D = self.currentLocation else {
+                        print ("DJI Hot Point Mission status: cannot determine current location. Aborting mission.")
+                        self.missionManager?.stopMissionExecution { (djiError) in
+                            semaphore.signal()
+                            error = djiError
+                        }
+                        
+                        semaphore.wait()
+                        return DroneTokenError.FailureRetrievingDroneState
+                    }
+
+                    
+                    
                     // two ways you can check whether the revolution has completed
                     // Method 1: Use angular velocity
                     // Sleep until the num of revolution is completed
                     /*
-                    startPointLocation = DCKCoordinate2D(latitude: self.currentLocation!.latitude, longitude: self.currentLocation!.longitude)
+                    startPointLocation = DCKCoordinate2D(latitude: currentLocation.latitude, longitude: currentLocation.longitude)
                     let sleepTime: Double = Double(360.0/hotPointMission.angularVelocity) * Double(numOfRevolution)
                     Thread.sleep(forTimeInterval: sleepTime)
-                    let distance:Double=computeDistanceBetweenTwoCoordinate(location1: self.currentLocation!, location2: startPointLocation!)
-                    
-                    print ("DJI Hot Point Mission status: \(numOfRevolution) revolution has completed. Distance: \(distance)")
+                    print ("DJI Hot Point Mission status: \(numOfRevolution) revolution has completed.")
                     self.missionManager?.stopMissionExecution { (djiError) in
                         semaphore.signal()
                         error = djiError
@@ -531,13 +555,25 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
                     semaphore.wait()
                     */
                     
+                    
                     // Method 2
                     if (startPointLocation==nil) {
-                        startPointLocation = DCKCoordinate2D(latitude: self.currentLocation!.latitude, longitude: self.currentLocation!.longitude)
+                        startPointLocation = DCKCoordinate2D(latitude: currentLocation.latitude, longitude: currentLocation.longitude)
                     }
                     else
                     {
-                        let distance:Double=computeDistanceBetweenTwoCoordinate(location1: self.currentLocation!, location2: startPointLocation!)
+                        // this error should never happen
+                        guard let startPoint: DCKCoordinate2D = startPointLocation else {
+                            print ("DJI Hot Point Mission status: cannot determine the circle starting location. Aborting mission.")
+                            self.missionManager?.stopMissionExecution { (djiError) in
+                                semaphore.signal()
+                                error = djiError
+                            }
+                            semaphore.wait()
+                            return DroneTokenError.FailureRetrievingDroneState
+                        }
+                        
+                        let distance:Double=computeDistanceBetweenTwoCoordinate(location1: currentLocation, location2: startPoint)
                         if let prevD: Double = prevDistance
                         {
                             let changeInDistance: Double = distance-prevD
