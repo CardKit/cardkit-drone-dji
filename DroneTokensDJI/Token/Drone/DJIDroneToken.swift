@@ -357,15 +357,38 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
             completionHandler?(error)
         }
     }
-
-    
-    public func flyBackHome(atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: AsyncExecutionCompletionHandler?) {
+   
+    public func returnHome(atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, toLand land: Bool, completionHandler: AsyncExecutionCompletionHandler?) {
         guard let homeCoordinates = self.homeLocation else {
             completionHandler?(DroneTokenError.FailureRetrievingDroneState)
             return
         }
         
-        fly(to: homeCoordinates, atAltitude: altitude, atSpeed: speed, completionHandler: completionHandler)
+        let semaphore = DispatchSemaphore(value: 0)
+        var error: Error? = nil
+        
+        self.fly(to: homeCoordinates, atAltitude: altitude, atSpeed: speed, completionHandler: { (djiError) in
+            error = djiError
+            semaphore.signal()
+        })
+      
+        // wait for fly back to home location to complete
+        semaphore.wait()
+        
+        // check if we need to land the drone
+        if (error==nil) {
+            if (land) {
+                self.land(completionHandler: { (djiError) in
+                    error = djiError
+                    semaphore.signal()
+                })
+            }
+        }
+        
+        // waiting for drone to land
+        semaphore.wait()
+        
+        completionHandler?(error)
     }
     
     public func landingGear(down: Bool, completionHandler: AsyncExecutionCompletionHandler?) {
