@@ -286,7 +286,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         executeWaypointMission(mission: mission, completionHandler: completionHandler)
     }
     
-    public func circle(around center: DCKCoordinate2D, atRadius radius: DCKDistance, atAltitude altitude: DCKRelativeAltitude, atAngularSpeed angularSpeed: DCKAngularVelocity?, atClockwise isClockwise:DCKMovementDirection?, toCircleRepeatedly toRepeat:Bool, completionHandler: DroneTokenCompletionHandler?) {
+    public func circle(around center: DCKCoordinate2D, atRadius radius: DCKDistance, atAltitude altitude: DCKRelativeAltitude, atAngularSpeed angularSpeed: DCKAngularVelocity?, atClockwise isClockwise:DCKMovementDirection?, toCircleRepeatedly toRepeat:Bool, completionHandler: AsyncExecutionCompletionHandler?) {
         print ("drone to performing circle operation. Circle Repeatedly: \(toRepeat)")
         
         DispatchQueue.global(qos: .default).async {
@@ -445,7 +445,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         }
     }
     
-    private func executeHotPointMissionWithCancelAfterRevolution(hotPointMission: DJIHotPointMission, numOfRevolution: Int, completionHandler: DroneTokenCompletionHandler?) {
+    private func executeHotPointMissionWithCancelAfterRevolution(hotPointMission: DJIHotPointMission, numOfRevolution: Int, completionHandler: AsyncExecutionCompletionHandler?) {
         DispatchQueue.global(qos: .default).async {
             let error = self.executeHotPointMissionWithCancelAfterRevolutionSync(hotPointMission: hotPointMission, numOfRevolution: numOfRevolution)
             completionHandler?(error)
@@ -605,7 +605,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         return d*1000 // Distance in meters
     }
     
-    private func executeMission(mission: DJIMission, completionHandler: DroneTokenCompletionHandler?) {
+    private func executeMission(mission: DJIMission, completionHandler: AsyncExecutionCompletionHandler?) {
         DispatchQueue.global(qos: .default).async {
             let error = self.executeMissionSync(mission: mission)
             completionHandler?(error)
