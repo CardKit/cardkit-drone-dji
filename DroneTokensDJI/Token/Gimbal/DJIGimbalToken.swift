@@ -24,7 +24,7 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
     private var rollRange: GimbalRotationRange
     private var yawRange: GimbalRotationRange
     
-    init(with card: TokenCard, for gimbal: DJIGimbal) {
+    public init(with card: TokenCard, for gimbal: DJIGimbal) {
         self.gimbal = gimbal
         self.gimbal.delegate = self.gimbalDelegate
         
