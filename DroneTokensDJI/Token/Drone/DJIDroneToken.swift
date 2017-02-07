@@ -99,7 +99,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     
     // MARK: Instance Methods
     // MARK: DroneToken
-    public func spinMotors(on: Bool, completionHandler: DroneTokenCompletionHandler?) {
+    public func spinMotors(on: Bool, completionHandler: AsyncExecutionCompletionHandler?) {
         if on {
             aircraft.flightController?.turnOnMotors(completion: completionHandler)
         } else {
@@ -107,7 +107,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         }
     }
     
-    public func takeOff(at altitude: DCKRelativeAltitude?, completionHandler: DroneTokenCompletionHandler?) {
+    public func takeOff(at altitude: DCKRelativeAltitude?, completionHandler: AsyncExecutionCompletionHandler?) {
         print("drone taking off and climbing to altitude \(altitude)")
         
         var missionSteps: [DJIMissionStep] = []
@@ -130,7 +130,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         }
     }
     
-    public func hover(at altitude: DCKRelativeAltitude?, withYaw yaw: DCKAngle?, completionHandler: DroneTokenCompletionHandler?) {
+    public func hover(at altitude: DCKRelativeAltitude?, withYaw yaw: DCKAngle?, completionHandler: AsyncExecutionCompletionHandler?) {
         DispatchQueue.global(qos: .default).async {
             let semaphore = DispatchSemaphore(value: 0)
             var error: Error?
@@ -162,7 +162,8 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
             }
             
             // change yaw (if specified)
-            // TODO: this method of controlling yaw does not work
+            // NOTE: WILL NEED TO LOOK AT THIS
+            //this method of controlling yaw does not work
             // it "freezes" the drone and does not allow for other commands to be sent (e.g. land)
 //            if error == nil { //, let yawAngleInDegrees = yaw?.degrees {
 //                let yawAngleInDegrees = 90
@@ -184,7 +185,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         }
     }
     
-    public func fly(to coordinate: DCKCoordinate2D, atYaw yaw: DCKAngle?, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: DroneTokenCompletionHandler?) {
+    public func fly(to coordinate: DCKCoordinate2D, atYaw yaw: DCKAngle?, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: AsyncExecutionCompletionHandler?) {
         DispatchQueue.global(qos: .default).async {
             let semaphore = DispatchSemaphore(value: 0)
             var error: Error? = nil
@@ -233,7 +234,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         }
     }
     
-    public func fly(on path: DCKCoordinate2DPath, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: DroneTokenCompletionHandler?) {
+    public func fly(on path: DCKCoordinate2DPath, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: AsyncExecutionCompletionHandler?) {
         var altitudeInMeters: Double? = nil
         
         // if altitude was not passed, use current altitude
@@ -254,7 +255,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     }
     
     
-    public func fly(on path: DCKCoordinate3DPath, atSpeed speed: DCKSpeed?, completionHandler: DroneTokenCompletionHandler?) {
+    public func fly(on path: DCKCoordinate3DPath, atSpeed speed: DCKSpeed?, completionHandler: AsyncExecutionCompletionHandler?) {
         print("drone flying on path: [\(path)] at current altitude at speed \(speed)")
         
         let mission = DJIWaypointMission()
@@ -346,7 +347,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     }
 
     
-    public func returnHome(atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: DroneTokenCompletionHandler?) {
+    public func returnHome(atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: AsyncExecutionCompletionHandler?) {
         guard let homeCoordinates = self.homeLocation else {
             completionHandler?(DroneTokenError.FailureRetrievingDroneState)
             return
@@ -356,7 +357,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
 
     }
     
-    public func landingGear(down: Bool, completionHandler: DroneTokenCompletionHandler?) {
+    public func landingGear(down: Bool, completionHandler: AsyncExecutionCompletionHandler?) {
         if down {
             aircraft.flightController?.landingGear?.deployLandingGear(completion: completionHandler)
         } else {
@@ -365,7 +366,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     }
     
     
-    public func land(completionHandler: DroneTokenCompletionHandler?) {
+    public func land(completionHandler: AsyncExecutionCompletionHandler?) {
         DispatchQueue.global(qos: .default).async {
             var error: Error?
             let semaphore = DispatchSemaphore(value: 0)
@@ -419,7 +420,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     }
  
     // MARK: - Instance Methods
-    private func executeWaypointMission(mission: DJIWaypointMission, completionHandler: DroneTokenCompletionHandler?) {
+    private func executeWaypointMission(mission: DJIWaypointMission, completionHandler: AsyncExecutionCompletionHandler?) {
         // create a waypoint step
         guard let step = DJIWaypointStep(waypointMission: mission) else {
             completionHandler?(DJIDroneTokenError.failedToInstantiateWaypointStep)
@@ -431,7 +432,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     }
  
     
-    private func executeMissionSteps(missionSteps: [DJIMissionStep], completionHandler: DroneTokenCompletionHandler?) {
+    private func executeMissionSteps(missionSteps: [DJIMissionStep], completionHandler: AsyncExecutionCompletionHandler?) {
         DispatchQueue.global(qos: .default).async {
             guard let mission = DJICustomMission(steps: missionSteps) else {
                 let error=DJIDroneTokenError.failedToInstantiateCustomMission
