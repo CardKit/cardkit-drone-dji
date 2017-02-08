@@ -84,6 +84,7 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
         }
     }
     
+    //swiftlint:disable:next function_parameter_count
     public func rotate(yaw: DCKAngle?, pitch: DCKAngle?, roll: DCKAngle?, relativeToDrone: Bool, withinTimeInSeconds duration: Double?, completionHandler: AsyncExecutionCompletionHandler?) {
         let rotateAngleMode: DJIGimbalRotateAngleMode = relativeToDrone ? .angleModeRelativeAngle : .angleModeAbsoluteAngle
         
@@ -151,6 +152,7 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
         self.rotateContinouslyBySpeed(yaw: djiYawSpeed, pitch: djiPitchSpeed, roll: djiRollSpeed, endDateTime: endDateTime, completionHandler: completionHandler, completionHandlerState: CompletionHandlerState())
     }
     
+    //swiftlint:disable:next function_parameter_count
     /// To rotate with angular velocity, we need to continously call the `rotateGimbalBySpeed()` command (every 100 milliseconds)
     /// This is not documented anywhere. Of course :/ It's used in this way in the android sample app:
     /// https://github.com/dji-sdk/Mobile-SDK-Android/blob/master/Sample%20Code/app/src/main/java/com/dji/sdk/sample/gimbal/MoveGimbalWithSpeedView.java

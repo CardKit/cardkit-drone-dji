@@ -32,6 +32,7 @@ public class DJICameraToken: ExecutableTokenCard {
         self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: nil, aspectRatio: aspectRatio, quality: quality, completionHandler: completionHandler)
     }
     
+    //swiftlint:disable:next function_parameter_count function_body_length
     func takePhoto(cameraMode: DJICameraMode, shootMode: DJICameraShootPhotoMode, interval: DJICameraPhotoIntervalParam?, aspectRatio: DJICameraPhotoAspectRatio?, quality: DJICameraPhotoQuality?, completionHandler: CameraTokenCompletionHandler?) {
         self.camera.setCameraMode(cameraMode, withCompletion: { error in
             if error != nil {
