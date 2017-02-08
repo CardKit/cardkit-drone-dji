@@ -8,14 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		685338A11DF4C219003F1DA5 /* DroneTokensDJI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338971DF4C219003F1DA5 /* DroneTokensDJI.framework */; };
-		685338A61DF4C219003F1DA5 /* DroneTokensDJITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685338A51DF4C219003F1DA5 /* DroneTokensDJITests.swift */; };
 		685338A81DF4C219003F1DA5 /* DroneTokensDJI.h in Headers */ = {isa = PBXBuildFile; fileRef = 6853389A1DF4C219003F1DA5 /* DroneTokensDJI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		685338B71DF4C251003F1DA5 /* CardKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B21DF4C251003F1DA5 /* CardKit.framework */; };
 		685338B81DF4C251003F1DA5 /* CardKitRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */; };
 		685338B91DF4C251003F1DA5 /* DroneCardKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B41DF4C251003F1DA5 /* DroneCardKit.framework */; };
 		685338BA1DF4C251003F1DA5 /* Freddy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B51DF4C251003F1DA5 /* Freddy.framework */; };
-		689498E31DF4C30A007D765A /* DJIDroneToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689498E11DF4C30A007D765A /* DJIDroneToken.swift */; };
-		689498E41DF4C30A007D765A /* DJIGimbalToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689498E21DF4C30A007D765A /* DJIGimbalToken.swift */; };
+		688EA0611E424A85008559F8 /* DJIAttitudeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688EA0601E424A85008559F8 /* DJIAttitudeExtension.swift */; };
 		689498E81DF4C373007D765A /* DJISDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 689498E71DF4C373007D765A /* DJISDK.framework */; };
 		689498E91DF4C391007D765A /* CardKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B21DF4C251003F1DA5 /* CardKit.framework */; };
 		689498EA1DF4C391007D765A /* CardKitRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */; };
@@ -23,6 +21,18 @@
 		689498EC1DF4C391007D765A /* Freddy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B51DF4C251003F1DA5 /* Freddy.framework */; };
 		689498F11DF4C5AB007D765A /* DJISDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 689498E71DF4C373007D765A /* DJISDK.framework */; };
 		689498F31DF4C62F007D765A /* DJISDK.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 689498E71DF4C373007D765A /* DJISDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6896C0021E44DE0700256601 /* DJIGimbalTokenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6896C0001E44DD3B00256601 /* DJIGimbalTokenTests.swift */; };
+		CC64ECA21E40EA1900F7010D /* TestDJIGimbalToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC64ECA11E40EA1900F7010D /* TestDJIGimbalToken.swift */; };
+		CC64ECAA1E415B2200F7010D /* DJICameraToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC64ECA51E415B2200F7010D /* DJICameraToken.swift */; };
+		CC64ECAB1E415B2200F7010D /* DJIDroneToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC64ECA71E415B2200F7010D /* DJIDroneToken.swift */; };
+		CC64ECAC1E415B2200F7010D /* DJIGimbalToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC64ECA91E415B2200F7010D /* DJIGimbalToken.swift */; };
+		D58DE48D1E424E5900011E93 /* DJIHardwareTokenTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D58DE48C1E424E5900011E93 /* DJIHardwareTokenTest.swift */; };
+		D58DE4981E4278CC00011E93 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D58DE4971E4278CC00011E93 /* AppDelegate.swift */; };
+		D58DE49A1E4278CC00011E93 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D58DE4991E4278CC00011E93 /* ViewController.swift */; };
+		D58DE49D1E4278CC00011E93 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D58DE49B1E4278CC00011E93 /* Main.storyboard */; };
+		D58DE49F1E4278CC00011E93 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D58DE49E1E4278CC00011E93 /* Assets.xcassets */; };
+		D58DE4A21E4278CC00011E93 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D58DE4A01E4278CC00011E93 /* LaunchScreen.storyboard */; };
+		D58DE4AB1E427A8200011E93 /* DJICameraTokenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D58DE4A91E427A5100011E93 /* DJICameraTokenTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,6 +42,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 685338961DF4C219003F1DA5;
 			remoteInfo = DroneTokensDJI;
+		};
+		D58DE4A71E4278D200011E93 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6853388E1DF4C219003F1DA5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D58DE4941E4278CC00011E93;
+			remoteInfo = HostApplicationForTests;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -53,16 +70,27 @@
 		6853389A1DF4C219003F1DA5 /* DroneTokensDJI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DroneTokensDJI.h; sourceTree = "<group>"; };
 		6853389B1DF4C219003F1DA5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		685338A01DF4C219003F1DA5 /* DroneTokensDJITests iOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "DroneTokensDJITests iOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		685338A51DF4C219003F1DA5 /* DroneTokensDJITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DroneTokensDJITests.swift; sourceTree = "<group>"; };
 		685338A71DF4C219003F1DA5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		685338B21DF4C251003F1DA5 /* CardKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CardKit.framework; path = Carthage/Build/iOS/CardKit.framework; sourceTree = "<group>"; };
 		685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CardKitRuntime.framework; path = Carthage/Build/iOS/CardKitRuntime.framework; sourceTree = "<group>"; };
 		685338B41DF4C251003F1DA5 /* DroneCardKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DroneCardKit.framework; path = Carthage/Build/iOS/DroneCardKit.framework; sourceTree = "<group>"; };
 		685338B51DF4C251003F1DA5 /* Freddy.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Freddy.framework; path = Carthage/Build/iOS/Freddy.framework; sourceTree = "<group>"; };
-		685338B61DF4C251003F1DA5 /* PromiseKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromiseKit.framework; path = Carthage/Build/iOS/PromiseKit.framework; sourceTree = "<group>"; };
-		689498E11DF4C30A007D765A /* DJIDroneToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJIDroneToken.swift; sourceTree = "<group>"; };
-		689498E21DF4C30A007D765A /* DJIGimbalToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJIGimbalToken.swift; sourceTree = "<group>"; };
+		688EA0601E424A85008559F8 /* DJIAttitudeExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DJIAttitudeExtension.swift; path = Extensions/DJIAttitudeExtension.swift; sourceTree = "<group>"; };
 		689498E71DF4C373007D765A /* DJISDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DJISDK.framework; path = Frameworks/DJISDK.framework; sourceTree = "<group>"; };
+		6896C0001E44DD3B00256601 /* DJIGimbalTokenTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJIGimbalTokenTests.swift; sourceTree = "<group>"; };
+		CC64ECA11E40EA1900F7010D /* TestDJIGimbalToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestDJIGimbalToken.swift; sourceTree = "<group>"; };
+		CC64ECA51E415B2200F7010D /* DJICameraToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJICameraToken.swift; sourceTree = "<group>"; };
+		CC64ECA71E415B2200F7010D /* DJIDroneToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJIDroneToken.swift; sourceTree = "<group>"; };
+		CC64ECA91E415B2200F7010D /* DJIGimbalToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJIGimbalToken.swift; sourceTree = "<group>"; };
+		D58DE48C1E424E5900011E93 /* DJIHardwareTokenTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJIHardwareTokenTest.swift; sourceTree = "<group>"; };
+		D58DE4951E4278CC00011E93 /* HostApplicationForTests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HostApplicationForTests.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D58DE4971E4278CC00011E93 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		D58DE4991E4278CC00011E93 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		D58DE49C1E4278CC00011E93 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		D58DE49E1E4278CC00011E93 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D58DE4A11E4278CC00011E93 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		D58DE4A31E4278CC00011E93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D58DE4A91E427A5100011E93 /* DJICameraTokenTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJICameraTokenTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +119,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D58DE4921E4278CC00011E93 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -99,6 +134,7 @@
 			children = (
 				685338991DF4C219003F1DA5 /* DroneTokensDJI */,
 				685338A41DF4C219003F1DA5 /* DroneTokensDJITests */,
+				D58DE4961E4278CC00011E93 /* HostApplicationForTests */,
 				685338981DF4C219003F1DA5 /* Products */,
 				685338B11DF4C251003F1DA5 /* Frameworks */,
 			);
@@ -109,6 +145,7 @@
 			children = (
 				685338971DF4C219003F1DA5 /* DroneTokensDJI.framework */,
 				685338A01DF4C219003F1DA5 /* DroneTokensDJITests iOS.xctest */,
+				D58DE4951E4278CC00011E93 /* HostApplicationForTests.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -118,7 +155,8 @@
 			children = (
 				6853389A1DF4C219003F1DA5 /* DroneTokensDJI.h */,
 				6853389B1DF4C219003F1DA5 /* Info.plist */,
-				689498DF1DF4C30A007D765A /* Token */,
+				CC64ECA31E415B2200F7010D /* Token */,
+				688EA05F1E424A7B008559F8 /* Extensions */,
 			);
 			path = DroneTokensDJI;
 			sourceTree = "<group>";
@@ -126,8 +164,11 @@
 		685338A41DF4C219003F1DA5 /* DroneTokensDJITests */ = {
 			isa = PBXGroup;
 			children = (
-				685338A51DF4C219003F1DA5 /* DroneTokensDJITests.swift */,
+				D58DE48C1E424E5900011E93 /* DJIHardwareTokenTest.swift */,
+				6896C0001E44DD3B00256601 /* DJIGimbalTokenTests.swift */,
+				D58DE4A91E427A5100011E93 /* DJICameraTokenTests.swift */,
 				685338A71DF4C219003F1DA5 /* Info.plist */,
+				CC64EC9F1E40EA1900F7010D /* Token */,
 			);
 			path = DroneTokensDJITests;
 			sourceTree = "<group>";
@@ -139,27 +180,80 @@
 				685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */,
 				685338B41DF4C251003F1DA5 /* DroneCardKit.framework */,
 				685338B51DF4C251003F1DA5 /* Freddy.framework */,
-				685338B61DF4C251003F1DA5 /* PromiseKit.framework */,
 				689498E71DF4C373007D765A /* DJISDK.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		689498DF1DF4C30A007D765A /* Token */ = {
+		688EA05F1E424A7B008559F8 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				689498E01DF4C30A007D765A /* Drone */,
+				688EA0601E424A85008559F8 /* DJIAttitudeExtension.swift */,
+			);
+			name = Extensions;
+			sourceTree = "<group>";
+		};
+		CC64EC9F1E40EA1900F7010D /* Token */ = {
+			isa = PBXGroup;
+			children = (
+				CC64ECA01E40EA1900F7010D /* Gimbal */,
 			);
 			path = Token;
 			sourceTree = "<group>";
 		};
-		689498E01DF4C30A007D765A /* Drone */ = {
+		CC64ECA01E40EA1900F7010D /* Gimbal */ = {
 			isa = PBXGroup;
 			children = (
-				689498E11DF4C30A007D765A /* DJIDroneToken.swift */,
-				689498E21DF4C30A007D765A /* DJIGimbalToken.swift */,
+				CC64ECA11E40EA1900F7010D /* TestDJIGimbalToken.swift */,
+			);
+			path = Gimbal;
+			sourceTree = "<group>";
+		};
+		CC64ECA31E415B2200F7010D /* Token */ = {
+			isa = PBXGroup;
+			children = (
+				CC64ECA41E415B2200F7010D /* Camera */,
+				CC64ECA61E415B2200F7010D /* Drone */,
+				CC64ECA81E415B2200F7010D /* Gimbal */,
+			);
+			path = Token;
+			sourceTree = "<group>";
+		};
+		CC64ECA41E415B2200F7010D /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				CC64ECA51E415B2200F7010D /* DJICameraToken.swift */,
+			);
+			path = Camera;
+			sourceTree = "<group>";
+		};
+		CC64ECA61E415B2200F7010D /* Drone */ = {
+			isa = PBXGroup;
+			children = (
+				CC64ECA71E415B2200F7010D /* DJIDroneToken.swift */,
 			);
 			path = Drone;
+			sourceTree = "<group>";
+		};
+		CC64ECA81E415B2200F7010D /* Gimbal */ = {
+			isa = PBXGroup;
+			children = (
+				CC64ECA91E415B2200F7010D /* DJIGimbalToken.swift */,
+			);
+			path = Gimbal;
+			sourceTree = "<group>";
+		};
+		D58DE4961E4278CC00011E93 /* HostApplicationForTests */ = {
+			isa = PBXGroup;
+			children = (
+				D58DE4971E4278CC00011E93 /* AppDelegate.swift */,
+				D58DE4991E4278CC00011E93 /* ViewController.swift */,
+				D58DE49B1E4278CC00011E93 /* Main.storyboard */,
+				D58DE49E1E4278CC00011E93 /* Assets.xcassets */,
+				D58DE4A01E4278CC00011E93 /* LaunchScreen.storyboard */,
+				D58DE4A31E4278CC00011E93 /* Info.plist */,
+			);
+			path = HostApplicationForTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -211,11 +305,29 @@
 			);
 			dependencies = (
 				685338A31DF4C219003F1DA5 /* PBXTargetDependency */,
+				D58DE4A81E4278D200011E93 /* PBXTargetDependency */,
 			);
 			name = "DroneTokensDJITests iOS";
 			productName = DroneTokensDJITests;
 			productReference = 685338A01DF4C219003F1DA5 /* DroneTokensDJITests iOS.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D58DE4941E4278CC00011E93 /* HostApplicationForTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D58DE4A41E4278CC00011E93 /* Build configuration list for PBXNativeTarget "HostApplicationForTests" */;
+			buildPhases = (
+				D58DE4911E4278CC00011E93 /* Sources */,
+				D58DE4921E4278CC00011E93 /* Frameworks */,
+				D58DE4931E4278CC00011E93 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HostApplicationForTests;
+			productName = HostApplicationForTests;
+			productReference = D58DE4951E4278CC00011E93 /* HostApplicationForTests.app */;
+			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
@@ -223,7 +335,7 @@
 		6853388E1DF4C219003F1DA5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0810;
+				LastSwiftUpdateCheck = 0820;
 				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = IBM;
 				TargetAttributes = {
@@ -236,6 +348,12 @@
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = 76CMF53Q35;
 						ProvisioningStyle = Automatic;
+						TestTargetID = D58DE4941E4278CC00011E93;
+					};
+					D58DE4941E4278CC00011E93 = {
+						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = 76CMF53Q35;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -245,6 +363,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 6853388D1DF4C219003F1DA5;
 			productRefGroup = 685338981DF4C219003F1DA5 /* Products */;
@@ -253,6 +372,7 @@
 			targets = (
 				685338961DF4C219003F1DA5 /* DroneTokensDJI iOS */,
 				6853389F1DF4C219003F1DA5 /* DroneTokensDJITests iOS */,
+				D58DE4941E4278CC00011E93 /* HostApplicationForTests */,
 			);
 		};
 /* End PBXProject section */
@@ -269,6 +389,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D58DE4931E4278CC00011E93 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D58DE4A21E4278CC00011E93 /* LaunchScreen.storyboard in Resources */,
+				D58DE49F1E4278CC00011E93 /* Assets.xcassets in Resources */,
+				D58DE49D1E4278CC00011E93 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -342,8 +472,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				689498E31DF4C30A007D765A /* DJIDroneToken.swift in Sources */,
-				689498E41DF4C30A007D765A /* DJIGimbalToken.swift in Sources */,
+				CC64ECAB1E415B2200F7010D /* DJIDroneToken.swift in Sources */,
+				688EA0611E424A85008559F8 /* DJIAttitudeExtension.swift in Sources */,
+				CC64ECAC1E415B2200F7010D /* DJIGimbalToken.swift in Sources */,
+				CC64ECAA1E415B2200F7010D /* DJICameraToken.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -351,7 +483,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				685338A61DF4C219003F1DA5 /* DroneTokensDJITests.swift in Sources */,
+				D58DE4AB1E427A8200011E93 /* DJICameraTokenTests.swift in Sources */,
+				D58DE48D1E424E5900011E93 /* DJIHardwareTokenTest.swift in Sources */,
+				CC64ECA21E40EA1900F7010D /* TestDJIGimbalToken.swift in Sources */,
+				6896C0021E44DE0700256601 /* DJIGimbalTokenTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D58DE4911E4278CC00011E93 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D58DE49A1E4278CC00011E93 /* ViewController.swift in Sources */,
+				D58DE4981E4278CC00011E93 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -363,7 +507,31 @@
 			target = 685338961DF4C219003F1DA5 /* DroneTokensDJI iOS */;
 			targetProxy = 685338A21DF4C219003F1DA5 /* PBXContainerItemProxy */;
 		};
+		D58DE4A81E4278D200011E93 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D58DE4941E4278CC00011E93 /* HostApplicationForTests */;
+			targetProxy = D58DE4A71E4278D200011E93 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		D58DE49B1E4278CC00011E93 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D58DE49C1E4278CC00011E93 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		D58DE4A01E4278CC00011E93 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D58DE4A11E4278CC00011E93 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		685338A91DF4C219003F1DA5 /* Debug */ = {
@@ -534,6 +702,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ibm.research.DroneTokensDJITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HostApplicationForTests.app/HostApplicationForTests";
 			};
 			name = Debug;
 		};
@@ -549,6 +718,37 @@
 				);
 				INFOPLIST_FILE = DroneTokensDJITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ibm.research.DroneTokensDJITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HostApplicationForTests.app/HostApplicationForTests";
+			};
+			name = Release;
+		};
+		D58DE4A51E4278CC00011E93 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				DEVELOPMENT_TEAM = 76CMF53Q35;
+				INFOPLIST_FILE = HostApplicationForTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ibm.research.DroneTokensDJITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		D58DE4A61E4278CC00011E93 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				DEVELOPMENT_TEAM = 76CMF53Q35;
+				INFOPLIST_FILE = HostApplicationForTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ibm.research.DroneTokensDJITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
@@ -581,6 +781,15 @@
 			buildConfigurations = (
 				685338AF1DF4C219003F1DA5 /* Debug */,
 				685338B01DF4C219003F1DA5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D58DE4A41E4278CC00011E93 /* Build configuration list for PBXNativeTarget "HostApplicationForTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D58DE4A51E4278CC00011E93 /* Debug */,
+				D58DE4A61E4278CC00011E93 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
