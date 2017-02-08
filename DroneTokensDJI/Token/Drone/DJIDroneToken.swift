@@ -282,7 +282,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         }
     }
     
-    public func circle(around center: DCKCoordinate2D, atRadius radius: DCKDistance, atAltitude altitude: DCKRelativeAltitude, atAngularSpeed angularSpeed: DCKAngularVelocity?, atClockwise isClockwise:DCKMovementDirection?, toCircleRepeatedly toRepeat: Bool, completionHandler: AsyncExecutionCompletionHandler?) {
+    public func circle(around center: DCKCoordinate2D, atRadius radius: DCKDistance, atAltitude altitude: DCKRelativeAltitude, atAngularSpeed angularSpeed: DCKAngularVelocity?, atClockwise isClockwise: DCKMovementDirection?, toCircleRepeatedly toRepeat: Bool, completionHandler: AsyncExecutionCompletionHandler?) {
         print ("drone to performing circle operation. Circle Repeatedly: \(toRepeat)")
         
         DispatchQueue.global(qos: .default).async {
@@ -291,22 +291,20 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
             // fly to location
             if error == nil {
                 
-                var hotPointMission: DJIHotPointMission = DJIHotPointMission()
+                let hotPointMission: DJIHotPointMission = DJIHotPointMission()
                 hotPointMission.hotPoint = CLLocationCoordinate2DMake(center.latitude, center.longitude)
                 hotPointMission.radius = Float(radius.meters)
                 hotPointMission.altitude = Float(altitude.metersAboveGroundAtTakeoff)
                 
                 if let angSpeed = angularSpeed {
                     hotPointMission.angularVelocity = Float(angSpeed.degreesPerSecond)
-                }
-                else {
+                } else {
                     hotPointMission.angularVelocity=20.0
                 }
                 
                 if let isClockwiseDirection = isClockwise {
                     hotPointMission.isClockwise = Bool (isClockwiseDirection.isClockwise)
-                }
-                else {
+                } else {
                     hotPointMission.isClockwise=true
                 }
                 
@@ -318,8 +316,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
                 // To perform single revolution of 'Circle', manual cancelling of the DJIHotPoint mission is needed.
                 if toRepeat {
                     error = self.executeMissionSync(mission: hotPointMission)
-                }
-                else {
+                } else {
                     error = self.executeHotPointMissionWithNumOfRevolutionSync(hotPointMission: hotPointMission, numOfRevolution: 1)
                 }
             }
@@ -396,7 +393,55 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
             completionHandler?(landError)
         }
     }
- 
+    
+    public func spinAround(toYawAngle yaw: DCKAngle, atAngularSpeed angularSpeed: DCKAngularVelocity?, completionHandler: AsyncExecutionCompletionHandler?) {
+        print ("Drone spining around to change yaw angle to \(yaw) degrees at AngularSpeed: \(angularSpeed)")
+        
+        DispatchQueue.global(qos: .default).async {
+            var spinAroundError: Error? = nil
+            
+            var missionSteps: [DJIMissionStep] = []
+         
+            // default angular velocity to move the drone's yaw angle is 20 degree/s according to DJI SDK
+            var angSpeed: Double = 20.0
+            if let angSpeedUnwrapped = angularSpeed?.degreesPerSecond, angSpeedUnwrapped > 0, angSpeedUnwrapped < 100 {
+                angSpeed = angSpeedUnwrapped
+            }
+
+            if let aircraftYawStep = DJIAircraftYawStep(relativeAngle: yaw.degrees, andAngularVelocity: angSpeed) {
+                missionSteps.append(aircraftYawStep)
+            } else {
+                spinAroundError = DJIDroneTokenError.failedToInstantiateCustomMission
+                completionHandler?(spinAroundError)
+                return
+            }
+            
+            // spinAroundError = self.executeMissionStepsSync(missionSteps: missionSteps)
+            
+            /*
+            let semaphore = DispatchSemaphore(value: 0)
+            
+            
+            let yawAngleInDegrees = 90
+            var ctrlData: DJIVirtualStickFlightControlData = DJIVirtualStickFlightControlData()
+            ctrlData.yaw = Float(yawAngleInDegrees)
+            
+            if let isVirtualStickAvailable = self.aircraft.flightController?.isVirtualStickControlModeAvailable(),
+                isVirtualStickAvailable == true {
+                self.aircraft.flightController?.send(ctrlData) { (djiError) in
+                    spinAroundError = djiError
+                    semaphore.signal()
+                }
+            }
+            
+            semaphore.wait()
+            */
+       
+            completionHandler?(spinAroundError)
+        }
+
+    }
+
     // MARK: - Instance Methods
     private func executeWaypointMissionSync(mission: DJIWaypointMission) -> Error? {
         
@@ -468,9 +513,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
                         // Method 2
                         if startPointLocation == nil {
                             startPointLocation = DCKCoordinate2D(latitude: currentLocation.latitude, longitude: currentLocation.longitude)
-                        }
-                        else
-                        {
+                        } else {
                             // this error should never happen
                             guard let startPoint: DCKCoordinate2D = startPointLocation else {
                                 print ("DJI Hot Point Mission status: cannot determine the circle starting location. Aborting mission.")
@@ -489,8 +532,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
                                         if revolutionCounter == numOfRevolution {
                                             print ("DJI Hot Point Mission status: \(numOfRevolution) revolution has completed. Distance: \(distance)")
                                             try DispatchQueue.executeSynchronously { missionManager.stopMissionExecution(completion: $0) }
-                                        }
-                                        else {
+                                        } else {
                                             print ("DJI Hot Point Mission status: \(revolutionCounter) revolution has completed. Remaining # of revolution: \(numOfRevolution-revolutionCounter)")
                                             
                                         }
@@ -498,8 +540,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
                                     isPrevSlopePositive = true
                                 }
                                 
-                            }
-                            else {
+                            } else {
                                 prevDistance = distance
                             }
                             print ("DJI Hot Point Mission status: Circling. Distance from Starting Point: \(distance)")
@@ -544,9 +585,8 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         
         do {
             try DispatchQueue.executeSynchronously { missionManager.prepare(mission, withProgress: nil, withCompletion: $0) }
-           
+        
             try DispatchQueue.executeSynchronously { missionManager.startMissionExecution(completion: $0) }
-            
             missionManagerDelegate.isExecuting = true
         } catch {
             return error
