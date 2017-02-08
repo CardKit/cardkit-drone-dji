@@ -26,112 +26,125 @@ class DJIGimbalTokenTests: DJIHardwareTokenTest {
         }
         
         self.gimbal = DJIGimbalToken(with: DroneCardKit.Token.Gimbal.makeCard(), for: gimbalHardware)
-    
+        
     }
     
     func testDownwardOrient() {
-        var completed = false
+        var isCompleted = false
         
-        self.gimbal?.orient(to: .facingDownward, completionHandler: { (error) in
-            if let error = error {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                try self.gimbal?.orient(to: .facingDownward)
+            } catch {
                 XCTFail("could not update the pitch of the gimbal. error: \(error)")
             }
             
-            completed = true
-        })
+            isCompleted = true
+        }
         
-        runLoop { completed }
+        runLoop { isCompleted }
     }
     
     func testForwardOrient() {
-        var completed = false
+        var isCompleted = false
         
-        self.gimbal?.orient(to: .facingForward, completionHandler: { (error) in
-            if let error = error {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                try self.gimbal?.orient(to: .facingForward)
+            } catch {
                 XCTFail("could not update the pitch of the gimbal. error: \(error)")
             }
             
-            completed = true
-        })
+            isCompleted = true
+        }
         
-        runLoop { completed }
+        runLoop { isCompleted }
     }
     
     /// Test pitch control of drone using velocity
     func testPitchUsingVelocity() {
-        var completed = false
-        
+        var isCompleted = false
         let angularVelocity = DCKAngularVelocity(degreesPerSecond: 5)
         
-        self.gimbal?.rotate(pitch: angularVelocity, forTimeInSeconds: 5, completionHandler: { (error) in
-            if let error = error {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                try self.gimbal?.rotate(pitch: angularVelocity, forTimeInSeconds: 5)
+            } catch {
                 XCTFail("could not update the pitch of the gimbal. error: \(error)")
             }
             
-            completed = true
-        })
+            isCompleted = true
+        }
         
-        runLoop { completed }
+        runLoop { isCompleted }
     }
     
     
     /// Test pitch control of drone
     func testPitchUsingAbsoluteAngle() {
-        var completed = false
+        var isCompleted = false
         let zeroAngle = DCKAngle(degrees: 0)
         
-        //test pitch absolute
-        self.gimbal?.rotate(yaw: zeroAngle, pitch: DCKAngle(degrees: 70), roll: zeroAngle, relativeToDrone: false, withinTimeInSeconds: 10, completionHandler: { (error) in
-            if let error = error {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                //test pitch absolute
+                try self.gimbal?.rotate(yaw: zeroAngle, pitch: DCKAngle(degrees: 70), roll: zeroAngle, relativeToDrone: false, withinTimeInSeconds: 10)
+            } catch {
                 XCTFail("could not update the pitch of the gimbal. error: \(error)")
             }
             
-            completed = true
-        })
+            isCompleted = true
+        }
         
-        runLoop { completed }
+        runLoop { isCompleted }
     }
     
     func testPitchUsingRelativeAngle() {
-        var completed = false
+        var isCompleted = false
         let zeroAngle = DCKAngle(degrees: 0)
         
-        self.gimbal?.rotate(yaw: zeroAngle, pitch: DCKAngle(degrees: -20), roll: zeroAngle, relativeToDrone: true, withinTimeInSeconds: 1, completionHandler: { (error) in
-            if let error = error {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                try self.gimbal?.rotate(yaw: zeroAngle, pitch: DCKAngle(degrees: -20), roll: zeroAngle, relativeToDrone: true, withinTimeInSeconds: 1)
+            } catch {
                 XCTFail("could not update the pitch of the gimbal. error: \(error)")
             }
             
-            completed = true
-        })
+            isCompleted = true
+        }
         
-        runLoop { completed }
+        runLoop { isCompleted }
     }
     
     func testCalibrate() {
-        var completed = false
+        var isCompleted = false
         
-        self.gimbal?.calibrate(completionHandler: { (error) in
-            if let error = error {
-                XCTFail("could not reset the gimbal. error: \(error)")
+        DispatchQueue.global(qos: .default).async {
+            do {
+                try self.gimbal?.calibrate()
+            } catch {
+                XCTFail("could not calibrate the gimbal. error: \(error)")
             }
             
-            completed = true
-        })
+            isCompleted = true
+        }
         
-        runLoop { completed }
+        runLoop { isCompleted }
     }
     
     func testReset() {
-        var completed = false
+        var isCompleted = false
         
-        self.gimbal?.reset(completionHandler: { (error) in
-            if let error = error {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                try self.gimbal?.reset()
+            } catch {
                 XCTFail("could not reset the gimbal. error: \(error)")
             }
             
-            completed = true
-        })
+            isCompleted = true
+        }
         
-        runLoop { completed }
+        runLoop { isCompleted }
     }
 }

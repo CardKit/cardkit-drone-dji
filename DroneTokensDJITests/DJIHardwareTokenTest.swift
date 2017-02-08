@@ -106,7 +106,7 @@ class DJIHardwareTokenTest: XCTestCase, DJISDKManagerDelegate {
             
             if enterDebugMode {
                 print("enterDebugMode")
-                DJISDKManager.enterDebugMode(withDebugId: "192.168.1.4")
+                DJISDKManager.enterDebugMode(withDebugId: "10.10.10.243")
                 /*let result = semaphore.wait(timeout: semaphoreTimeout)
                 
                 if result == .timedOut {
