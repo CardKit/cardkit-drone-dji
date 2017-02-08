@@ -73,7 +73,11 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
             return nil
         }
         
-        return DCKAttitude(yaw: DCKAngle(degrees: attitude.yaw), pitch: DCKAngle(degrees: attitude.pitch), roll: DCKAngle(degrees: attitude.roll))
+        // jw: I think I disagree with normalizing this here, I thought the normalization
+        // discussion we had was about the gimbal because different gimbals have different
+        // ranges of motion.
+        let normalizedAttitude = attitude.normalized()
+        return DCKAttitude(yaw: DCKAngle(degrees: normalizedAttitude.yaw), pitch: DCKAngle(degrees: normalizedAttitude.pitch), roll: DCKAngle(degrees: normalizedAttitude.roll))
     }
     
     public var areMotorsOn: Bool? {
@@ -88,7 +92,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         return landingGear.status == .deployed
     }
     
-    // MARK: init
+    // MARK: Init
     
     public init(with card: TokenCard, for aircraft: DJIAircraft) {
         self.aircraft = aircraft
@@ -97,8 +101,8 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         super.init(with: card)
     }
     
-    // MARK: Instance Methods
     // MARK: DroneToken
+    
     public func spinMotors(on: Bool, completionHandler: AsyncExecutionCompletionHandler?) {
         if on {
             aircraft.flightController?.turnOnMotors(completion: completionHandler)
