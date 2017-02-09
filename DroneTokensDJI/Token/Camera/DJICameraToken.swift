@@ -52,12 +52,12 @@ public class DJICameraToken: ExecutableTokenCard {
         
         // set the aspect ratio
         if let aspectRatio = aspectRatio {
-            try DispatchQueue.executeSynchronously { self.camera.setPhotoRatio(aspectRatio, withCompletion:$0) }
+            try DispatchQueue.executeSynchronously { self.camera.setPhotoRatio(aspectRatio, withCompletion: $0) }
         }
         
         // set the quality
         if let quality = quality {
-            try DispatchQueue.executeSynchronously { self.camera.setPhotoQuality(quality, withCompletion:$0) }
+            try DispatchQueue.executeSynchronously { self.camera.setPhotoQuality(quality, withCompletion: $0) }
         }
         
         // set the burstCount (if we're taking photos in burst mode)
@@ -77,11 +77,11 @@ public class DJICameraToken: ExecutableTokenCard {
         
         // set the interval (if we're taking photos in an interval)
         if shootMode == .interval, let interval = interval {
-            try DispatchQueue.executeSynchronously { self.camera.setPhotoIntervalParam(interval, withCompletion:$0) }
+            try DispatchQueue.executeSynchronously { self.camera.setPhotoIntervalParam(interval, withCompletion: $0) }
         }
         
         // take the photo
-        try DispatchQueue.executeSynchronously { self.camera.startShootPhoto(shootMode, withCompletion:$0) }
+        try DispatchQueue.executeSynchronously { self.camera.startShootPhoto(shootMode, withCompletion: $0) }
     }
     
     func stopPhotos() throws {
