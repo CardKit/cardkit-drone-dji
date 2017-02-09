@@ -15,7 +15,7 @@ import DroneCardKit
 import DJISDK
 
 public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
-    private let sleepTimeInSeconds = 2.0 //in seconds
+    private let sleepTimeInSeconds = 2.0
     private let gimbal: DJIGimbal
     
     //swiftlint:disable:next weak_delegate
@@ -116,18 +116,11 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
             self.gimbal.completionTimeForControlAngleAction = Double(clamp(value: duration, min: 0.1, max: 25.5))
         }
         
-        // rotate the gimbal
+        // start rotating the gimbal
         try DispatchQueue.executeSynchronously { self.gimbal.rotateGimbal(with: rotateAngleMode, pitch: djiPitch, roll: djiRoll, yaw: djiYaw, withCompletion: $0) }
         
         //wait until the gimbal finishes rotating
-        var timeToCompletion = Date()
-        if let endDate = Calendar.current.date(byAdding: .second, value: Int(self.gimbal.completionTimeForControlAngleAction), to: Date()) {
-            timeToCompletion = endDate
-        }
-        
-        while Date() < timeToCompletion {
-            Thread.sleep(forTimeInterval: sleepTimeInSeconds)
-        }
+        Thread.sleep(forTimeInterval: self.gimbal.completionTimeForControlAngleAction)
     }
     
     public func rotate(yaw: DCKAngularVelocity?, pitch: DCKAngularVelocity?, roll: DCKAngularVelocity?, forTimeInSeconds duration: Double) throws {
