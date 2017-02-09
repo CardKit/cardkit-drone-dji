@@ -27,6 +27,8 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
         super.setUp()
         print("setup of DJICameraTokenTests")
         
+        runLoop { self.aircraft?.camera != nil }
+        
         //setup camera
         guard let camera = self.aircraft?.camera else {
             XCTFail("No camera exists")
@@ -93,7 +95,7 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
         
         DispatchQueue.global(qos: .default).async {
             do {
-                try self.cameraExecutableTokenCard?.takePhotoBurst(count: PhotoBurstCount.burst_7, options: self.cameraOptions)
+                try self.cameraExecutableTokenCard?.takePhotoBurst(count: PhotoBurstCount.burst_3, options: self.cameraOptions)
             } catch {
                 XCTAssertNil(error, "Took Photo Burst")
             }
