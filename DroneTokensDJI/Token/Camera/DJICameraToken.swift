@@ -94,7 +94,7 @@ public class DJICameraToken: ExecutableTokenCard {
                 
                 self.camera.setPhotoBurstCount(burstCount, withCompletion: { (error) in
                     
-                    // check if there was an error
+                    // check if there was an error   
                     if error != nil {
                         if let nsError = error as? NSError {
                             if nsError.code == DJISDKError.invalidParameters.rawValue {
@@ -108,6 +108,7 @@ public class DJICameraToken: ExecutableTokenCard {
                         completionHandler?(error)
                         return
                     }
+                    
                     dispatchGroup.leave()
                 })
             }
