@@ -105,7 +105,7 @@ class DJIGimbalTokenTests: DJIHardwareTokenTest {
         
         DispatchQueue.global(qos: .default).async {
             do {
-                try self.gimbal?.rotate(yaw: zeroAngle, pitch: DCKAngle(degrees: -20), roll: zeroAngle, relativeToDrone: true, withinTimeInSeconds: 1)
+                try self.gimbal?.rotate(yaw: zeroAngle, pitch: DCKAngle(degrees: -270), roll: zeroAngle, relativeToDrone: true, withinTimeInSeconds: 1)
             } catch {
                 XCTFail("could not update the pitch of the gimbal. error: \(error)")
             }
