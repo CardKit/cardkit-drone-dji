@@ -29,11 +29,11 @@ public class DJICameraToken: ExecutableTokenCard {
     }
     
     func takePhoto(cameraMode: DJICameraMode, shootMode: DJICameraShootPhotoMode, aspectRatio: DJICameraPhotoAspectRatio?, quality: DJICameraPhotoQuality?, completionHandler: CameraTokenCompletionHandler?) {
-        self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: nil, aspectRatio: aspectRatio, quality: quality, completionHandler: completionHandler)
+        self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: nil, burstCount: nil, aspectRatio: aspectRatio, quality: quality, completionHandler: completionHandler)
     }
     
     //swiftlint:disable:next function_parameter_count function_body_length
-    func takePhoto(cameraMode: DJICameraMode, shootMode: DJICameraShootPhotoMode, interval: DJICameraPhotoIntervalParam?, aspectRatio: DJICameraPhotoAspectRatio?, quality: DJICameraPhotoQuality?, completionHandler: CameraTokenCompletionHandler?) {
+    func takePhoto(cameraMode: DJICameraMode, shootMode: DJICameraShootPhotoMode, interval: DJICameraPhotoIntervalParam?, burstCount: DJICameraPhotoBurstCount?, aspectRatio: DJICameraPhotoAspectRatio?, quality: DJICameraPhotoQuality?, completionHandler: CameraTokenCompletionHandler?) {
         self.camera.setCameraMode(cameraMode, withCompletion: { error in
             if error != nil {
                 completionHandler?(DJICameraTokenError.failedToSetCameraModeToPhoto)
@@ -50,59 +50,80 @@ public class DJICameraToken: ExecutableTokenCard {
                 completionHandler?(DJICameraTokenError.sdCardFull)
                 return
             }
+                        
+            let dispatchGroup = DispatchGroup()
             
             // set the aspect ratio
             if let aspectRatio = aspectRatio {
-                let semaphore = DispatchSemaphore(value: 0)
-                var djiError: Error? = nil
+                
+                dispatchGroup.enter()
                 
                 self.camera.setPhotoRatio(aspectRatio, withCompletion: { error in
-                    djiError = error
-                    semaphore.signal()
+                    if error != nil {
+                        guard let completion = completionHandler else {
+                            return
+                        }
+                        completion(error)
+                        return
+                    }
+                    dispatchGroup.leave()
                 })
-                
-                // wait for the photo ratio to be set
-                semaphore.wait()
-                
-                // check if there was an error
-                if djiError != nil {
-                    completionHandler?(djiError)
-                    return
-                }
             }
             
             // set the quality
             if let quality = quality {
-                let semaphore = DispatchSemaphore(value: 0)
-                var djiError: Error? = nil
+                
+                dispatchGroup.enter()
                 
                 self.camera.setPhotoQuality(quality, withCompletion: { error in
-                    djiError = error
-                    semaphore.signal()
+                    if error != nil {
+                        guard let completion = completionHandler else {
+                            return
+                        }
+                        completion(error)
+                        return
+                    }
+                    dispatchGroup.leave()
                 })
-                
-                // wait for the photo ratio to be set
-                semaphore.wait()
-                
-                // check if there was an error
-                if djiError != nil {
-                    completionHandler?(djiError)
-                    return
-                }
             }
             
+            // set the burstCount (if we're taking photos in burst mode)
+            if shootMode == .burst, let burstCount = burstCount {
+                
+                dispatchGroup.enter()
+                
+                self.camera.setPhotoBurstCount(burstCount, withCompletion: { (error) in
+                    
+                    // check if there was an error   
+                    if error != nil {
+                        if let nsError = error as? NSError {
+                            if nsError.code == DJISDKError.invalidParameters.rawValue {
+                                //DJISDKError of .invalidParameters typically means that the burst count is not supported by the camera hardware in use.
+                                let burstCountErrorDescription = "\(nsError.localizedDescription).  Check to see that the camera supports the burst count provided."
+                                let burstCountError = NSError(domain: nsError.domain, code: nsError.code, userInfo: [NSLocalizedDescriptionKey: burstCountErrorDescription])
+                                completionHandler?(burstCountError)
+                                return
+                            }
+                        }
+                        completionHandler?(error)
+                        return
+                    }
+                    
+                    dispatchGroup.leave()
+                })
+            }
+ 
             // set the interval (if we're taking photos in an interval)
             if shootMode == .interval, let interval = interval {
-                let semaphore = DispatchSemaphore(value: 0)
+                
+                dispatchGroup.enter()
+                
                 var djiError: Error? = nil
                 
                 self.camera.setPhotoIntervalParam(interval, withCompletion: { error in
                     djiError = error
-                    semaphore.signal()
+                    dispatchGroup.leave()
                 })
-                
-                // wait for the interval to be set
-                semaphore.wait()
                 
                 // check if there was an error
                 if djiError != nil {
@@ -169,13 +190,15 @@ extension DJICameraToken: CameraToken {
     }
     
     public func takePhotoBurst(count: PhotoBurstCount, options: Set<CameraPhotoOption>, completionHandler: CameraTokenCompletionHandler?) {
+        
         let cameraMode: DJICameraMode = .shootPhoto
         let shootMode: DJICameraShootPhotoMode = .burst
         let aspectRatio: DJICameraPhotoAspectRatio? = DJICameraToken.aspectRatio(from: options)
         let quality: DJICameraPhotoQuality? = DJICameraToken.quality(from: options)
-        
+        let photoBurstCount: DJICameraPhotoBurstCount = DJICameraPhotoBurstCount(rawValue: UInt(count.hashValue))!
+    
         // take the photo
-        self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, aspectRatio: aspectRatio, quality: quality, completionHandler: completionHandler)
+        self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: nil, burstCount: photoBurstCount, aspectRatio: aspectRatio, quality: quality, completionHandler: completionHandler)
     }
     
     public func startTakingPhotos(at interval: TimeInterval, options: Set<CameraPhotoOption>, completionHandler: CameraTokenCompletionHandler?) {
@@ -189,7 +212,7 @@ extension DJICameraToken: CameraToken {
         let djiInterval = DJICameraPhotoIntervalParam(captureCount: 255, timeIntervalInSeconds: UInt16(interval))
         
         // take the photos
-        self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: djiInterval, aspectRatio: aspectRatio, quality: quality, completionHandler: completionHandler)
+        self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: djiInterval, burstCount: nil, aspectRatio: aspectRatio, quality: quality, completionHandler: completionHandler)
     }
     
     public func stopTakingPhotos(completionHandler: CameraTokenCompletionHandler?) {
@@ -282,7 +305,7 @@ fileprivate class CameraDelegate: NSObject, DJICameraDelegate {
         // tbd
     }
     
-    func camera(_ camera: DJICamera, didUpdate sdCardState: DJICameraSDCardState) {
+    func camera(_ camera: DJICamera, didUpdate sdCardState: DJICameraSDCardState) {        
         self.sdCardState = sdCardState
     }
     
