@@ -20,7 +20,6 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
     //Sometimes camera is nil.  Keep trying until it isn't.
     
     let expectationTimeout: TimeInterval = 1000
-    var cameraTokenCard: TokenCard?
     var cameraExecutableTokenCard: DJICameraToken?
     let cameraOptions: Set<CameraPhotoOption> = [CameraPhotoOption.aspectRatio(.aspect_16x9), CameraPhotoOption.quality(.normal)]
     
@@ -34,10 +33,9 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
             return
         }
         
-        self.cameraTokenCard = DroneCardKit.Token.Camera.makeCard()
-        self.cameraExecutableTokenCard = DJICameraToken(with: self.cameraTokenCard!, for: camera)
+        let cameraTokenCard = DroneCardKit.Token.Camera.makeCard()
+        self.cameraExecutableTokenCard = DJICameraToken(with: cameraTokenCard, for: camera)
         
-        XCTAssertNotNil(self.cameraTokenCard, "Camera Token Card could not be created.")
         XCTAssertNotNil(self.cameraExecutableTokenCard, "Camera Executable Token Card could not be created.")
         
     }
@@ -46,9 +44,15 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
         print("test camera token photo")
         
         let cameraExpectation = expectation(description: "take photo expectation")
-        cameraExecutableTokenCard?.takePhoto(options: cameraOptions) { (error) in
-            print("error taking photo \(error)")
-            XCTAssertNil(error, "Took Photo")
+        
+        DispatchQueue.global(qos: .default).async {
+            do {
+                try self.cameraExecutableTokenCard?.takePhoto(options: self.cameraOptions)
+            } catch {
+                print("error taking photo \(error)")
+                XCTAssertNil(error, "Took Photo")
+            }
+            
             cameraExpectation.fulfill()
         }
         
@@ -57,15 +61,21 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
                 XCTFail("Take photo timed out.  Error: \(error)")
             }
         }
-
     }
     
     func testCameraTokenHDRPhoto() {
         print("test camera token HDR photo")
         
         let cameraExpectation = expectation(description: "take HDR photo expectation")
-        cameraExecutableTokenCard?.takeHDRPhoto(options: cameraOptions) { (error) in
-            XCTAssertNil(error, "Took HDR Photo")
+        
+        DispatchQueue.global(qos: .default).async {
+            do {
+                try self.cameraExecutableTokenCard?.takeHDRPhoto(options: self.cameraOptions)
+            } catch {
+                print("error taking HDR Photo \(error)")
+                XCTAssertNil(error, "Took HDR Photo")
+            }
+            
             cameraExpectation.fulfill()
         }
         
@@ -80,8 +90,14 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
         print("test camera token photo burst")
         
         let cameraExpectation = expectation(description: "take photo burst expectation")
-        cameraExecutableTokenCard?.takePhotoBurst(count: PhotoBurstCount.burst_7, options: cameraOptions) { (error) in
-            XCTAssertNil(error, "Took Photo Burst")
+        
+        DispatchQueue.global(qos: .default).async {
+            do {
+                try self.cameraExecutableTokenCard?.takePhotoBurst(count: PhotoBurstCount.burst_7, options: self.cameraOptions)
+            } catch {
+                XCTAssertNil(error, "Took Photo Burst")
+            }
+            
             cameraExpectation.fulfill()
         }
         

@@ -28,12 +28,12 @@ public class DJICameraToken: ExecutableTokenCard {
         super.init(with: card)
     }
     
-    func takePhoto(cameraMode: DJICameraMode, shootMode: DJICameraShootPhotoMode, aspectRatio: DJICameraPhotoAspectRatio?, quality: DJICameraPhotoQuality?, completionHandler: CameraTokenCompletionHandler?) {
+    func takePhoto(cameraMode: DJICameraMode, shootMode: DJICameraShootPhotoMode, aspectRatio: DJICameraPhotoAspectRatio?, quality: DJICameraPhotoQuality?, completionHandler: AsyncExecutionCompletionHandler?) {
         self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: nil, burstCount: nil, aspectRatio: aspectRatio, quality: quality, completionHandler: completionHandler)
     }
     
     //swiftlint:disable:next function_parameter_count function_body_length
-    func takePhoto(cameraMode: DJICameraMode, shootMode: DJICameraShootPhotoMode, interval: DJICameraPhotoIntervalParam?, burstCount: DJICameraPhotoBurstCount?, aspectRatio: DJICameraPhotoAspectRatio?, quality: DJICameraPhotoQuality?, completionHandler: CameraTokenCompletionHandler?) {
+    func takePhoto(cameraMode: DJICameraMode, shootMode: DJICameraShootPhotoMode, interval: DJICameraPhotoIntervalParam?, burstCount: DJICameraPhotoBurstCount?, aspectRatio: DJICameraPhotoAspectRatio?, quality: DJICameraPhotoQuality?, completionHandler: AsyncExecutionCompletionHandler?) {
         self.camera.setCameraMode(cameraMode, withCompletion: { error in
             if error != nil {
                 completionHandler?(DJICameraTokenError.failedToSetCameraModeToPhoto)
@@ -139,7 +139,7 @@ public class DJICameraToken: ExecutableTokenCard {
         })
     }
     
-    func stopPhotos(completionHandler: CameraTokenCompletionHandler?) {
+    func stopPhotos(completionHandler: AsyncExecutionCompletionHandler?) {
         self.camera.stopShootPhoto(completion: { error in
             completionHandler?(error)
         })
@@ -169,27 +169,27 @@ extension DJICameraToken {
 // MARK: CameraToken
 
 extension DJICameraToken: CameraToken {
-    public func takePhoto(options: Set<CameraPhotoOption>, completionHandler: CameraTokenCompletionHandler?) {
+    public func takePhoto(options: Set<CameraPhotoOption>) throws {
         let cameraMode: DJICameraMode = .shootPhoto
         let shootMode: DJICameraShootPhotoMode = .single
         let aspectRatio: DJICameraPhotoAspectRatio? = DJICameraToken.aspectRatio(from: options)
         let quality: DJICameraPhotoQuality? = DJICameraToken.quality(from: options)
         
         // take the photo
-        self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, aspectRatio: aspectRatio, quality: quality, completionHandler: completionHandler)
+        try DispatchQueue.executeSynchronously { self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, aspectRatio: aspectRatio, quality: quality, completionHandler: $0) }
     }
     
-    public func takeHDRPhoto(options: Set<CameraPhotoOption>, completionHandler: CameraTokenCompletionHandler?) {
+    public func takeHDRPhoto(options: Set<CameraPhotoOption>) throws {
         let cameraMode: DJICameraMode = .shootPhoto
         let shootMode: DJICameraShootPhotoMode = .HDR
         let aspectRatio: DJICameraPhotoAspectRatio? = DJICameraToken.aspectRatio(from: options)
         let quality: DJICameraPhotoQuality? = DJICameraToken.quality(from: options)
         
         // take the photo
-        self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, aspectRatio: aspectRatio, quality: quality, completionHandler: completionHandler)
+        try DispatchQueue.executeSynchronously { self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, aspectRatio: aspectRatio, quality: quality, completionHandler: $0) }
     }
     
-    public func takePhotoBurst(count: PhotoBurstCount, options: Set<CameraPhotoOption>, completionHandler: CameraTokenCompletionHandler?) {
+    public func takePhotoBurst(count: PhotoBurstCount, options: Set<CameraPhotoOption>) throws {
         
         let cameraMode: DJICameraMode = .shootPhoto
         let shootMode: DJICameraShootPhotoMode = .burst
@@ -198,10 +198,10 @@ extension DJICameraToken: CameraToken {
         let photoBurstCount: DJICameraPhotoBurstCount = DJICameraPhotoBurstCount(rawValue: UInt(count.hashValue))!
     
         // take the photo
-        self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: nil, burstCount: photoBurstCount, aspectRatio: aspectRatio, quality: quality, completionHandler: completionHandler)
+        try DispatchQueue.executeSynchronously { self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: nil, burstCount: photoBurstCount, aspectRatio: aspectRatio, quality: quality, completionHandler: $0) }
     }
     
-    public func startTakingPhotos(at interval: TimeInterval, options: Set<CameraPhotoOption>, completionHandler: CameraTokenCompletionHandler?) {
+    public func startTakingPhotos(at interval: TimeInterval, options: Set<CameraPhotoOption>) throws {
         let cameraMode: DJICameraMode = .shootPhoto
         let shootMode: DJICameraShootPhotoMode = .interval
         let aspectRatio: DJICameraPhotoAspectRatio? = DJICameraToken.aspectRatio(from: options)
@@ -212,32 +212,32 @@ extension DJICameraToken: CameraToken {
         let djiInterval = DJICameraPhotoIntervalParam(captureCount: 255, timeIntervalInSeconds: UInt16(interval))
         
         // take the photos
-        self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: djiInterval, burstCount: nil, aspectRatio: aspectRatio, quality: quality, completionHandler: completionHandler)
+        try DispatchQueue.executeSynchronously {  self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: djiInterval, burstCount: nil, aspectRatio: aspectRatio, quality: quality, completionHandler: $0) }
     }
     
-    public func stopTakingPhotos(completionHandler: CameraTokenCompletionHandler?) {
-        self.stopPhotos(completionHandler: completionHandler)
+    public func stopTakingPhotos() throws {
+        try DispatchQueue.executeSynchronously {  self.stopPhotos(completionHandler: $0) }
     }
     
-    public func startTimelapse(options: Set<CameraPhotoOption>, completionHandler: CameraTokenCompletionHandler?) {
+    public func startTimelapse(options: Set<CameraPhotoOption>) throws {
         let cameraMode: DJICameraMode = .shootPhoto
         let shootMode: DJICameraShootPhotoMode = .timeLapse
         let aspectRatio: DJICameraPhotoAspectRatio? = DJICameraToken.aspectRatio(from: options)
         let quality: DJICameraPhotoQuality? = DJICameraToken.quality(from: options)
         
         // take the photos
-        self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, aspectRatio: aspectRatio, quality: quality, completionHandler: completionHandler)
+        try DispatchQueue.executeSynchronously {  self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, aspectRatio: aspectRatio, quality: quality, completionHandler: $0) }
     }
     
-    public func stopTimelapse(completionHandler: CameraTokenCompletionHandler?) {
-        self.stopPhotos(completionHandler: completionHandler)
+    public func stopTimelapse() throws {
+        try DispatchQueue.executeSynchronously { self.stopPhotos(completionHandler: $0) }
     }
     
-    public func startVideo(options: Set<CameraVideoOption>, completionHandler: CameraTokenCompletionHandler?) {
+    public func startVideo(options: Set<CameraVideoOption>) {
         
     }
     
-    public func stopVideo(completionHandler: CameraTokenCompletionHandler?) {
+    public func stopVideo() {
         
     }
 }
