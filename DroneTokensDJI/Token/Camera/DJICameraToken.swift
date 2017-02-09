@@ -84,10 +84,8 @@ public class DJICameraToken: ExecutableTokenCard {
         try DispatchQueue.executeSynchronously { self.camera.startShootPhoto(shootMode, withCompletion:$0) }
     }
     
-    func stopPhotos(completionHandler: AsyncExecutionCompletionHandler?) {
-        self.camera.stopShootPhoto(completion: { error in
-            completionHandler?(error)
-        })
+    func stopPhotos() throws {
+        try DispatchQueue.executeSynchronously { self.camera.stopShootPhoto(completion: $0) }
     }
 }
 
@@ -161,7 +159,7 @@ extension DJICameraToken: CameraToken {
     }
     
     public func stopTakingPhotos() throws {
-        try DispatchQueue.executeSynchronously {  self.stopPhotos(completionHandler: $0) }
+        try self.stopPhotos()
     }
     
     public func startTimelapse(options: Set<CameraPhotoOption>) throws {
@@ -175,7 +173,7 @@ extension DJICameraToken: CameraToken {
     }
     
     public func stopTimelapse() throws {
-        try DispatchQueue.executeSynchronously { self.stopPhotos(completionHandler: $0) }
+        try self.stopPhotos()
     }
     
     public func startVideo(options: Set<CameraVideoOption>) {
