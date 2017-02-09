@@ -15,10 +15,9 @@ import DroneCardKit
 class DJIHardwareTokenTest: XCTestCase, DJISDKManagerDelegate {
     
     let appKey = "fd1211a6c15ac26860028367"  //CHANGE APP KEY TO RUN YOUR TEST; MAKE SURE BUNDLE ID MATCHES HostApplicationForTests bundle ID
+    let debugId = "192.168.1.9"
     let enterDebugMode = true
     var registered = false
-//    let semaphoreTimeout = DispatchTime.now() + DispatchTimeInterval.seconds(120)
-//    var semaphore = DispatchSemaphore(value: 0)
     var connectedDJIProduct: DJIBaseProduct?
     var aircraft: DJIAircraft?
     
@@ -31,30 +30,22 @@ class DJIHardwareTokenTest: XCTestCase, DJISDKManagerDelegate {
         super.setUp()
         
         registered = false
-        
+
         DJISDKManager.registerApp(appKey, with: self)
         
+        //asynchronous processes in setUp() must be handled with RunLoop and not XCTestExpections;
+        // semaphores blocked the callbacks expected from DJI
         while !registered {
             RunLoop.current.run(mode: .defaultRunLoopMode, before: Date.distantFuture)
         }
-        
-        //asynchronous processes in setUp() must be handled with semaphores and not XCTestExpections
-        /*let result = semaphore.wait(timeout: semaphoreTimeout)
-        
-        if result == .timedOut {
-            XCTFail("Application and DJI Product Registration timed out")
-        }*/
     }
     
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
+        DJISDKManager.stopConnectionToProduct()
     }
-    
-    func testExample() {
-        //let cameraToken = DJICameraToken
-        print("test example")
-    }
+
     
     // MARK: - DJISDKManagerDelegate
     
@@ -72,6 +63,7 @@ class DJIHardwareTokenTest: XCTestCase, DJISDKManagerDelegate {
         //Updates the product's model
         print("Model: \((newProduct.model)!)")
         print("Product changed from: \(oldProduct?.model) to \((newProduct.model)!)")
+        print("Camera: \(self.aircraft?.camera)")
         
         //setup camera
         guard let camera = self.aircraft?.camera else {
@@ -82,31 +74,19 @@ class DJIHardwareTokenTest: XCTestCase, DJISDKManagerDelegate {
         self.cameraTokenCard = DroneCardKit.Token.Camera.makeCard()
         self.cameraExecutableTokenCard = DJICameraToken(with: self.cameraTokenCard!, for: camera)
         
-        //semaphore.signal()
-        
         registered = true
         
     }
     
     func sdkManagerDidRegisterAppWithError(_ error: Error?) {
         if let error = error {
-            print("whole error \(error)")
             print("Application Registration Error: \(error.localizedDescription)")
-            //semaphore.signal()
-            //registrationExpectation?.fulfill()
             XCTFail("\(error.localizedDescription)")
         } else {
             print("DJISDK Registered Successfully")
             
-            
-            if enterDebugMode {
-                print("enterDebugMode")
-                DJISDKManager.enterDebugMode(withDebugId: "10.10.10.175")
-                /*let result = semaphore.wait(timeout: semaphoreTimeout)
-                
-                if result == .timedOut {
-                    XCTFail("Application and DJI Product Registration timed out")
-                }*/
+            if enterDebugMode {                
+                DJISDKManager.enterDebugMode(withDebugId: debugId)
             } else {
                 let connStatus = DJISDKManager.startConnectionToProduct()
                 if connStatus {

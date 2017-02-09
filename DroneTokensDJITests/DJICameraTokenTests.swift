@@ -13,7 +13,11 @@ import DJISDK
 
 class DJICameraTokenTests: DJIHardwareTokenTest {
     
+    //These tests are best run individually so the resulting photo, video or lack thereof can be verified.
     
+    //Sometimes camera is nil.  Keep trying until it isn't.
+    
+    let expectationTimeout: TimeInterval = 1000
     let cameraOptions: Set<CameraPhotoOption> = [CameraPhotoOption.aspectRatio(.aspect_16x9), CameraPhotoOption.quality(.normal)]
     
     func testCameraTokenPhoto() {
@@ -24,9 +28,19 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
             return
         }
         
-        camera.takePhoto(cameraMode: .shootPhoto, shootMode: .single, aspectRatio: .ratio16_9, quality: .excellent) { (error) in
+        let cameraExpectation = expectation(description: "take photo expectation")
+        camera.takePhoto(options: cameraOptions) { (error) in
+            print("error taking photo \(error)")
             XCTAssertNil(error, "Took Photo")
+            cameraExpectation.fulfill()
         }
+        
+        waitForExpectations(timeout: expectationTimeout) { (error) in
+            if let error = error {
+                XCTFail("Take photo timed out.  Error: \(error)")
+            }
+        }
+
     }
     
     func testCameraTokenHDRPhoto() {
@@ -37,8 +51,16 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
             return
         }
         
+        let cameraExpectation = expectation(description: "take HDR photo expectation")
         camera.takeHDRPhoto(options: cameraOptions) { (error) in
             XCTAssertNil(error, "Took HDR Photo")
+            cameraExpectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: expectationTimeout) { (error) in
+            if let error = error {
+                XCTFail("Take HDR photo timed out.  Error: \(error)")
+            }
         }
     }
     
@@ -50,17 +72,28 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
             return
         }
         
+        let cameraExpectation = expectation(description: "take photo burst expectation")
         camera.takePhotoBurst(count: PhotoBurstCount.burst_10, options: cameraOptions) { (error) in
             XCTAssertNil(error, "Took Photo Burst")
+            cameraExpectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: expectationTimeout) { (error) in
+            if let error = error {
+                XCTFail("Take photo burst timed out.  Error: \(error)")
+            }
         }
     }
     
     func testCameraTokenPhotoSeries() {
-        print("test camera token start and stop photos")
         
-        guard let camera = self.cameraExecutableTokenCard else {
-            XCTFail("Camera does not exist")
-            return
-        }
+    }
+    
+    func testCameraTokenTimelapse() {
+        
+    }
+    
+    func testCameraTokenVideo() {
+        
     }
 }
