@@ -15,7 +15,6 @@ import DroneCardKit
 import DJISDK
 
 public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
-    private let sleepTimeInSeconds = 2.0
     private let gimbal: DJIGimbal
     
     //swiftlint:disable:next weak_delegate
@@ -75,8 +74,21 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
     public func calibrate() throws {
         try DispatchQueue.executeSynchronously { self.gimbal.startAutoCalibration(completion: $0) }
         
+        var timeoutCount = 0
+        
+        // wait for drone to start calibrating. this doesnt happen instantaneously. timeout after 5 seconds.
+        while let isCalibrating = self.gimbalDelegate.currentState?.isCalibrating, !isCalibrating && timeoutCount < 5 {
+            Thread.sleep(forTimeInterval: 1)
+            timeoutCount+=1
+        }
+        
+        if let isCalibrating = self.gimbalDelegate.currentState?.isCalibrating, timeoutCount == 5 && !isCalibrating {
+            throw GimbalTokenError.failedToBeginCalibration
+        }
+        
+        // wait for the drone to finish calibrating
         while let isCalibrating = self.gimbalDelegate.currentState?.isCalibrating, isCalibrating {
-            Thread.sleep(forTimeInterval: sleepTimeInSeconds)
+            Thread.sleep(forTimeInterval: 3)
         }
     }
     
