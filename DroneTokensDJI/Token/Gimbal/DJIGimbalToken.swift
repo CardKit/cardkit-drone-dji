@@ -15,7 +15,6 @@ import DroneCardKit
 import DJISDK
 
 public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
-    private let sleepTimeInSeconds = 2.0 //in seconds
     private let gimbal: DJIGimbal
     
     //swiftlint:disable:next weak_delegate
@@ -75,8 +74,21 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
     public func calibrate() throws {
         try DispatchQueue.executeSynchronously { self.gimbal.startAutoCalibration(completion: $0) }
         
+        var timeoutCount = 0
+        
+        // wait for drone to start calibrating. this doesnt happen instantaneously. timeout after 5 seconds.
+        while let isCalibrating = self.gimbalDelegate.currentState?.isCalibrating, !isCalibrating && timeoutCount < 5 {
+            Thread.sleep(forTimeInterval: 1)
+            timeoutCount+=1
+        }
+        
+        if let isCalibrating = self.gimbalDelegate.currentState?.isCalibrating, timeoutCount == 5 && !isCalibrating {
+            throw GimbalTokenError.failedToBeginCalibration
+        }
+        
+        // wait for the drone to finish calibrating
         while let isCalibrating = self.gimbalDelegate.currentState?.isCalibrating, isCalibrating {
-            Thread.sleep(forTimeInterval: sleepTimeInSeconds)
+            Thread.sleep(forTimeInterval: 3)
         }
     }
     
@@ -116,18 +128,11 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
             self.gimbal.completionTimeForControlAngleAction = Double(clamp(value: duration, min: 0.1, max: 25.5))
         }
         
-        // rotate the gimbal
+        // start rotating the gimbal
         try DispatchQueue.executeSynchronously { self.gimbal.rotateGimbal(with: rotateAngleMode, pitch: djiPitch, roll: djiRoll, yaw: djiYaw, withCompletion: $0) }
         
         //wait until the gimbal finishes rotating
-        var timeToCompletion = Date()
-        if let endDate = Calendar.current.date(byAdding: .second, value: Int(self.gimbal.completionTimeForControlAngleAction), to: Date()) {
-            timeToCompletion = endDate
-        }
-        
-        while Date() < timeToCompletion {
-            Thread.sleep(forTimeInterval: sleepTimeInSeconds)
-        }
+        Thread.sleep(forTimeInterval: self.gimbal.completionTimeForControlAngleAction)
     }
     
     public func rotate(yaw: DCKAngularVelocity?, pitch: DCKAngularVelocity?, roll: DCKAngularVelocity?, forTimeInSeconds duration: Double) throws {
