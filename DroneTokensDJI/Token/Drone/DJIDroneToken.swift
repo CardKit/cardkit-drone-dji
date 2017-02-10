@@ -231,7 +231,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     }
     
     public func fly(on path: DCKCoordinate2DPath, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, completionHandler: AsyncExecutionCompletionHandler?) {
-        var altitudeInMeters: Double? = nil
+        var altitudeInMeters: Double = 0.0
         
         // if altitude was not passed, use current altitude
         if let userSetAltitude = altitude {
@@ -244,7 +244,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         }
         
         let coordinate3DPath = path.path.map { (coordinate2d) -> DCKCoordinate3D in
-            DCKCoordinate3D(latitude: coordinate2d.latitude, longitude: coordinate2d.longitude, altitude: DCKRelativeAltitude(metersAboveGroundAtTakeoff: altitudeInMeters!))
+            DCKCoordinate3D(latitude: coordinate2d.latitude, longitude: coordinate2d.longitude, altitude: DCKRelativeAltitude(metersAboveGroundAtTakeoff: altitudeInMeters))
         }
         
         fly(on: DCKCoordinate3DPath(path: coordinate3DPath), atSpeed: speed, completionHandler: completionHandler)
@@ -648,8 +648,8 @@ fileprivate class MissionManagerDelegate: NSObject, DJIMissionManagerDelegate {
     }
     
     public func missionManager(_ manager: DJIMissionManager, didFinishMissionExecution error: Error?) {
-        if error != nil {
-            print("Mission Finished with error:\(error!)")
+        if let error = error {
+            print("Mission Finished with error:\(error)")
         } else {
             print("Mission Finished!")
         }
@@ -660,9 +660,11 @@ fileprivate class MissionManagerDelegate: NSObject, DJIMissionManagerDelegate {
     
     public func missionManager(_ manager: DJIMissionManager, missionProgressStatus missionProgress: DJIMissionProgressStatus) {
         if missionProgress is DJICustomMissionStatus {
-            let customMissionStatus: DJICustomMissionStatus = (missionProgress as? DJICustomMissionStatus)!
-            let currentExecStep: DJIMissionStep = customMissionStatus.currentExecutingStep!
-            print("Mission Status -- error: \(missionProgress.error) -- currentStep: \(currentExecStep)")
+            
+            if let customMissionStatus: DJICustomMissionStatus = (missionProgress as? DJICustomMissionStatus),
+                let currentExecStep: DJIMissionStep = customMissionStatus.currentExecutingStep {
+                print("Mission Status -- error: \(missionProgress.error) -- currentStep: \(currentExecStep)")
+            }
         }
         
         progressStatus = missionProgress
