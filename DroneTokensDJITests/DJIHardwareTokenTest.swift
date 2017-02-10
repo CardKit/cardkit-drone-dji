@@ -15,7 +15,7 @@ import DroneCardKit
 class DJIHardwareTokenTest: XCTestCase, DJISDKManagerDelegate {
     
     let appKey = "fd1211a6c15ac26860028367"  //CHANGE APP KEY TO RUN YOUR TEST; MAKE SURE BUNDLE ID MATCHES HostApplicationForTests bundle ID
-    let debugId = "192.168.1.9" //CHANGE TO MATCH THE DEBUG ID IN THE DJI BRIDGE APP
+    let debugId = "10.10.10.175" //CHANGE TO MATCH THE DEBUG ID IN THE DJI BRIDGE APP
     let enterDebugMode = true
     var registered = false
     var connectedDJIProduct: DJIBaseProduct?

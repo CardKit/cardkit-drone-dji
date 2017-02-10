@@ -111,7 +111,23 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
     }
     
     func testCameraTokenPhotoSeries() {
+        let cameraExpectation = expectation(description: "take photo series")
         
+        DispatchQueue.global(qos: .default).async {
+            do {
+                let timeInterval: TimeInterval = 10.0
+                try self.cameraExecutableTokenCard?.startTakingPhotos(at: timeInterval, options: self.cameraOptions)
+            } catch {
+                XCTAssertNil(error, "Took Photo Series")
+            }
+            cameraExpectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: expectationTimeout) { (error) in
+            if let error = error {
+                XCTFail("Photo series timed out.  Error: \(error)")
+            }
+        }
     }
     
     func testCameraTokenTimelapse() {
