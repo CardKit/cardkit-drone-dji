@@ -188,14 +188,14 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
             }
         }
         
-        if let flyStep = DJIGoToStep(coordinate: coord) {
-            if let speedInMetersPerSecond = speed?.metersPerSecond, speedInMetersPerSecond > 0 {
-                flyStep.flightSpeed = Float(speedInMetersPerSecond)
-            }
-            missionSteps.append(flyStep)
-        } else {
+        guard let flyStep = DJIGoToStep(coordinate: coord) else {
             throw DJIDroneTokenError.failedToInstantiateCustomMission
         }
+        
+        if let speedInMetersPerSecond = speed?.metersPerSecond, speedInMetersPerSecond > 0 {
+            flyStep.flightSpeed = Float(speedInMetersPerSecond)
+        }
+        missionSteps.append(flyStep)
         
         try self.executeMissionSteps(missionSteps: missionSteps)
     }
@@ -207,17 +207,19 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         // if altitude was not passed, use current altitude
         if let userSetAltitude = altitude {
             altitudeInMeters = userSetAltitude.metersAboveGroundAtTakeoff
-        } else if let currentAltitude = self.flightControllerDelegate.currentState?.altitude {
-            altitudeInMeters = Double(currentAltitude)
         } else {
-            throw DroneTokenError.FailureRetrievingDroneState
+            guard let currentAltitude = self.flightControllerDelegate.currentState?.altitude else {
+                throw DJIDroneTokenError.indeterminateCurrentState
+            }
+            altitudeInMeters = Double(currentAltitude)
         }
-        if let altitudeInMetersUnWrapped = altitudeInMeters {
+        
+        if let altitudeInMeters = altitudeInMeters {
             let coordinate3DPath = path.path.map { (coordinate2d) -> DCKCoordinate3D in
-                DCKCoordinate3D(latitude: coordinate2d.latitude, longitude: coordinate2d.longitude, altitude: DCKRelativeAltitude(metersAboveGroundAtTakeoff: altitudeInMetersUnWrapped))
+                DCKCoordinate3D(latitude: coordinate2d.latitude, longitude: coordinate2d.longitude, altitude: DCKRelativeAltitude(metersAboveGroundAtTakeoff: altitudeInMeters))
             }
             try self.fly(on: DCKCoordinate3DPath(path: coordinate3DPath), atSpeed: speed)
-       }
+        }
     }
     
     
@@ -268,8 +270,8 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
             hotPointMission.angularVelocity = Float (20.0)
         }
         
-        if let isClockwiseDirection = isClockwise {
-            hotPointMission.isClockwise = Bool (isClockwiseDirection.isClockwise)
+        if let isClockwise = isClockwise {
+            hotPointMission.isClockwise = Bool (isClockwise.isClockwise)
         } else {
             hotPointMission.isClockwise = true
         }
@@ -283,7 +285,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         if toRepeat {
             try self.executeMission(mission: hotPointMission)
         } else {
-            try self.executeHotPointMissionWithRevolutionLimit(hotPointMission: hotPointMission, numOfRevolution: 1)
+            try self.executeHotPointMission(hotPointMission: hotPointMission, withRevolutionLimit: 1)
         }
     }
 
@@ -291,7 +293,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         print ("drone returning home atAltitude: \(altitude), atSpeed: \(speed), landAfterReturningHome: \(land)")
         
         guard let homeCoordinates = self.homeLocation else {
-            throw DroneTokenError.FailureRetrievingDroneState
+            throw DJIDroneTokenError.indeterminateCurrentState
         }
         
         try self.fly(to: homeCoordinates, atAltitude: altitude, atSpeed: speed)
@@ -345,11 +347,11 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
             angSpeed = angSpeedUnwrapped
         }
         
-        if let aircraftYawStep = DJIAircraftYawStep(relativeAngle: yaw.degrees, andAngularVelocity: angSpeed) {
-            missionSteps.append(aircraftYawStep)
-        } else {
-            throw DJIDroneTokenError.failedToInstantiateCustomMission
+        guard let aircraftYawStep = DJIAircraftYawStep(relativeAngle: yaw.degrees, andAngularVelocity: angSpeed) else {
+            throw DJIDroneTokenError.failedToInstantiateWaypointStep
         }
+        
+        missionSteps.append(aircraftYawStep)
         
         try self.executeMissionSteps(missionSteps: missionSteps)
         
@@ -386,8 +388,8 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         try self.executeMissionSteps(missionSteps: [step])
     }
     
-    private func executeHotPointMissionWithRevolutionLimit(hotPointMission: DJIHotPointMission, numOfRevolution: Int) throws {
-        print("Execute Hot Point Mission Sync with Num of Revolution: \(numOfRevolution)")
+    private func executeHotPointMission(hotPointMission: DJIHotPointMission, withRevolutionLimit limit: Int) throws {
+        print("Execute Hot Point Mission Sync withRevolutionLimit: \(limit)")
         
         guard let missionManager = missionManager else {
             throw DJIDroneTokenError.failedToInstantiateMissionManager
@@ -419,7 +421,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
                     guard let currentLocation: DCKCoordinate2D = self.currentLocation else {
                         print ("DJI Hot Point Mission status: cannot determine current location. Aborting mission.")
                         try DispatchQueue.executeSynchronously { missionManager.stopMissionExecution(completion: $0) }
-                        throw DroneTokenError.FailureRetrievingDroneState
+                        throw DJIDroneTokenError.indeterminateCurrentState
                     }
                     
                     // two ways you can check whether the revolution has completed
@@ -427,9 +429,9 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
                     // Sleep until the num of revolution is completed
                     /*
                      startPointLocation = DCKCoordinate2D(latitude: currentLocation.latitude, longitude: currentLocation.longitude)
-                     let sleepTime: Double = Double(360.0/hotPointMission.angularVelocity) * Double(numOfRevolution)
+                     let sleepTime: Double = Double(360.0/hotPointMission.angularVelocity) * Double(limit)
                      Thread.sleep(forTimeInterval: sleepTime)
-                     print ("DJI Hot Point Mission status: \(numOfRevolution) revolution has completed.")
+                     print ("DJI Hot Point Mission status: \(limit) revolution has completed.")
                      self.missionManager?.stopMissionExecution { (djiError) in
                      semaphore.signal()
                      error = djiError
@@ -447,22 +449,22 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
                         guard let startPoint: DCKCoordinate2D = startPointLocation else {
                             print ("DJI Hot Point Mission status: cannot determine the circle starting location. Aborting mission.")
                             try DispatchQueue.executeSynchronously { missionManager.stopMissionExecution(completion: $0) }
-                            throw DroneTokenError.FailureRetrievingDroneState
+                            throw DJIDroneTokenError.indeterminateCurrentState
                         }
                         
                         let distance: Double = currentLocation.distance(to: startPoint)
-                        if let prevD: Double = prevDistance {
-                            let changeInDistance: Double = distance-prevD
+                        if let prevDistance = prevDistance {
+                            let changeInDistance: Double = distance - prevDistance
                             if changeInDistance < 0 {
                                 isPrevSlopePositive = false
                             } else {
                                 if isPrevSlopePositive == false {
                                     revolutionCounter += 1
-                                    if revolutionCounter == numOfRevolution {
-                                        print ("DJI Hot Point Mission status: \(numOfRevolution) revolution has completed. Distance: \(distance)")
+                                    if revolutionCounter == limit {
+                                        print ("DJI Hot Point Mission status: \(limit) revolution has completed. Distance: \(distance)")
                                         try DispatchQueue.executeSynchronously { missionManager.stopMissionExecution(completion: $0) }
                                     } else {
-                                        print ("DJI Hot Point Mission status: \(revolutionCounter) revolution has completed. Remaining # of revolution: \(numOfRevolution-revolutionCounter)")
+                                        print ("DJI Hot Point Mission status: \(revolutionCounter) revolution has completed. Remaining # of revolution: \(limit-revolutionCounter)")
                                         
                                     }
                                 }
@@ -567,8 +569,8 @@ fileprivate class MissionManagerDelegate: NSObject, DJIMissionManagerDelegate {
     }
     
     public func missionManager(_ manager: DJIMissionManager, didFinishMissionExecution error: Error?) {
-        if let errorUnwrapped = error {
-            print("Mission Finished with error:\(errorUnwrapped)")
+        if let error = error {
+            print("Mission Finished with error:\(error)")
         } else {
             print("Mission Finished!")
         }
