@@ -71,21 +71,34 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
         return attitude
     }
     
-    public func calibrate(completionHandler: AsyncExecutionCompletionHandler?) {
-        self.gimbal.startAutoCalibration(completion: { error in
-            completionHandler?(error)
-        })
-    }
-    
-    public func reset(completionHandler: AsyncExecutionCompletionHandler?) {
-        let zero = DCKAngle(degrees: 0)
-        self.rotate(yaw: zero, pitch: zero, roll: zero, relativeToDrone: false, withinTimeInSeconds: 1) { (error) in
-            completionHandler?(error)
+    public func calibrate() throws {
+        try DispatchQueue.executeSynchronously { self.gimbal.startAutoCalibration(completion: $0) }
+        
+        var timeoutCount = 0
+        
+        // wait for drone to start calibrating. this doesnt happen instantaneously. timeout after 5 seconds.
+        while let isCalibrating = self.gimbalDelegate.currentState?.isCalibrating, !isCalibrating && timeoutCount < 5 {
+            Thread.sleep(forTimeInterval: 1)
+            timeoutCount+=1
+        }
+        
+        if let isCalibrating = self.gimbalDelegate.currentState?.isCalibrating, timeoutCount == 5 && !isCalibrating {
+            throw GimbalTokenError.failedToBeginCalibration
+        }
+        
+        // wait for the drone to finish calibrating
+        while let isCalibrating = self.gimbalDelegate.currentState?.isCalibrating, isCalibrating {
+            Thread.sleep(forTimeInterval: 3)
         }
     }
     
+    public func reset() throws {
+        let zero = DCKAngle(degrees: 0)
+        try self.rotate(yaw: zero, pitch: zero, roll: zero, relativeToDrone: false, withinTimeInSeconds: 1)
+    }
+    
     //swiftlint:disable:next function_parameter_count
-    public func rotate(yaw: DCKAngle?, pitch: DCKAngle?, roll: DCKAngle?, relativeToDrone: Bool, withinTimeInSeconds duration: Double?, completionHandler: AsyncExecutionCompletionHandler?) {
+    public func rotate(yaw: DCKAngle?, pitch: DCKAngle?, roll: DCKAngle?, relativeToDrone: Bool, withinTimeInSeconds duration: Double?) throws {
         let rotateAngleMode: DJIGimbalRotateAngleMode = relativeToDrone ? .angleModeRelativeAngle : .angleModeAbsoluteAngle
         
         var djiYaw: DJIGimbalAngleRotation = DJIGimbalAngleRotation(enabled: false, angle: 0, direction: .clockwise)
@@ -115,13 +128,14 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
             self.gimbal.completionTimeForControlAngleAction = Double(clamp(value: duration, min: 0.1, max: 25.5))
         }
         
-        // rotate the gimbal
-        self.gimbal.rotateGimbal(with: rotateAngleMode, pitch: djiPitch, roll: djiRoll, yaw: djiYaw, withCompletion: { error in
-            completionHandler?(error)
-        })
+        // start rotating the gimbal
+        try DispatchQueue.executeSynchronously { self.gimbal.rotateGimbal(with: rotateAngleMode, pitch: djiPitch, roll: djiRoll, yaw: djiYaw, withCompletion: $0) }
+        
+        //wait until the gimbal finishes rotating
+        Thread.sleep(forTimeInterval: self.gimbal.completionTimeForControlAngleAction)
     }
     
-    public func rotate(yaw: DCKAngularVelocity?, pitch: DCKAngularVelocity?, roll: DCKAngularVelocity?, forTimeInSeconds duration: Double, completionHandler: AsyncExecutionCompletionHandler?) {
+    public func rotate(yaw: DCKAngularVelocity?, pitch: DCKAngularVelocity?, roll: DCKAngularVelocity?, forTimeInSeconds duration: Double) throws {
         var djiYawSpeed: DJIGimbalSpeedRotation = DJIGimbalSpeedRotation(angleVelocity: 0, direction: .clockwise)
         var djiPitchSpeed: DJIGimbalSpeedRotation = DJIGimbalSpeedRotation(angleVelocity: 0, direction: .clockwise)
         var djiRollSpeed: DJIGimbalSpeedRotation = DJIGimbalSpeedRotation(angleVelocity: 0, direction: .clockwise)
@@ -149,7 +163,7 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
             endDateTime = endDate
         }
         
-        self.rotateContinouslyBySpeed(yaw: djiYawSpeed, pitch: djiPitchSpeed, roll: djiRollSpeed, endDateTime: endDateTime, completionHandler: completionHandler, completionHandlerState: CompletionHandlerState())
+        try DispatchQueue.executeSynchronously { self.rotateContinouslyBySpeed(yaw: djiYawSpeed, pitch: djiPitchSpeed, roll: djiRollSpeed, endDateTime: endDateTime, completionHandler: $0, completionHandlerState: CompletionHandlerState()) }
     }
     
     //swiftlint:disable:next function_parameter_count
@@ -182,12 +196,12 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
         }
     }
     
-    public func orient(to position: GimbalOrientation, completionHandler: AsyncExecutionCompletionHandler?) {
+    public func orient(to position: GimbalOrientation) throws {
         let yaw = DCKAngle(degrees: position.yawOrientationInDegrees)
         let pitch = DCKAngle(degrees: position.pitchOrientationInDegrees)
         let roll = DCKAngle(degrees: position.rollOrientationInDegrees)
         
-        self.rotate(yaw: yaw, pitch: pitch, roll: roll, relativeToDrone: false, withinTimeInSeconds: nil, completionHandler: completionHandler)
+        try self.rotate(yaw: yaw, pitch: pitch, roll: roll, relativeToDrone: false, withinTimeInSeconds: nil)
     }
     
     /// Normalize the given angle to the given gimbal rotation range. The given angle is first normalized to the
