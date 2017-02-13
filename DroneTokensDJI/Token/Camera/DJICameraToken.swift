@@ -38,7 +38,7 @@ public class DJICameraToken: ExecutableTokenCard {
         do {
             try DispatchQueue.executeSynchronously { self.camera.setCameraMode(cameraMode, withCompletion: $0) }
         } catch {
-            throw DJICameraTokenError.failedToSetCameraModeToPhoto
+            throw error        
         }
         
         // make sure there is enough space on the SD card
@@ -77,15 +77,55 @@ public class DJICameraToken: ExecutableTokenCard {
         
         // set the interval (if we're taking photos in an interval)
         if shootMode == .interval, let interval = interval {
+            print("set photo interval \(interval.timeIntervalInSeconds)")
             try DispatchQueue.executeSynchronously { self.camera.setPhotoIntervalParam(interval, withCompletion: $0) }
         }
-        
+        print("start shoot photo")
         // take the photo
         try DispatchQueue.executeSynchronously { self.camera.startShootPhoto(shootMode, withCompletion: $0) }
     }
     
     func stopPhotos() throws {
+        print("stopPhotos()")
+        
         try DispatchQueue.executeSynchronously { self.camera.stopShootPhoto(completion: $0) }
+    }
+    
+    func recordVideo(cameraMode: DJICameraMode, fileFormat: DJICameraVideoFileFormat, frameRate: DJICameraVideoFrameRate?, resolution: DJICameraVideoResolution?, videoStandard: DJICameraVideoStandard?) throws {
+        
+        do {
+            try DispatchQueue.executeSynchronously { self.camera.setCameraMode(cameraMode, withCompletion: $0) }
+        } catch {
+            throw error
+        }
+        
+        do {
+            try DispatchQueue.executeSynchronously { self.camera.setVideoFileFormat(fileFormat, withCompletion: $0) }
+        } catch {
+            throw error
+        }
+        
+        if let frameRate = frameRate, let resolution = resolution {
+            do {
+                try DispatchQueue.executeSynchronously { self.camera.setSSDVideoResolution(resolution, andFrameRate: frameRate, withCompletion: $0) }
+            } catch {
+                throw error
+            }
+        }
+        
+        if let videoStandard = videoStandard {
+            do {
+                try DispatchQueue.executeSynchronously { self.camera.setVideoStandard(videoStandard, withCompletion: $0) }
+            } catch {
+                throw error
+            }
+        }
+        
+        try DispatchQueue.executeSynchronously { self.camera.startRecordVideo(completion: $0)}
+    }
+    
+    func stopRecordVideo() throws {
+        try DispatchQueue.executeSynchronously { self.camera.stopRecordVideo(completion: $0)}
     }
 }
 
@@ -103,6 +143,24 @@ extension DJICameraToken {
         for option in options {
             if case .quality(let q) = option {
                 return q.djiQuality
+            }
+        }
+        return nil
+    }
+    
+    fileprivate class func frameRate(from options: Set<CameraVideoOption>) -> DJICameraVideoFrameRate? {
+        for option in options {
+            if case .framerate(let f) = option {
+                return f.djiVideoFrameRate
+            }
+        }
+        return nil
+    }
+    
+    fileprivate class func resolution(from options: Set<CameraVideoOption>) -> DJICameraVideoResolution? {
+        for option in options {
+            if case .resolution(let r) = option {
+                return r.djiVideoResolution
             }
         }
         return nil
@@ -159,6 +217,7 @@ extension DJICameraToken: CameraToken {
     }
     
     public func stopTakingPhotos() throws {
+        print("sstopTakingPhotos()")
         try self.stopPhotos()
     }
     
@@ -176,12 +235,23 @@ extension DJICameraToken: CameraToken {
         try self.stopPhotos()
     }
     
-    public func startVideo(options: Set<CameraVideoOption>) {
-        
+    public func startVideo(fileFormat: VideoFileFormat = .mov, videoStandard: VideoStandard = .NTSC, options: Set<CameraVideoOption>) throws {
+        let cameraMode: DJICameraMode = .recordVideo
+        let format = fileFormat.djiVideoFileFormat
+        let frameRate: DJICameraVideoFrameRate? = DJICameraToken.frameRate(from: options)
+        let resolution: DJICameraVideoResolution? = DJICameraToken.resolution(from: options)
+        let videoStandard
+        /*
+ slowMotionEnabled
+ case framerate(VideoFramerate)
+ case resolution(VideoResolution)*/
+  
+ 
+        try self.recordVideo(cameraMode: cameraMode, fileFormat: format, frameRate: frameRate!, resolution: resolution)
     }
     
-    public func stopVideo() {
-        
+    public func stopVideo() throws {
+        try self.stopRecordVideo()
     }
 }
 
@@ -211,6 +281,79 @@ extension PhotoQuality {
             return .fine
         case .normal:
             return .normal
+        }
+    }
+}
+
+// MARK: - VideoFileFormat
+extension VideoFileFormat {
+    var djiVideoFileFormat: DJICameraVideoFileFormat {
+        switch self {
+        case .mov:
+            return .MOV
+        case .mp4:
+            return .MP4
+        case .unknown:
+            return .unknown
+        }
+    }
+}
+
+// MARK: - VideoFrameRate
+
+//TODO: figure out whether to add the other DJICameraVideoFrameRates to CameraToken?
+extension VideoFramerate {
+    var djiVideoFrameRate: DJICameraVideoFrameRate {
+        switch self {
+        case .framerate_24fps:
+            return .rate24FPS
+        case .framerate_25fps:
+            return .rate25FPS
+        case .framerate_30fps:
+            //TODO: find out if 30 fps is just not supported in DJI land?
+            return .rate29dot970FPS
+        case .framerate_48fps:
+            //TODO: find out if 48 fps is just not supported in DJI land?
+            return .rate47dot950FPS
+        case .framerate_60fps:
+            //TODO: find out if 60 fps is just not supported in DJI land?
+            return .rate59dot940FPS
+        case .framerate_96fps:
+            return .rate96FPS
+        case .framerate_120fps:
+            return .rate120FPS
+        }
+    }
+}
+
+// MARK: - VideoResolution
+
+//TODO: how to handle other video resolutions
+
+extension VideoResolution {
+    var djiVideoResolution: DJICameraVideoResolution {
+        switch self {
+        case .resolution_1080p:
+            return .resolution1920x1080
+        case .resolution_720p:
+            return .resolution1280x720
+        case .resolution_4k:
+            return .resolution3840x2160
+        }
+    }
+}
+
+// MARK: - VideoStandard
+
+extension VideoStandard {
+    var djiVideoStandard: DJICameraVideoStandard {
+        switch self {
+        case .pal:
+            return .PAL
+        case .ntsc:
+            return .NTSC
+        case .unknown:
+            return .unknown
         }
     }
 }

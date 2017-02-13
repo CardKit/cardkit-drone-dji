@@ -29,6 +29,8 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
         
         runLoop { self.aircraft?.camera != nil }
         
+        print("camera found: \(self.aircraft?.camera)")
+        
         //setup camera
         guard let camera = self.aircraft?.camera else {
             XCTFail("No camera exists")
@@ -110,18 +112,58 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
         }
     }
     
+    @available(iOS 10.0, *)
     func testCameraTokenPhotoSeries() {
         let cameraExpectation = expectation(description: "take photo series")
+        let timeInterval: TimeInterval = 3.0
+        let duration = DispatchTime.now() + .seconds(10)
         
+        //start taking photos at interval
         DispatchQueue.global(qos: .default).async {
             do {
-                let timeInterval: TimeInterval = 10.0
+                print("start taking photos")
+                
                 try self.cameraExecutableTokenCard?.startTakingPhotos(at: timeInterval, options: self.cameraOptions)
+                
+                Timer.scheduledTimer(withTimeInterval: 10, repeats: false, block: { (_) in
+                    print("heyo")
+                })
+                
+//                try self.cameraExecutableTokenCard?.stopTakingPhotos()
+                //stop taking photos
+//                DispatchQueue.global(qos: .default).asyncAfter(deadline: duration) {
+//                    do {
+//                        print("stop taking photos")
+//                        try self.cameraExecutableTokenCard?.stopTakingPhotos()
+//                        cameraExpectation.fulfill()
+//                    } catch {
+//                        XCTAssertNil(error, "Took Photo Series - stopped taking photos")
+//                        cameraExpectation.fulfill()
+//                    }
+//                }
             } catch {
-                XCTAssertNil(error, "Took Photo Series")
-            }
-            cameraExpectation.fulfill()
+                XCTAssertNil(error, "Took Photo Series - started taking photos")
+            }            
         }
+        
+        
+
+//        if #available(iOS 10.0, *) {
+//            Timer.scheduledTimer(withTimeInterval: 10, repeats: false, block: { (_) in
+//                DispatchQueue.global(qos: .default).async {
+//                do {
+//                    print("stop taking photos")
+//                    try self.cameraExecutableTokenCard?.stopTakingPhotos()
+//                    cameraExpectation.fulfill()
+//                } catch {
+//                    XCTAssertNil(error, "Took Photo Series - stopped taking photos")
+//                    cameraExpectation.fulfill()
+//                }
+//                }
+//            })
+//        } else {
+//            // Fallback on earlier versions
+//        }
         
         waitForExpectations(timeout: expectationTimeout) { (error) in
             if let error = error {
@@ -130,11 +172,40 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
         }
     }
     
+    func stopTakingPictures() {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                try self.cameraExecutableTokenCard?.stopTakingPhotos()
+            } catch {
+                print("error stopping taking photos \(error)")
+            }
+        }
+    }
+    
+    //NOT SUPPORTED BY MAVIC PRO
     func testCameraTokenTimelapse() {
+        let cameraExpectation = expectation(description: "take timelapse")
         
+        DispatchQueue.global(qos: .default).async {
+            do {
+                try self.cameraExecutableTokenCard?.startTimelapse(options: self.cameraOptions)
+                cameraExpectation.fulfill()
+            } catch {
+                XCTAssertNil(error, "Timelapse - started")
+            }
+            
+            
+        }
+        
+        waitForExpectations(timeout: expectationTimeout) { (error) in
+            if let error = error {
+                XCTFail("Photo timelapse timed out.  Error: \(error)")
+            }
+        }
     }
     
     func testCameraTokenVideo() {
         
     }
 }
+
