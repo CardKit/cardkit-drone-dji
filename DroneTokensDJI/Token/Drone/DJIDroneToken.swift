@@ -303,13 +303,13 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
                 if let angSpeed = angularSpeed {
                     hotPointMission.angularVelocity = Float(angSpeed.degreesPerSecond)
                 } else {
-                    hotPointMission.angularVelocity=20.0
+                    hotPointMission.angularVelocity = 20.0
                 }
                 
                 if let isClockwiseDirection = isClockwise {
                     hotPointMission.isClockwise = Bool (isClockwiseDirection.isClockwise)
                 } else {
-                    hotPointMission.isClockwise=true
+                    hotPointMission.isClockwise = true
                 }
                 
                 hotPointMission.startPoint = DJIHotPointStartPoint.nearest
