@@ -138,7 +138,7 @@ extension DJICameraToken: CameraToken {
         let shootMode: DJICameraShootPhotoMode = .burst
         let aspectRatio: DJICameraPhotoAspectRatio? = DJICameraToken.aspectRatio(from: options)
         let quality: DJICameraPhotoQuality? = DJICameraToken.quality(from: options)
-        let photoBurstCount: DJICameraPhotoBurstCount = DJICameraPhotoBurstCount(rawValue: UInt(count.hashValue))!
+        let photoBurstCount: DJICameraPhotoBurstCount = DJICameraPhotoBurstCount(rawValue: count.rawValue)!
         
         // take the photo
         try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: nil, burstCount: photoBurstCount, aspectRatio: aspectRatio, quality: quality)
