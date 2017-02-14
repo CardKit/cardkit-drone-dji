@@ -171,7 +171,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         print("drone fly to coordinate: [\(coordinate)] atAltitude: \(altitude) atSpeed: \(speed)")
         
         if yaw != nil {
-            try self.hover(at: altitude, withYaw: yaw)
+            try self.hover(withYaw: yaw)
         }
         
         let coord: CLLocationCoordinate2D = CLLocationCoordinate2DMake(coordinate.latitude, coordinate.longitude)
