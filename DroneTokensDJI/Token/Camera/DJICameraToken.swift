@@ -133,13 +133,18 @@ extension DJICameraToken: CameraToken {
     }
     
     public func takePhotoBurst(count: PhotoBurstCount, options: Set<CameraPhotoOption>) throws {
-        
         let cameraMode: DJICameraMode = .shootPhoto
         let shootMode: DJICameraShootPhotoMode = .burst
         let aspectRatio: DJICameraPhotoAspectRatio? = DJICameraToken.aspectRatio(from: options)
         let quality: DJICameraPhotoQuality? = DJICameraToken.quality(from: options)
-
-        guard let photoBurstCount: DJICameraPhotoBurstCount = DJICameraPhotoBurstCount(rawValue: UInt(count.hashValue)) else { return }
+        
+        guard let unsignedCount: UInt = UInt(count.rawValue) else {
+            throw DJICameraTokenError.invalidPhotoBurstCountSpecified(count.rawValue)
+        }
+        
+        guard let photoBurstCount: DJICameraPhotoBurstCount = DJICameraPhotoBurstCount(rawValue: unsignedCount) else {
+            throw DJICameraTokenError.invalidPhotoBurstCountSpecified(count.rawValue)
+        }
         
         // take the photo
         try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: nil, burstCount: photoBurstCount, aspectRatio: aspectRatio, quality: quality)
@@ -224,6 +229,7 @@ public enum DJICameraTokenError: Error {
     case sdCardFull
     case failedToSetCameraPhotoAspectRatio
     case failedToSetCameraPhotoQuality
+    case invalidPhotoBurstCountSpecified(Int)
 }
 
 // MARK: - CameraDelegate
