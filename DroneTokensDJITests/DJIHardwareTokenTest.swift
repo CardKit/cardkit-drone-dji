@@ -70,8 +70,11 @@ class DJIHardwareTokenTest: XCTestCase, DJISDKManagerDelegate {
         self.aircraft = connectedDJIProduct as? DJIAircraft
         
         //Updates the product's model
-        print("Model: \((newProduct.model)!)")
-        print("Product changed from: \(oldProduct?.model) to \((newProduct.model)!)")
+        if let model = newProduct.model {
+            print("Model: \(model)")
+            print("Product changed from: \(oldProduct?.model) to \(model)")
+        }
+        
         print("Camera: \(self.aircraft?.camera)")
         
         registered = true

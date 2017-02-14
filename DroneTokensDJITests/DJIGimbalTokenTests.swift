@@ -14,6 +14,7 @@ import DJISDK
 class DJIGimbalTokenTests: DJIHardwareTokenTest {
     
     var gimbal: GimbalToken?
+    let expectationTimeout: TimeInterval = 1000
     
     override func setUp() {
         super.setUp()
@@ -26,112 +27,153 @@ class DJIGimbalTokenTests: DJIHardwareTokenTest {
         }
         
         self.gimbal = DJIGimbalToken(with: DroneCardKit.Token.Gimbal.makeCard(), for: gimbalHardware)
-    
+        
     }
     
     func testDownwardOrient() {
-        var completed = false
+        let myExpectation = expectation(description: "testDownwardOrient expectation")
         
-        self.gimbal?.orient(to: .facingDownward, completionHandler: { (error) in
-            if let error = error {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                try self.gimbal?.orient(to: .facingDownward)
+            } catch {
                 XCTFail("could not update the pitch of the gimbal. error: \(error)")
             }
             
-            completed = true
-        })
+            myExpectation.fulfill()
+        }
         
-        runLoop { completed }
+        waitForExpectations(timeout: expectationTimeout) { error in
+            if let error = error {
+                XCTFail("testDownwardOrient error: \(error)")
+            }
+        }
     }
     
     func testForwardOrient() {
-        var completed = false
+        let myExpectation = expectation(description: "testForwardOrient expectation")
         
-        self.gimbal?.orient(to: .facingForward, completionHandler: { (error) in
-            if let error = error {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                try self.gimbal?.orient(to: .facingForward)
+            } catch {
                 XCTFail("could not update the pitch of the gimbal. error: \(error)")
             }
             
-            completed = true
-        })
+            myExpectation.fulfill()
+        }
         
-        runLoop { completed }
+        waitForExpectations(timeout: expectationTimeout) { error in
+            if let error = error {
+                XCTFail("testForwardOrient error: \(error)")
+            }
+        }
     }
     
     /// Test pitch control of drone using velocity
     func testPitchUsingVelocity() {
-        var completed = false
-        
+        let myExpectation = expectation(description: "testPitchUsingVelocity expectation")
         let angularVelocity = DCKAngularVelocity(degreesPerSecond: 5)
         
-        self.gimbal?.rotate(pitch: angularVelocity, forTimeInSeconds: 5, completionHandler: { (error) in
-            if let error = error {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                try self.gimbal?.rotate(pitch: angularVelocity, forTimeInSeconds: 5)
+            } catch {
                 XCTFail("could not update the pitch of the gimbal. error: \(error)")
             }
             
-            completed = true
-        })
+            myExpectation.fulfill()
+        }
         
-        runLoop { completed }
+        waitForExpectations(timeout: expectationTimeout) { error in
+            if let error = error {
+                XCTFail("testPitchUsingVelocity error: \(error)")
+            }
+        }
     }
     
     
     /// Test pitch control of drone
     func testPitchUsingAbsoluteAngle() {
-        var completed = false
+        let myExpectation = expectation(description: "testPitchUsingAbsoluteAngle expectation")
         let zeroAngle = DCKAngle(degrees: 0)
         
-        //test pitch absolute
-        self.gimbal?.rotate(yaw: zeroAngle, pitch: DCKAngle(degrees: 70), roll: zeroAngle, relativeToDrone: false, withinTimeInSeconds: 10, completionHandler: { (error) in
-            if let error = error {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                //test pitch absolute
+                try self.gimbal?.rotate(yaw: zeroAngle, pitch: DCKAngle(degrees: 70), roll: zeroAngle, relativeToDrone: false, withinTimeInSeconds: 10)
+            } catch {
                 XCTFail("could not update the pitch of the gimbal. error: \(error)")
             }
             
-            completed = true
-        })
+            myExpectation.fulfill()
+        }
         
-        runLoop { completed }
+        waitForExpectations(timeout: expectationTimeout) { error in
+            if let error = error {
+                XCTFail("testPitchUsingAbsoluteAngle error: \(error)")
+            }
+        }
     }
     
     func testPitchUsingRelativeAngle() {
-        var completed = false
+        let myExpectation = expectation(description: "testPitchUsingRelativeAngle expectation")
         let zeroAngle = DCKAngle(degrees: 0)
         
-        self.gimbal?.rotate(yaw: zeroAngle, pitch: DCKAngle(degrees: -20), roll: zeroAngle, relativeToDrone: true, withinTimeInSeconds: 1, completionHandler: { (error) in
-            if let error = error {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                try self.gimbal?.rotate(yaw: zeroAngle, pitch: DCKAngle(degrees: -20), roll: zeroAngle, relativeToDrone: true, withinTimeInSeconds: 1)
+            } catch {
                 XCTFail("could not update the pitch of the gimbal. error: \(error)")
             }
             
-            completed = true
-        })
+            myExpectation.fulfill()
+        }
         
-        runLoop { completed }
+        waitForExpectations(timeout: expectationTimeout) { error in
+            if let error = error {
+                XCTFail("testPitchUsingRelativeAngle error: \(error)")
+            }
+        }
     }
     
     func testCalibrate() {
-        var completed = false
+        let myExpectation = expectation(description: "testCalibrate expectation")
         
-        self.gimbal?.calibrate(completionHandler: { (error) in
-            if let error = error {
-                XCTFail("could not reset the gimbal. error: \(error)")
+        DispatchQueue.global(qos: .default).async {
+            do {
+                try self.gimbal?.calibrate()
+            } catch {
+                XCTFail("could not calibrate the gimbal. error: \(error)")
             }
             
-            completed = true
-        })
+            myExpectation.fulfill()
+        }
         
-        runLoop { completed }
+        waitForExpectations(timeout: expectationTimeout) { error in
+            if let error = error {
+                XCTFail("testCalibrate error: \(error)")
+            }
+        }
     }
     
     func testReset() {
-        var completed = false
+        let myExpectation = expectation(description: "testReset expectation")
         
-        self.gimbal?.reset(completionHandler: { (error) in
-            if let error = error {
+        DispatchQueue.global(qos: .default).async {
+            do {
+                try self.gimbal?.reset()
+            } catch {
                 XCTFail("could not reset the gimbal. error: \(error)")
             }
             
-            completed = true
-        })
+            myExpectation.fulfill()
+        }
         
-        runLoop { completed }
+        waitForExpectations(timeout: expectationTimeout) { error in
+            if let error = error {
+                XCTFail("testReset error: \(error)")
+            }
+        }
     }
 }
