@@ -138,9 +138,7 @@ extension DJICameraToken: CameraToken {
         let aspectRatio: DJICameraPhotoAspectRatio? = DJICameraToken.aspectRatio(from: options)
         let quality: DJICameraPhotoQuality? = DJICameraToken.quality(from: options)
         
-        guard let unsignedCount: UInt = UInt(count.rawValue) else {
-            throw DJICameraTokenError.invalidPhotoBurstCountSpecified(count.rawValue)
-        }
+        let unsignedCount: UInt = UInt(count.rawValue)
         
         guard let photoBurstCount: DJICameraPhotoBurstCount = DJICameraPhotoBurstCount(rawValue: unsignedCount) else {
             throw DJICameraTokenError.invalidPhotoBurstCountSpecified(count.rawValue)
