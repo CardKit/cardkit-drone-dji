@@ -165,6 +165,8 @@ extension DJICameraToken {
         }
         return nil
     }
+    
+//    fileprivate class func standard(from options: )
 }
 
 // MARK: CameraToken
@@ -235,19 +237,14 @@ extension DJICameraToken: CameraToken {
         try self.stopPhotos()
     }
     
-    public func startVideo(fileFormat: VideoFileFormat = .mov, videoStandard: VideoStandard = .NTSC, options: Set<CameraVideoOption>) throws {
+    public func startVideo(fileFormat: VideoFileFormat = .mov, videoStandard: VideoStandard = .ntsc, options: Set<CameraVideoOption>) throws {
         let cameraMode: DJICameraMode = .recordVideo
         let format = fileFormat.djiVideoFileFormat
         let frameRate: DJICameraVideoFrameRate? = DJICameraToken.frameRate(from: options)
         let resolution: DJICameraVideoResolution? = DJICameraToken.resolution(from: options)
-        let videoStandard
-        /*
- slowMotionEnabled
- case framerate(VideoFramerate)
- case resolution(VideoResolution)*/
-  
- 
-        try self.recordVideo(cameraMode: cameraMode, fileFormat: format, frameRate: frameRate!, resolution: resolution)
+        let videoStandard: DJICameraVideoStandard? = videoStandard.djiVideoStandard
+
+        try self.recordVideo(cameraMode: cameraMode, fileFormat: format, frameRate: frameRate!, resolution: resolution, videoStandard: videoStandard)
     }
     
     public func stopVideo() throws {
