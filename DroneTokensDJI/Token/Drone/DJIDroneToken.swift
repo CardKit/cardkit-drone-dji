@@ -200,9 +200,10 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         try self.executeMissionSteps(missionSteps: missionSteps)
     }
     
+
     public func fly(on path: DCKCoordinate2DPath, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?) throws {
       
-        var altitudeInMeters: Double? = nil
+        var altitudeInMeters: Double?
         
         // if altitude was not passed, use current altitude
         if let userSetAltitude = altitude {
@@ -580,7 +581,6 @@ fileprivate class MissionManagerDelegate: NSObject, DJIMissionManagerDelegate {
     }
     
     public func missionManager(_ manager: DJIMissionManager, missionProgressStatus missionProgress: DJIMissionProgressStatus) {
-        
         if missionProgress is DJICustomMissionStatus,
             let customMissionStatus: DJICustomMissionStatus = (missionProgress as? DJICustomMissionStatus),
             let currentExecStep: DJIMissionStep = customMissionStatus.currentExecutingStep {
