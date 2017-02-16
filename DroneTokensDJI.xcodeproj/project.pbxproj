@@ -13,6 +13,11 @@
 		685338B81DF4C251003F1DA5 /* CardKitRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */; };
 		685338B91DF4C251003F1DA5 /* DroneCardKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B41DF4C251003F1DA5 /* DroneCardKit.framework */; };
 		685338BA1DF4C251003F1DA5 /* Freddy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B51DF4C251003F1DA5 /* Freddy.framework */; };
+		687DC9C81E5629EE000F7EBE /* BaseGimbalCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DC9C61E5629D7000F7EBE /* BaseGimbalCardTests.swift */; };
+		687DC9C91E5629FD000F7EBE /* PointAtFrontTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DC9C41E56283F000F7EBE /* PointAtFrontTests.swift */; };
+		687DC9CB1E563260000F7EBE /* PointAtGroundTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DC9CA1E563260000F7EBE /* PointAtGroundTests.swift */; };
+		687DC9CD1E563783000F7EBE /* PointInDirectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DC9CC1E563783000F7EBE /* PointInDirectionTests.swift */; };
+		687DC9CF1E564C56000F7EBE /* PanBetweenLocationsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DC9CE1E564C56000F7EBE /* PanBetweenLocationsTests.swift */; };
 		688EA0611E424A85008559F8 /* DJIAttitudeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688EA0601E424A85008559F8 /* DJIAttitudeExtension.swift */; };
 		689498E81DF4C373007D765A /* DJISDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 689498E71DF4C373007D765A /* DJISDK.framework */; };
 		689498E91DF4C391007D765A /* CardKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B21DF4C251003F1DA5 /* CardKit.framework */; };
@@ -75,6 +80,11 @@
 		685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CardKitRuntime.framework; path = Carthage/Build/iOS/CardKitRuntime.framework; sourceTree = "<group>"; };
 		685338B41DF4C251003F1DA5 /* DroneCardKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DroneCardKit.framework; path = Carthage/Build/iOS/DroneCardKit.framework; sourceTree = "<group>"; };
 		685338B51DF4C251003F1DA5 /* Freddy.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Freddy.framework; path = Carthage/Build/iOS/Freddy.framework; sourceTree = "<group>"; };
+		687DC9C41E56283F000F7EBE /* PointAtFrontTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PointAtFrontTests.swift; path = Cards/Gimbal/PointAtFrontTests.swift; sourceTree = "<group>"; };
+		687DC9C61E5629D7000F7EBE /* BaseGimbalCardTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BaseGimbalCardTests.swift; path = Cards/Gimbal/BaseGimbalCardTests.swift; sourceTree = "<group>"; };
+		687DC9CA1E563260000F7EBE /* PointAtGroundTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PointAtGroundTests.swift; path = Cards/Gimbal/PointAtGroundTests.swift; sourceTree = "<group>"; };
+		687DC9CC1E563783000F7EBE /* PointInDirectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PointInDirectionTests.swift; path = Cards/Gimbal/PointInDirectionTests.swift; sourceTree = "<group>"; };
+		687DC9CE1E564C56000F7EBE /* PanBetweenLocationsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PanBetweenLocationsTests.swift; path = Cards/Gimbal/PanBetweenLocationsTests.swift; sourceTree = "<group>"; };
 		688EA0601E424A85008559F8 /* DJIAttitudeExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DJIAttitudeExtension.swift; path = Extensions/DJIAttitudeExtension.swift; sourceTree = "<group>"; };
 		689498E71DF4C373007D765A /* DJISDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DJISDK.framework; path = Frameworks/DJISDK.framework; sourceTree = "<group>"; };
 		6896C0001E44DD3B00256601 /* DJIGimbalTokenTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJIGimbalTokenTests.swift; sourceTree = "<group>"; };
@@ -205,6 +215,11 @@
 			isa = PBXGroup;
 			children = (
 				68A419791E4CC3C00065ABCB /* PointAtLocationTests.swift */,
+				687DC9CA1E563260000F7EBE /* PointAtGroundTests.swift */,
+				687DC9C41E56283F000F7EBE /* PointAtFrontTests.swift */,
+				687DC9CC1E563783000F7EBE /* PointInDirectionTests.swift */,
+				687DC9CE1E564C56000F7EBE /* PanBetweenLocationsTests.swift */,
+				687DC9C61E5629D7000F7EBE /* BaseGimbalCardTests.swift */,
 			);
 			name = Gimbal;
 			sourceTree = "<group>";
@@ -483,8 +498,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				687DC9C81E5629EE000F7EBE /* BaseGimbalCardTests.swift in Sources */,
+				687DC9CF1E564C56000F7EBE /* PanBetweenLocationsTests.swift in Sources */,
 				68A4197B1E4CC4600065ABCB /* PointAtLocationTests.swift in Sources */,
 				D58DE4AB1E427A8200011E93 /* DJICameraTokenTests.swift in Sources */,
+				687DC9CD1E563783000F7EBE /* PointInDirectionTests.swift in Sources */,
+				687DC9CB1E563260000F7EBE /* PointAtGroundTests.swift in Sources */,
+				687DC9C91E5629FD000F7EBE /* PointAtFrontTests.swift in Sources */,
 				D58DE48D1E424E5900011E93 /* DJIHardwareTokenTest.swift in Sources */,
 				6896C0021E44DE0700256601 /* DJIGimbalTokenTests.swift in Sources */,
 			);

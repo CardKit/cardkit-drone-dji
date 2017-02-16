@@ -7,65 +7,71 @@
 //
 
 @testable import DroneTokensDJI
+@testable import DroneCardKit
+@testable import CardKitRuntime
+@testable import CardKit
 
 import XCTest
 
-import DroneCardKit
 import DJISDK
 
-class PointAtLocationTests: DJIHardwareTokenTest {
-    
-    var gimbal: GimbalToken?
-    var drone: DroneToken?
-    
-    override func setUp() {
-        super.setUp()
-        
-        runLoop { self.aircraft?.gimbal != nil }
-        
-        guard let aircraft = self.aircraft else {
-            XCTFail("Drone does not exist")
-            return
-        }
-        
-        self.drone = DJIDroneToken(with: DroneCardKit.Token.Drone.makeCard(), for: aircraft)
-        
-        guard let gimbalHardware = aircraft.gimbal else {
-            XCTFail("Gimbal does not exist")
-            return
-        }
-        
-        self.gimbal = DJIGimbalToken(with: DroneCardKit.Token.Gimbal.makeCard(), for: gimbalHardware)
-    }
-    
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
-    
+class PointAtLocationTests: BaseGimbalCardTests {
     func testPointAtLocationCard() {
-        // land card
-        let pointAtLocation = PointAtLocation(with: DroneCardKit.Action.Tech.Gimbal.PointAtLocation.makeCard())
+        let myExpectation = expectation(description: "testPointAtLocationCard expectation")
         
-        guard let droneTokenSlot = land.actionCard.tokenSlots.slot(named: "Drone") else {
-            XCTFail("expected Land card to have slot named Drone")
+        guard let drone = drone, let gimbal = gimbal else {
+            XCTFail("Could not find drone and/or gimbal hardware")
             return
         }
         
-        // drone token card
-        let droneCard = DroneCardKit.Token.Drone.makeCard()
+        DispatchQueue.global(qos: .default).async {
+            do {
+                // determine location to point at
+                let originalLocation = DCKCoordinate2D(latitude: 23.00099, longitude: 113.9599)
+                let newLocation = DCKCoordinate2D(latitude: 23.00199, longitude: 113.9600)
+                let locationToPointAt = DCKCoordinate3D(latitude: newLocation.latitude, longitude: newLocation.longitude, altitude: DCKRelativeAltitude(metersAboveGroundAtTakeoff: 0.0))
+                
+                // takeoff and hover at 10m
+                if let droneToken = drone as? DroneToken {
+                    try droneToken.fly(to: originalLocation, atAltitude: DCKRelativeAltitude(metersAboveGroundAtTakeoff: 10))
+                } else {
+                    XCTFail("Could not cast `drone` as DroneToken.")
+                }
+                
+                // setup PointAtLocation card
+                let pointAtLocation = PointAtLocation(with: DroneCardKit.Action.Tech.Gimbal.PointAtLocation.makeCard())
+                
+                // bind input and token slots
+                guard let droneTokenSlot = pointAtLocation.actionCard.tokenSlots.slot(named: "DroneTelemetry"),
+                    let gimbalTokenSlot = pointAtLocation.actionCard.tokenSlots.slot(named: "Gimbal"),
+                    let inputLocationTokenSlot = pointAtLocation.actionCard.inputSlots.slot(named: "Location") else {
+                        XCTFail("could not find the right token/input slots")
+                        myExpectation.fulfill()
+                        return
+                }
+                
+                let inputBindings = [inputLocationTokenSlot: InputDataBinding.bound(locationToPointAt.toJSON())]
+                let tokenBindings = [droneTokenSlot: drone, gimbalTokenSlot: gimbal]
+                pointAtLocation.setup(inputBindings, tokens: tokenBindings)
+                
+                // execute
+                pointAtLocation.main()
+                
+                if let djiError = pointAtLocation.error {
+                    throw djiError
+                }
+            } catch {
+                XCTFail("\(error)")
+            }
+            
+            myExpectation.fulfill()
+        }
         
-        // drone token instance
-        let dummyDrone = DummyDroneToken(with: droneCard)
-        
-        // bind
-        land.setup([:], tokens: [droneTokenSlot: dummyDrone])
-        
-        // execute
-        land.main()
-        
-        XCTAssertTrue(dummyDrone.calledFunctions.contains("land"), "land should have been called")
-        XCTAssertTrue(dummyDrone.calledFunctions.count == 1, "only one card should have been called")
+        waitForExpectations(timeout: expectationTimeout) { error in
+            if let error = error {
+                XCTFail("testPointAtLocationCard error: \(error)")
+            }
+        }
     }
     
 }
