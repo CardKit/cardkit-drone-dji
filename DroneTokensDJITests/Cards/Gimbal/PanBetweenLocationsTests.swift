@@ -30,7 +30,7 @@ class PanBetweenLocationsTests: BaseGimbalCardTests {
                 let startLocation = DCKCoordinate3D(latitude: 23.004897, longitude: 113.955945, altitude: DCKRelativeAltitude(metersAboveGroundAtTakeoff: 100))
                 let endLocation = DCKCoordinate3D(latitude: 23.006654, longitude: 113.962990, altitude: DCKRelativeAltitude(metersAboveGroundAtTakeoff: 0))
                 
-                // setup PointInDirection card
+                // setup PanBetweenLocations card
                 let panBetweenLocations = PanBetweenLocations(with: DroneCardKit.Action.Tech.Gimbal.PanBetweenLocations.makeCard())
                 
                 //take off
