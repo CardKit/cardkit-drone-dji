@@ -19,7 +19,7 @@ import DJISDK
 
 class PaceTests: BaseDroneTokenTests {
     func testPaceCard() {
-        let myExpectation = expectation(description: "testFlyPathCard expectation")
+        let myExpectation = expectation(description: "testPaceCard expectation")
         
         guard let drone = drone else {
             XCTFail("Could not find drone and/or gimbal hardware")
@@ -93,7 +93,7 @@ class PaceTests: BaseDroneTokenTests {
         
         waitForExpectations(timeout: expectationTimeout) { error in
             if let error = error {
-                XCTFail("testFlyPathCard error: \(error)")
+                XCTFail("testPaceCard error: \(error)")
             }
         }
         
