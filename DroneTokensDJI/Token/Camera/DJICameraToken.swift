@@ -160,9 +160,12 @@ extension Sequence where Iterator.Element == CameraPhotoOption {
         }
         return nil
     }
+}
+
+extension Sequence where Iterator.Element == CameraVideoOption {
     
-    fileprivate class func frameRate(from options: Set<CameraVideoOption>) -> DJICameraVideoFrameRate? {
-        for option in options {
+    var djiVideoFrameRate: DJICameraVideoFrameRate? {
+        for option in self {
             if case .framerate(let f) = option {
                 return f.djiVideoFrameRate
             }
@@ -170,16 +173,14 @@ extension Sequence where Iterator.Element == CameraPhotoOption {
         return nil
     }
     
-    fileprivate class func resolution(from options: Set<CameraVideoOption>) -> DJICameraVideoResolution? {
-        for option in options {
+    var djiVideoResolution: DJICameraVideoResolution? {
+        for option in self {
             if case .resolution(let r) = option {
                 return r.djiVideoResolution
             }
         }
         return nil
     }
-    
-//    fileprivate class func standard(from options: )
 }
 
 // MARK: CameraToken
@@ -258,8 +259,8 @@ extension DJICameraToken: CameraToken {
 
         let cameraMode: DJICameraMode = .recordVideo
         let format = fileFormat.djiVideoFileFormat
-        let frameRate: DJICameraVideoFrameRate? = DJICameraToken.frameRate(from: options)
-        let resolution: DJICameraVideoResolution? = DJICameraToken.resolution(from: options)
+        let frameRate: DJICameraVideoFrameRate? = options.djiVideoFrameRate
+        let resolution: DJICameraVideoResolution? = options.djiVideoResolution
         let videoStandard: DJICameraVideoStandard? = videoStandard.djiVideoStandard
 
         try self.recordVideo(cameraMode: cameraMode, fileFormat: format, frameRate: frameRate, resolution: resolution, videoStandard: videoStandard)
