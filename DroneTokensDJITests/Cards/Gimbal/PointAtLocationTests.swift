@@ -33,7 +33,7 @@ class PointAtLocationTests: BaseGimbalCardTests {
                 
                 // takeoff and hover at 10m
                 if let droneToken = drone as? DroneToken {
-                    try droneToken.fly(to: originalLocation, atAltitude: DCKRelativeAltitude(metersAboveGroundAtTakeoff: 10))
+                    try droneToken.fly(to: originalLocation, atAltitude: DCKRelativeAltitude(metersAboveGroundAtTakeoff: 100))
                 } else {
                     XCTFail("Could not cast `drone` as DroneToken.")
                 }
