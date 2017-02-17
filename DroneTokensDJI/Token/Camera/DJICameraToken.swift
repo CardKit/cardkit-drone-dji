@@ -142,9 +142,9 @@ public class DJICameraToken: ExecutableTokenCard {
     }
 }
 
-extension DJICameraToken {
-    fileprivate class func aspectRatio(from options: Set<CameraPhotoOption>) -> DJICameraPhotoAspectRatio? {
-        for option in options {
+extension Sequence where Iterator.Element == CameraPhotoOption {
+    var djiAspectRatio: DJICameraPhotoAspectRatio? {
+        for option in self {
             if case .aspectRatio(let r) = option {
                 return r.djiAspectRatio
             }
@@ -152,8 +152,8 @@ extension DJICameraToken {
         return nil
     }
     
-    fileprivate class func quality(from options: Set<CameraPhotoOption>) -> DJICameraPhotoQuality? {
-        for option in options {
+    var djiQuality: DJICameraPhotoQuality? {
+        for option in self {
             if case .quality(let q) = option {
                 return q.djiQuality
             }
@@ -188,8 +188,8 @@ extension DJICameraToken: CameraToken {
     public func takePhoto(options: Set<CameraPhotoOption>) throws {
         let cameraMode: DJICameraMode = .shootPhoto
         let shootMode: DJICameraShootPhotoMode = .single
-        let aspectRatio: DJICameraPhotoAspectRatio? = DJICameraToken.aspectRatio(from: options)
-        let quality: DJICameraPhotoQuality? = DJICameraToken.quality(from: options)
+        let aspectRatio: DJICameraPhotoAspectRatio? = options.djiAspectRatio
+        let quality: DJICameraPhotoQuality? = options.djiQuality
         
         // take the photo
         try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, aspectRatio: aspectRatio, quality: quality)
@@ -198,21 +198,24 @@ extension DJICameraToken: CameraToken {
     public func takeHDRPhoto(options: Set<CameraPhotoOption>) throws {
         let cameraMode: DJICameraMode = .shootPhoto
         let shootMode: DJICameraShootPhotoMode = .HDR
-        let aspectRatio: DJICameraPhotoAspectRatio? = DJICameraToken.aspectRatio(from: options)
-        let quality: DJICameraPhotoQuality? = DJICameraToken.quality(from: options)
+        let aspectRatio: DJICameraPhotoAspectRatio? = options.djiAspectRatio
+        let quality: DJICameraPhotoQuality? = options.djiQuality
         
         // take the photo
         try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, aspectRatio: aspectRatio, quality: quality)
     }
     
     public func takePhotoBurst(count: PhotoBurstCount, options: Set<CameraPhotoOption>) throws {
-        
         let cameraMode: DJICameraMode = .shootPhoto
         let shootMode: DJICameraShootPhotoMode = .burst
-        let aspectRatio: DJICameraPhotoAspectRatio? = DJICameraToken.aspectRatio(from: options)
-        let quality: DJICameraPhotoQuality? = DJICameraToken.quality(from: options)
-
-        guard let photoBurstCount: DJICameraPhotoBurstCount = DJICameraPhotoBurstCount(rawValue: UInt(count.hashValue)) else { return }
+        let aspectRatio: DJICameraPhotoAspectRatio? = options.djiAspectRatio
+        let quality: DJICameraPhotoQuality? = options.djiQuality
+        
+        let unsignedCount: UInt = UInt(count.rawValue)
+        
+        guard let photoBurstCount: DJICameraPhotoBurstCount = DJICameraPhotoBurstCount(rawValue: unsignedCount) else {
+            throw DJICameraTokenError.invalidPhotoBurstCountSpecified(count.rawValue)
+        }
         
         // take the photo
         try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: nil, burstCount: photoBurstCount, aspectRatio: aspectRatio, quality: quality)
@@ -221,8 +224,8 @@ extension DJICameraToken: CameraToken {
     public func startTakingPhotos(at interval: TimeInterval, options: Set<CameraPhotoOption>) throws {
         let cameraMode: DJICameraMode = .shootPhoto
         let shootMode: DJICameraShootPhotoMode = .interval
-        let aspectRatio: DJICameraPhotoAspectRatio? = DJICameraToken.aspectRatio(from: options)
-        let quality: DJICameraPhotoQuality? = DJICameraToken.quality(from: options)
+        let aspectRatio: DJICameraPhotoAspectRatio? = options.djiAspectRatio
+        let quality: DJICameraPhotoQuality? = options.djiQuality
         
         // figure out the interval
         // a captureCount of 255 means the camera will continue taking photos until stopShootPhotoWithCompletion() is called
@@ -239,8 +242,8 @@ extension DJICameraToken: CameraToken {
     public func startTimelapse(options: Set<CameraPhotoOption>) throws {
         let cameraMode: DJICameraMode = .shootPhoto
         let shootMode: DJICameraShootPhotoMode = .timeLapse
-        let aspectRatio: DJICameraPhotoAspectRatio? = DJICameraToken.aspectRatio(from: options)
-        let quality: DJICameraPhotoQuality? = DJICameraToken.quality(from: options)
+        let aspectRatio: DJICameraPhotoAspectRatio? = options.djiAspectRatio
+        let quality: DJICameraPhotoQuality? = options.djiQuality
         
         // take the photos
         try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, aspectRatio: aspectRatio, quality: quality)
@@ -404,6 +407,7 @@ public enum DJICameraTokenError: Error {
     case sdCardFull
     case failedToSetCameraPhotoAspectRatio
     case failedToSetCameraPhotoQuality
+    case invalidPhotoBurstCountSpecified(Int)
 }
 
 // MARK: - CameraDelegate
