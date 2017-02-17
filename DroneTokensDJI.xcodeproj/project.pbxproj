@@ -80,15 +80,15 @@
 		685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CardKitRuntime.framework; path = Carthage/Build/iOS/CardKitRuntime.framework; sourceTree = "<group>"; };
 		685338B41DF4C251003F1DA5 /* DroneCardKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DroneCardKit.framework; path = Carthage/Build/iOS/DroneCardKit.framework; sourceTree = "<group>"; };
 		685338B51DF4C251003F1DA5 /* Freddy.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Freddy.framework; path = Carthage/Build/iOS/Freddy.framework; sourceTree = "<group>"; };
-		687DC9C41E56283F000F7EBE /* PointAtFrontTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PointAtFrontTests.swift; path = Cards/Gimbal/PointAtFrontTests.swift; sourceTree = "<group>"; };
-		687DC9C61E5629D7000F7EBE /* BaseGimbalCardTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BaseGimbalCardTests.swift; path = Cards/Gimbal/BaseGimbalCardTests.swift; sourceTree = "<group>"; };
-		687DC9CA1E563260000F7EBE /* PointAtGroundTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PointAtGroundTests.swift; path = Cards/Gimbal/PointAtGroundTests.swift; sourceTree = "<group>"; };
-		687DC9CC1E563783000F7EBE /* PointInDirectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PointInDirectionTests.swift; path = Cards/Gimbal/PointInDirectionTests.swift; sourceTree = "<group>"; };
-		687DC9CE1E564C56000F7EBE /* PanBetweenLocationsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PanBetweenLocationsTests.swift; path = Cards/Gimbal/PanBetweenLocationsTests.swift; sourceTree = "<group>"; };
-		688EA0601E424A85008559F8 /* DJIAttitudeExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DJIAttitudeExtension.swift; path = Extensions/DJIAttitudeExtension.swift; sourceTree = "<group>"; };
+		687DC9C41E56283F000F7EBE /* PointAtFrontTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PointAtFrontTests.swift; path = PointAtFrontTests.swift; sourceTree = "<group>"; };
+		687DC9C61E5629D7000F7EBE /* BaseGimbalCardTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BaseGimbalCardTests.swift; path = BaseGimbalCardTests.swift; sourceTree = "<group>"; };
+		687DC9CA1E563260000F7EBE /* PointAtGroundTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PointAtGroundTests.swift; path = PointAtGroundTests.swift; sourceTree = "<group>"; };
+		687DC9CC1E563783000F7EBE /* PointInDirectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PointInDirectionTests.swift; path = PointInDirectionTests.swift; sourceTree = "<group>"; };
+		687DC9CE1E564C56000F7EBE /* PanBetweenLocationsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PanBetweenLocationsTests.swift; path = PanBetweenLocationsTests.swift; sourceTree = "<group>"; };
+		688EA0601E424A85008559F8 /* DJIAttitudeExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DJIAttitudeExtension.swift; path = DJIAttitudeExtension.swift; sourceTree = "<group>"; };
 		689498E71DF4C373007D765A /* DJISDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DJISDK.framework; path = Frameworks/DJISDK.framework; sourceTree = "<group>"; };
 		6896C0001E44DD3B00256601 /* DJIGimbalTokenTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJIGimbalTokenTests.swift; sourceTree = "<group>"; };
-		68A419791E4CC3C00065ABCB /* PointAtLocationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PointAtLocationTests.swift; path = Cards/Gimbal/PointAtLocationTests.swift; sourceTree = "<group>"; };
+		68A419791E4CC3C00065ABCB /* PointAtLocationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PointAtLocationTests.swift; path = PointAtLocationTests.swift; sourceTree = "<group>"; };
 		CC64ECA51E415B2200F7010D /* DJICameraToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJICameraToken.swift; sourceTree = "<group>"; };
 		CC64ECA71E415B2200F7010D /* DJIDroneToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJIDroneToken.swift; sourceTree = "<group>"; };
 		CC64ECA91E415B2200F7010D /* DJIGimbalToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJIGimbalToken.swift; sourceTree = "<group>"; };
@@ -195,20 +195,31 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		687DC9D71E578B51000F7EBE /* Tech */ = {
+			isa = PBXGroup;
+			children = (
+				68A419781E4CC3A60065ABCB /* Gimbal */,
+			);
+			name = Tech;
+			path = Tech;
+			sourceTree = "<group>";
+		};
 		688EA05F1E424A7B008559F8 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
 				688EA0601E424A85008559F8 /* DJIAttitudeExtension.swift */,
 			);
 			name = Extensions;
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		68A419771E4CC3A00065ABCB /* Cards */ = {
 			isa = PBXGroup;
 			children = (
-				68A419781E4CC3A60065ABCB /* Gimbal */,
+				687DC9D71E578B51000F7EBE /* Tech */,
 			);
 			name = Cards;
+			path = Cards;
 			sourceTree = "<group>";
 		};
 		68A419781E4CC3A60065ABCB /* Gimbal */ = {
@@ -222,6 +233,7 @@
 				687DC9C61E5629D7000F7EBE /* BaseGimbalCardTests.swift */,
 			);
 			name = Gimbal;
+			path = Gimbal;
 			sourceTree = "<group>";
 		};
 		CC64ECA31E415B2200F7010D /* Token */ = {
@@ -541,6 +553,7 @@
 				D58DE49C1E4278CC00011E93 /* Base */,
 			);
 			name = Main.storyboard;
+			path = .;
 			sourceTree = "<group>";
 		};
 		D58DE4A01E4278CC00011E93 /* LaunchScreen.storyboard */ = {
@@ -549,6 +562,7 @@
 				D58DE4A11E4278CC00011E93 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			path = .;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
