@@ -1,10 +1,12 @@
 //
-//  FlyPathTests.swift
+//  PaceTests.swift
 //  DroneTokensDJI
 //
 //  Created by ismails on 2/17/17.
 //  Copyright © 2017 IBM. All rights reserved.
 //
+
+import Foundation
 
 @testable import DroneTokensDJI
 @testable import DroneCardKit
@@ -15,8 +17,8 @@ import XCTest
 
 import DJISDK
 
-class FlyPathTests: BaseDroneTokenTests {
-    func testFlyPathCard() {
+class PaceTests: BaseDroneTokenTests {
+    func testPaceCard() {
         let myExpectation = expectation(description: "testFlyPathCard expectation")
         
         guard let drone = drone else {
@@ -31,7 +33,7 @@ class FlyPathTests: BaseDroneTokenTests {
                 // determine path to fly
                 // https://www.google.com/maps/dir/23.00099,+113.9599/23.0013356,113.9594235/23.0015072,113.9602554/23.0009514,113.9602443/23.0010923,113.9599299/@23.001543,113.959468,18.95z/data=!4m10!4m9!1m3!2m2!1d113.9599!2d23.00099!1m0!1m0!1m0!1m0!3e2
                 
-             
+                
                 let locationsInPath: [DCKCoordinate2D] = [
                     DCKCoordinate2D(latitude: 23.0013356, longitude: 113.9594235),
                     DCKCoordinate2D(latitude: 23.0015072, longitude: 113.9602554),
@@ -53,14 +55,14 @@ class FlyPathTests: BaseDroneTokenTests {
                 }
                 
                 // setup card
-                let flyPath = FlyPath(with: DroneCardKit.Action.Movement.Sequence.FlyPath.makeCard())
+                let paceCard = Pace(with: DroneCardKit.Action.Movement.Sequence.Pace.makeCard())
                 
                 // bind input and token slots
-                guard let droneTokenSlot = flyPath.actionCard.tokenSlots.slot(named: "Drone"),
-                    let pathSlot = flyPath.actionCard.inputSlots.slot(named: "Path"),
-                    let speedSlot = flyPath.actionCard.inputSlots.slot(named: "Speed") ,
-                    let durationSlot = flyPath.actionCard.inputSlots.slot(named: "Duration"),
-                    let altitudeSlot = flyPath.actionCard.inputSlots.slot(named: "Altitude")  else {
+                guard let droneTokenSlot = paceCard.actionCard.tokenSlots.slot(named: "Drone"),
+                    let pathSlot = paceCard.actionCard.inputSlots.slot(named: "Path"),
+                    let speedSlot = paceCard.actionCard.inputSlots.slot(named: "Speed") ,
+                    let durationSlot = paceCard.actionCard.inputSlots.slot(named: "Duration"),
+                    let altitudeSlot = paceCard.actionCard.inputSlots.slot(named: "Altitude")  else {
                         XCTFail("could not find the right token/input slots")
                         myExpectation.fulfill()
                         return
@@ -74,12 +76,12 @@ class FlyPathTests: BaseDroneTokenTests {
                 ]
                 
                 let tokenBindings = [droneTokenSlot: drone]
-                flyPath.setup(inputBindings, tokens: tokenBindings)
+                paceCard.setup(inputBindings, tokens: tokenBindings)
                 
                 // execute
-                flyPath.main()
+                paceCard.main()
                 
-                if let djiError = flyPath.error {
+                if let djiError = paceCard.error {
                     throw djiError
                 }
             } catch {
