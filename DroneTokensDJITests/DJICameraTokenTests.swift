@@ -22,20 +22,24 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
     let expectationTimeout: TimeInterval = 1000
     var cameraExecutableTokenCard: DJICameraToken?
     let cameraOptions: Set<CameraPhotoOption> = [CameraPhotoOption.aspectRatio(.aspect_16x9), CameraPhotoOption.quality(.normal)]
+    let videoOptions: Set<CameraVideoOption> = [CameraVideoOption.framerate(.framerate_60fps), CameraVideoOption.resolution(.resolution_720p)]
+    
     
     override func setUp() {
         super.setUp()
         print("setup of DJICameraTokenTests")
-        
+    
         runLoop { self.aircraft?.camera != nil }
         
         print("camera found: \(self.aircraft?.camera)")
         
         //setup camera
         guard let camera = self.aircraft?.camera else {
-            XCTFail("No camera exists")
+            XCTAssertNil(self.aircraft?.camera, "NO CAMERA HARDWARE")
             return
         }
+        
+        print("Camera Video Resolution and Frame Rate Range: \(DJICameraParameters.sharedInstance().supportedCameraVideoResolutionAndFrameRateRange())")        
         
         let cameraTokenCard = DroneCardKit.Token.Camera.makeCard()
         self.cameraExecutableTokenCard = DJICameraToken(with: cameraTokenCard, for: camera)
@@ -112,72 +116,36 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
         }
     }
     
-    @available(iOS 10.0, *)
+   
     func testCameraTokenPhotoSeries() {
         let cameraExpectation = expectation(description: "take photo series")
-        let timeInterval: TimeInterval = 3.0
-        let duration = DispatchTime.now() + .seconds(10)
+        let backgroundQueue = DispatchQueue(label: "photo.series")
+        let timeInterval: TimeInterval = 5.0
+        let duration = DispatchTime.now() + .seconds(20)
         
-        //start taking photos at interval
-        DispatchQueue.global(qos: .default).async {
+        backgroundQueue.async {
             do {
-                print("start taking photos")
-                
+                print("start taking interval photos")
                 try self.cameraExecutableTokenCard?.startTakingPhotos(at: timeInterval, options: self.cameraOptions)
                 
-                Timer.scheduledTimer(withTimeInterval: 10, repeats: false, block: { (_) in
-                    print("heyo")
+                backgroundQueue.asyncAfter(deadline: duration, execute: { 
+                    do {
+                        print("stop taking photos")
+                        try self.cameraExecutableTokenCard?.stopTakingPhotos()
+                        cameraExpectation.fulfill()
+                    } catch {
+                        XCTAssertNil(error, "Took Photo Series - stopped taking photos")
+                        cameraExpectation.fulfill()
+                    }
                 })
-                
-//                try self.cameraExecutableTokenCard?.stopTakingPhotos()
-                //stop taking photos
-//                DispatchQueue.global(qos: .default).asyncAfter(deadline: duration) {
-//                    do {
-//                        print("stop taking photos")
-//                        try self.cameraExecutableTokenCard?.stopTakingPhotos()
-//                        cameraExpectation.fulfill()
-//                    } catch {
-//                        XCTAssertNil(error, "Took Photo Series - stopped taking photos")
-//                        cameraExpectation.fulfill()
-//                    }
-//                }
             } catch {
                 XCTAssertNil(error, "Took Photo Series - started taking photos")
-            }            
+            }
         }
-        
-        
-
-//        if #available(iOS 10.0, *) {
-//            Timer.scheduledTimer(withTimeInterval: 10, repeats: false, block: { (_) in
-//                DispatchQueue.global(qos: .default).async {
-//                do {
-//                    print("stop taking photos")
-//                    try self.cameraExecutableTokenCard?.stopTakingPhotos()
-//                    cameraExpectation.fulfill()
-//                } catch {
-//                    XCTAssertNil(error, "Took Photo Series - stopped taking photos")
-//                    cameraExpectation.fulfill()
-//                }
-//                }
-//            })
-//        } else {
-//            // Fallback on earlier versions
-//        }
         
         waitForExpectations(timeout: expectationTimeout) { (error) in
             if let error = error {
                 XCTFail("Photo series timed out.  Error: \(error)")
-            }
-        }
-    }
-    
-    func stopTakingPictures() {
-        DispatchQueue.global(qos: .default).async {
-            do {
-                try self.cameraExecutableTokenCard?.stopTakingPhotos()
-            } catch {
-                print("error stopping taking photos \(error)")
             }
         }
     }
@@ -205,7 +173,36 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
     }
     
     func testCameraTokenVideo() {
+        let cameraExpectation = expectation(description: "record video")
+        let duration = DispatchTime.now() + .seconds(10)
+        let backgroundQueue = DispatchQueue(label: "record-video")
         
+        //start taking photos at interval
+        backgroundQueue.async {
+            do {
+                print("start recording")
+                try self.cameraExecutableTokenCard?.startVideo(fileFormat: .mov, videoStandard: .ntsc, options: self.videoOptions)
+                
+                backgroundQueue.asyncAfter(deadline: duration, execute: { 
+                    do {
+                        print("stop recording")
+                        try self.cameraExecutableTokenCard?.stopVideo()
+                        cameraExpectation.fulfill()
+                    } catch {
+                        XCTAssertNil(error, "Took Video - stopped taking video")
+                        cameraExpectation.fulfill()
+                    }
+                })
+            } catch {
+                XCTFail("Take video failed. \(error)")
+            }            
+        }
+
+        waitForExpectations(timeout: expectationTimeout) { (error) in
+            if let error = error {
+                XCTFail("Record video timed out.  Error: \(error)")
+            }
+        }
+
     }
 }
-
