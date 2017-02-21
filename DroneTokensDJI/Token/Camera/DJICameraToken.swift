@@ -92,11 +92,11 @@ public class DJICameraToken: ExecutableTokenCard {
     func recordVideo(cameraMode: DJICameraMode, frameRate: DJICameraVideoFrameRate?, resolution: DJICameraVideoResolution?) throws {
         
         
-        DispatchQueue.executeSynchronously { self.camera.setCameraMode(cameraMode, withCompletion: $0) }
+        try DispatchQueue.executeSynchronously { self.camera.setCameraMode(cameraMode, withCompletion: $0) }
         
         
         if let frameRate = frameRate, let resolution = resolution {
-            DispatchQueue.executeSynchronously { self.camera.setVideoResolution(resolution, andFrameRate: frameRate, withCompletion: $0) }
+            try DispatchQueue.executeSynchronously { self.camera.setVideoResolution(resolution, andFrameRate: frameRate, withCompletion: $0) }
         }
 
         try DispatchQueue.executeSynchronously { self.camera.startRecordVideo(completion: $0)}
