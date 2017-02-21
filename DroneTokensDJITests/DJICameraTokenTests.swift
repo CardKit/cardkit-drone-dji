@@ -35,6 +35,7 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
         
         //setup camera
         guard let camera = self.aircraft?.camera else {
+            //because these tests are hardware tests and are part of continuous integration on build server, they should not fail if there is no hardware.  Instead, we asser that there is not hardware.
             XCTAssertNil(self.aircraft?.camera, "NO CAMERA HARDWARE")
             return
         }
@@ -153,7 +154,6 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
     //NOT SUPPORTED BY MAVIC PRO
     func testCameraTokenTimelapse() {
         let cameraExpectation = expectation(description: "take timelapse")
-        
         DispatchQueue.global(qos: .default).async {
             do {
                 try self.cameraExecutableTokenCard?.startTimelapse(options: self.cameraOptions)
@@ -161,10 +161,7 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
             } catch {
                 XCTAssertNil(error, "Timelapse - started")
             }
-            
-            
         }
-        
         waitForExpectations(timeout: expectationTimeout) { (error) in
             if let error = error {
                 XCTFail("Photo timelapse timed out.  Error: \(error)")
@@ -181,7 +178,7 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
         backgroundQueue.async {
             do {
                 print("start recording")
-                try self.cameraExecutableTokenCard?.startVideo(fileFormat: .mov, videoStandard: .ntsc, options: self.videoOptions)
+                try self.cameraExecutableTokenCard?.startVideo(fileFormat: .mov, options: self.videoOptions)
                 
                 backgroundQueue.asyncAfter(deadline: duration, execute: { 
                     do {

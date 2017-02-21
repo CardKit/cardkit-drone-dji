@@ -89,38 +89,14 @@ public class DJICameraToken: ExecutableTokenCard {
         try DispatchQueue.executeSynchronously { self.camera.stopShootPhoto(completion: $0) }
     }
     
-    func recordVideo(cameraMode: DJICameraMode, fileFormat: DJICameraVideoFileFormat, frameRate: DJICameraVideoFrameRate?, resolution: DJICameraVideoResolution?, videoStandard: DJICameraVideoStandard?) throws {
+    func recordVideo(cameraMode: DJICameraMode, frameRate: DJICameraVideoFrameRate?, resolution: DJICameraVideoResolution?) throws {
         
-        do {
-            try DispatchQueue.executeSynchronously { self.camera.setCameraMode(cameraMode, withCompletion: $0) }
-        } catch {            
-            throw error
-        }
         
-        do {
-            try DispatchQueue.executeSynchronously { self.camera.setVideoFileFormat(fileFormat, withCompletion: $0) }
-        } catch {
-            throw error
-        }
-        
-        //Cannot set videoStandard.  It impedes the camera state from ever being recording
-//        if let videoStandard = videoStandard {
-//            do {
-//                print("setVideoStandard \(videoStandard.rawValue)")
-//                try DispatchQueue.executeSynchronously { self.camera.setVideoStandard(videoStandard, withCompletion: $0) }
-//            } catch {
-//            print("3")
-//                throw error
-//            }
-//        }
+        DispatchQueue.executeSynchronously { self.camera.setCameraMode(cameraMode, withCompletion: $0) }
         
         
         if let frameRate = frameRate, let resolution = resolution {
-            do {
-                try DispatchQueue.executeSynchronously { self.camera.setVideoResolution(resolution, andFrameRate: frameRate, withCompletion: $0) }
-            } catch {
-                throw error
-            }
+            DispatchQueue.executeSynchronously { self.camera.setVideoResolution(resolution, andFrameRate: frameRate, withCompletion: $0) }
         }
 
         try DispatchQueue.executeSynchronously { self.camera.startRecordVideo(completion: $0)}
@@ -254,16 +230,14 @@ extension DJICameraToken: CameraToken {
         try self.stopPhotos()
     }
     
-    public func startVideo(fileFormat: VideoFileFormat = .mov, videoStandard: VideoStandard = .ntsc, options: Set<CameraVideoOption>) throws {
+    public func startVideo(options: Set<CameraVideoOption>) throws {
         
 
         let cameraMode: DJICameraMode = .recordVideo
-        let format = fileFormat.djiVideoFileFormat
         let frameRate: DJICameraVideoFrameRate? = options.djiVideoFrameRate
         let resolution: DJICameraVideoResolution? = options.djiVideoResolution
-        let videoStandard: DJICameraVideoStandard? = videoStandard.djiVideoStandard
 
-        try self.recordVideo(cameraMode: cameraMode, fileFormat: format, frameRate: frameRate, resolution: resolution, videoStandard: videoStandard)
+        try self.recordVideo(cameraMode: cameraMode, frameRate: frameRate, resolution: resolution)
     }
     
     public func stopVideo() throws {
@@ -297,20 +271,6 @@ extension PhotoQuality {
             return .fine
         case .normal:
             return .normal
-        }
-    }
-}
-
-// MARK: - VideoFileFormat
-extension VideoFileFormat {
-    var djiVideoFileFormat: DJICameraVideoFileFormat {
-        switch self {
-        case .mov:
-            return .MOV
-        case .mp4:
-            return .MP4
-        case .unknown:
-            return .unknown
         }
     }
 }
@@ -385,29 +345,11 @@ extension VideoResolution {
     }
 }
 
-// MARK: - VideoStandard
-
-extension VideoStandard {
-    var djiVideoStandard: DJICameraVideoStandard {
-        switch self {
-        case .pal:
-            return .PAL
-        case .ntsc:
-            return .NTSC
-        case .unknown:
-            return .unknown
-        }
-    }
-}
-
 // MARK: - DJICameraTokenError
 
 public enum DJICameraTokenError: Error {
-    case failedToSetCameraModeToPhoto
     case failedToObtainSDCardState
     case sdCardFull
-    case failedToSetCameraPhotoAspectRatio
-    case failedToSetCameraPhotoQuality
     case invalidPhotoBurstCountSpecified(Int)
 }
 
