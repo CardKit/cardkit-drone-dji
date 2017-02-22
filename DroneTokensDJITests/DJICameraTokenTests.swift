@@ -22,7 +22,7 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
     let expectationTimeout: TimeInterval = 1000
     var cameraExecutableTokenCard: DJICameraToken?
     let cameraOptions: Set<CameraPhotoOption> = [CameraPhotoOption.aspectRatio(.aspect_16x9), CameraPhotoOption.quality(.normal)]
-    let videoOptions: Set<CameraVideoOption> = [CameraVideoOption.framerate(.framerate_60fps), CameraVideoOption.resolution(.resolution_720p)]
+    let videoOptions: Set<CameraVideoOption> = [CameraVideoOption.framerate(.framerate_50fps), CameraVideoOption.resolution(.resolution_720p)]
     
     
     override func setUp() {
@@ -178,7 +178,7 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
         backgroundQueue.async {
             do {
                 print("start recording")
-                try self.cameraExecutableTokenCard?.startVideo(fileFormat: .mov, options: self.videoOptions)
+                try self.cameraExecutableTokenCard?.startVideo(options: self.videoOptions)
                 
                 backgroundQueue.asyncAfter(deadline: duration, execute: { 
                     do {

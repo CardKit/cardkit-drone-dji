@@ -187,12 +187,7 @@ extension DJICameraToken: CameraToken {
         let shootMode: DJICameraShootPhotoMode = .burst
         let aspectRatio: DJICameraPhotoAspectRatio? = options.djiAspectRatio
         let quality: DJICameraPhotoQuality? = options.djiQuality
-        
-        let unsignedCount: UInt = UInt(count.rawValue)
-        
-        guard let photoBurstCount: DJICameraPhotoBurstCount = DJICameraPhotoBurstCount(rawValue: unsignedCount) else {
-            throw DJICameraTokenError.invalidPhotoBurstCountSpecified(count.rawValue)
-        }
+        let photoBurstCount: DJICameraPhotoBurstCount = count.djiPhotoBurstCount
         
         // take the photo
         try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: nil, burstCount: photoBurstCount, aspectRatio: aspectRatio, quality: quality)
@@ -341,6 +336,25 @@ extension VideoResolution {
             return .resolutionNoSSDVideo
         case .unknown:
             return .resolutionUnknown
+        }
+    }
+}
+
+// MARK: - PhotoBurstCount
+
+extension PhotoBurstCount {
+    var djiPhotoBurstCount: DJICameraPhotoBurstCount {
+        switch self {
+        case .burst_3:
+            return .count3
+        case .burst_5:
+            return .count5
+        case .burst_7:
+            return .count7
+        case .burst_10:
+            return .count10
+        case .burst_14:
+            return .count14
         }
     }
 }
