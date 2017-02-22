@@ -17,6 +17,7 @@ import DJISDK
 // MARK: DJICameraToken
 
 public class DJICameraToken: ExecutableTokenCard {
+    
     private let camera: DJICamera
     
     //swiftlint:disable:next weak_delegate
@@ -38,7 +39,7 @@ public class DJICameraToken: ExecutableTokenCard {
         do {
             try DispatchQueue.executeSynchronously { self.camera.setCameraMode(cameraMode, withCompletion: $0) }
         } catch {
-            throw DJICameraTokenError.failedToSetCameraModeToPhoto
+            throw error        
         }
         
         // make sure there is enough space on the SD card
@@ -87,6 +88,34 @@ public class DJICameraToken: ExecutableTokenCard {
     func stopPhotos() throws {
         try DispatchQueue.executeSynchronously { self.camera.stopShootPhoto(completion: $0) }
     }
+    
+    func recordVideo(cameraMode: DJICameraMode, frameRate: DJICameraVideoFrameRate?, resolution: DJICameraVideoResolution?) throws {
+        
+        
+        try DispatchQueue.executeSynchronously { self.camera.setCameraMode(cameraMode, withCompletion: $0) }
+        
+        
+        if let frameRate = frameRate, let resolution = resolution {
+            try DispatchQueue.executeSynchronously { self.camera.setVideoResolution(resolution, andFrameRate: frameRate, withCompletion: $0) }
+        }
+
+        try DispatchQueue.executeSynchronously { self.camera.startRecordVideo(completion: $0)}
+        
+        //the startRecordVideo callback does not coincide with the actual system state changing to recording;
+        //RunLoop similarly prevents the system state from updating
+        while self.cameraDelegate.systemState?.isRecording == false {}
+    }
+    
+    
+    func stopRecordVideo() throws {
+        try DispatchQueue.executeSynchronously { self.camera.stopRecordVideo(completion: $0)}
+        
+        //the stopRecordVideo callback does not coincide with the actual system state changing to not recording;
+        //for some reason RunLoop is non-blocking here
+        while self.cameraDelegate.systemState?.isRecording == true {
+            RunLoop.current.run(mode: .defaultRunLoopMode, before: Date.distantFuture)
+        }
+    }
 }
 
 extension Sequence where Iterator.Element == CameraPhotoOption {
@@ -103,6 +132,27 @@ extension Sequence where Iterator.Element == CameraPhotoOption {
         for option in self {
             if case .quality(let q) = option {
                 return q.djiQuality
+            }
+        }
+        return nil
+    }
+}
+
+extension Sequence where Iterator.Element == CameraVideoOption {
+    
+    var djiVideoFrameRate: DJICameraVideoFrameRate? {
+        for option in self {
+            if case .framerate(let f) = option {
+                return f.djiVideoFrameRate
+            }
+        }
+        return nil
+    }
+    
+    var djiVideoResolution: DJICameraVideoResolution? {
+        for option in self {
+            if case .resolution(let r) = option {
+                return r.djiVideoResolution
             }
         }
         return nil
@@ -137,12 +187,7 @@ extension DJICameraToken: CameraToken {
         let shootMode: DJICameraShootPhotoMode = .burst
         let aspectRatio: DJICameraPhotoAspectRatio? = options.djiAspectRatio
         let quality: DJICameraPhotoQuality? = options.djiQuality
-        
-        let unsignedCount: UInt = UInt(count.rawValue)
-        
-        guard let photoBurstCount: DJICameraPhotoBurstCount = DJICameraPhotoBurstCount(rawValue: unsignedCount) else {
-            throw DJICameraTokenError.invalidPhotoBurstCountSpecified(count.rawValue)
-        }
+        let photoBurstCount: DJICameraPhotoBurstCount = count.djiPhotoBurstCount
         
         // take the photo
         try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: nil, burstCount: photoBurstCount, aspectRatio: aspectRatio, quality: quality)
@@ -157,7 +202,7 @@ extension DJICameraToken: CameraToken {
         // figure out the interval
         // a captureCount of 255 means the camera will continue taking photos until stopShootPhotoWithCompletion() is called
         let djiInterval = DJICameraPhotoIntervalParam(captureCount: 255, timeIntervalInSeconds: UInt16(interval))
-        
+
         // take the photos
         try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: djiInterval, burstCount: nil, aspectRatio: aspectRatio, quality: quality)
     }
@@ -180,12 +225,18 @@ extension DJICameraToken: CameraToken {
         try self.stopPhotos()
     }
     
-    public func startVideo(options: Set<CameraVideoOption>) {
+    public func startVideo(options: Set<CameraVideoOption>) throws {
         
+
+        let cameraMode: DJICameraMode = .recordVideo
+        let frameRate: DJICameraVideoFrameRate? = options.djiVideoFrameRate
+        let resolution: DJICameraVideoResolution? = options.djiVideoResolution
+
+        try self.recordVideo(cameraMode: cameraMode, frameRate: frameRate, resolution: resolution)
     }
     
-    public func stopVideo() {
-        
+    public func stopVideo() throws {
+        try self.stopRecordVideo()
     }
 }
 
@@ -219,14 +270,100 @@ extension PhotoQuality {
     }
 }
 
+// MARK: - VideoFrameRate
+
+extension VideoFramerate {
+    var djiVideoFrameRate: DJICameraVideoFrameRate {
+        switch self {
+        case .framerate_23dot976fps:
+            return .rate23dot976FPS
+        case .framerate_24fps:
+            return .rate24FPS
+        case .framerate_25fps:
+            return .rate25FPS
+        case .framerate_29dot970fps:
+            return .rate29dot970FPS
+        case .framerate_30fps:
+            return .rate29dot970FPS
+        case .framerate_47dot950fps:
+            return .rate47dot950FPS
+        case .framerate_48fps:
+            return .rate47dot950FPS
+        case .framerate_50fps:
+            return .rate50FPS
+        case .framerate_59dot940fps:
+            return .rate59dot940FPS
+        case .framerate_60fps:
+            return .rate59dot940FPS
+        case .framerate_96fps:
+            return .rate96FPS
+        case .framerate_120fps:
+            return .rate120FPS
+        case .unknown:
+            return .rateUnknown
+        }
+    }
+}
+
+// MARK: - VideoResolution
+
+extension VideoResolution {
+    var djiVideoResolution: DJICameraVideoResolution {
+        switch self {
+        case .resolution_640x480:
+            return .resolution640x480
+        case .resolution_640x512:
+            return .resolution640x512
+        case .resolution_720p:
+            return .resolution1280x720
+        case .resolution_1080p:
+            return .resolution1920x1080
+        case .resolution_2704x1520:
+            return .resolution2704x1520
+        case .resolution_2720x1530:
+            return .resolution2720x1530
+        case .resolution_3840x1572:
+            return .resolution3840x1572
+        case .resolution_4k:
+            return .resolution3840x2160
+        case .resolution_4096x2160:
+            return .resolution4096x2160
+        case .resolution_5280x2160:
+            return .resolution5280x2160
+        case .max:
+            return .resolutionMaxResolution
+        case .noSSDVideo:
+            return .resolutionNoSSDVideo
+        case .unknown:
+            return .resolutionUnknown
+        }
+    }
+}
+
+// MARK: - PhotoBurstCount
+
+extension PhotoBurstCount {
+    var djiPhotoBurstCount: DJICameraPhotoBurstCount {
+        switch self {
+        case .burst_3:
+            return .count3
+        case .burst_5:
+            return .count5
+        case .burst_7:
+            return .count7
+        case .burst_10:
+            return .count10
+        case .burst_14:
+            return .count14
+        }
+    }
+}
+
 // MARK: - DJICameraTokenError
 
 public enum DJICameraTokenError: Error {
-    case failedToSetCameraModeToPhoto
     case failedToObtainSDCardState
     case sdCardFull
-    case failedToSetCameraPhotoAspectRatio
-    case failedToSetCameraPhotoQuality
     case invalidPhotoBurstCountSpecified(Int)
 }
 
@@ -258,6 +395,10 @@ fileprivate class CameraDelegate: NSObject, DJICameraDelegate {
     }
     
     func camera(_ camera: DJICamera, didUpdate systemState: DJICameraSystemState) {
+//        print("SYSTEM STATE CHANGED isShootingInterval:\(systemState.isShootingIntervalPhoto)")
+//        print("SYSTEM STATE CHANGED isRecording:\(systemState.isRecording)")
+//        print("SYSTEM STATE CHANGED isCameraOverHeated:\(systemState.isCameraOverHeated)")
+//        print("SYSTEM STATE CHANGED isCameraError:\(systemState.isCameraError)")
         self.systemState = systemState
     }
     
