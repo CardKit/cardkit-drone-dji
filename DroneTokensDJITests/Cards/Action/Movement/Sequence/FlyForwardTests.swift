@@ -16,7 +16,7 @@ import XCTest
 import DJISDK
 
 class FlyForwardTests: BaseDroneTokenTests {
-    // ideally it would be good to test fly forward when facing different angles (various yaw angles)
+    // when  ideally it would be good to test fly forward when facing different angles (various yaw angles)
     // however we are not able to update our yaw yet.. therefore the yaw will have 
     // to be manually updated for now with the remote controller in the simulator
     // this test will make the drone take off and hover and fly forward in the direction 
@@ -31,14 +31,18 @@ class FlyForwardTests: BaseDroneTokenTests {
         
         DispatchQueue.global(qos: .default).async {
             do {
-                let originalLocation = DCKCoordinate2D(latitude: 23.00099, longitude: 113.9599)
+                var originalLocation = DCKCoordinate2D(latitude: 23.00099, longitude: 113.9599)
                 
                 // create other inputs
-                let distance = DCKDistance(meters: 5.0)
+                let distance = DCKDistance(meters: 10.0)
                 
                 // takeoff and hover at 10m
                 if let droneToken = drone as? DroneToken {
-                    try droneToken.fly(to: originalLocation, atAltitude: 10)
+                    if let droneLocation = droneToken.currentLocation {
+                        originalLocation = droneLocation
+                    }
+                    
+                    try droneToken.fly(to: originalLocation)
                 } else {
                     XCTFail("Could not cast `drone` as DroneToken.")
                 }
