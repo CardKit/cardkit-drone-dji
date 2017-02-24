@@ -66,7 +66,7 @@ class FlyPathTests: BaseDroneTokenTests {
                         return
                 }
                 
-                let inputBindings: [InputSlot: InputDataBinding] = [
+                let inputBindings: [InputSlot: DataBinding] = [
                     pathSlot: .bound(path.toJSON()),
                     speedSlot: .bound(speed.toJSON()),
                     durationSlot: .bound(duration.toJSON()),
@@ -74,12 +74,12 @@ class FlyPathTests: BaseDroneTokenTests {
                 ]
                 
                 let tokenBindings = [droneTokenSlot: drone]
-                flyPath.setup(inputBindings, tokens: tokenBindings)
+                flyPath.setup(inputBindings: inputBindings, tokenBindings: tokenBindings)
                 
                 // execute
                 flyPath.main()
                 
-                if let djiError = flyPath.error {
+                if let djiError = flyPath.errors.first {
                     throw djiError
                 }
             } catch {

@@ -225,7 +225,7 @@ extension DJICameraToken: CameraToken {
         try self.recordVideo(cameraMode: cameraMode, frameRate: frameRate, resolution: resolution)
     }
     
-    public func stopVideo() throws {
+    public func stopVideo() throws -> DCKVideo {
         // stop the video recording
         try self.stopRecordVideo()
         
@@ -244,6 +244,7 @@ public enum DJICameraTokenError: Error {
     case failedToObtainSDCardState
     case sdCardFull
     case invalidPhotoBurstCountSpecified(Int)
+    case failedToDownloadMediaFromDrone
 }
 
 // MARK: - [CameraPhotoOption] Extensions
@@ -435,7 +436,7 @@ fileprivate class CameraDelegate: NSObject, DJICameraDelegate {
     fileprivate let mediaAppearanceTimeout: TimeInterval = 10
     
     func waitForAndDownloadPhotos(count: Int) -> [DCKPhoto] {
-        let endTime = Date(timeIntervalFrom: mediaAppearanceTimeout)
+        let endTime = Date(timeIntervalSinceNow: mediaAppearanceTimeout)
         
         // sleep until we have all the photos we are expecting
         while newPhotos.count < count && Date() < endTime {
@@ -455,7 +456,7 @@ fileprivate class CameraDelegate: NSObject, DJICameraDelegate {
     }
     
     func waitForAndDownloadVideos(count: Int) -> [DCKVideo] {
-        let endTime = Date(timeIntervalFrom: mediaAppearanceTimeout)
+        let endTime = Date(timeIntervalSinceNow: mediaAppearanceTimeout)
         
         // sleep until we have the video we are expecting
         while newVideos.count < count && Date() < endTime {
