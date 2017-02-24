@@ -581,7 +581,7 @@ fileprivate class CameraDelegate: NSObject, DJICameraDelegate {
 
 // MARK: - SynchronizedQueue
 
-public class SynchronizedQueue<T> {
+fileprivate class SynchronizedQueue<T> {
     private var array: [T] = []
     private let accessQueue = DispatchQueue(label: "SynchronizedQueueAccess", attributes: .concurrent)
     
