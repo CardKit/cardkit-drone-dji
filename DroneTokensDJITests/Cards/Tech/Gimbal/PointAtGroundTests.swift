@@ -37,12 +37,12 @@ class PointAtGroundTests: BaseGimbalCardTests {
                 }
                 
                 let tokenBindings = [gimbalTokenSlot: gimbal]
-                pointAtGround.setup([:], tokens: tokenBindings)
+                pointAtGround.setup(inputBindings: [:], tokenBindings: tokenBindings)
                 
                 // execute
                 pointAtGround.main()
                 
-                if let djiError = pointAtGround.error {
+                if let djiError = pointAtGround.errors.first {
                     throw djiError
                 }
             } catch {

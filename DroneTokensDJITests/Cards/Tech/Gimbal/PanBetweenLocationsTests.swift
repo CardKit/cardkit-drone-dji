@@ -41,7 +41,7 @@ class PanBetweenLocationsTests: BaseGimbalCardTests {
                 }
                 
                 // bind input and token slots
-                guard let droneTokenSlot = panBetweenLocations.actionCard.tokenSlots.slot(named: "DroneTelemetry"),
+                guard let droneTokenSlot = panBetweenLocations.actionCard.tokenSlots.slot(named: "Telemetry"),
                     let gimbalTokenSlot = panBetweenLocations.actionCard.tokenSlots.slot(named: "Gimbal"),
                     let inputStartLocationTokenSlot = panBetweenLocations.actionCard.inputSlots.slot(named: "StartLocation"),
                     let inputEndLocationTokenSlot = panBetweenLocations.actionCard.inputSlots.slot(named: "EndLocation")  else {
@@ -50,15 +50,15 @@ class PanBetweenLocationsTests: BaseGimbalCardTests {
                         return
                 }
                 
-                let inputBindings = [inputStartLocationTokenSlot: InputDataBinding.bound(startLocation.toJSON()),
-                                     inputEndLocationTokenSlot: InputDataBinding.bound(endLocation.toJSON())]
+                let inputBindings = [inputStartLocationTokenSlot: DataBinding.bound(startLocation.toJSON()),
+                                     inputEndLocationTokenSlot: DataBinding.bound(endLocation.toJSON())]
                 let tokenBindings = [droneTokenSlot: drone, gimbalTokenSlot: gimbal]
-                panBetweenLocations.setup(inputBindings, tokens: tokenBindings)
+                panBetweenLocations.setup(inputBindings: inputBindings, tokenBindings: tokenBindings)
                 
                 // execute
                 panBetweenLocations.main()
                 
-                if let djiError = panBetweenLocations.error {
+                if let djiError = panBetweenLocations.errors.first {
                     throw djiError
                 }
                 

@@ -16,7 +16,7 @@ import XCTest
 import DJISDK
 
 class BaseDroneTokenTests: DJIHardwareTokenTest {
-    var droneTelemetryTokenCard: TokenCard = DroneCardKit.Token.DroneTelemetry.makeCard()
+    var droneTelemetryTokenCard: TokenCard = DroneCardKit.Token.Telemetry.makeCard()
     var gimbalTokenCard: TokenCard = DroneCardKit.Token.Gimbal.makeCard()
     
     var gimbal: ExecutableTokenCard?

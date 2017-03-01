@@ -37,12 +37,12 @@ class PointAtFrontTests: BaseGimbalCardTests {
                 }
                 
                 let tokenBindings = [gimbalTokenSlot: gimbal]
-                pointAtFront.setup([:], tokens: tokenBindings)
+                pointAtFront.setup(inputBindings: [:], tokenBindings: tokenBindings)
                 
                 // execute
                 pointAtFront.main()
                 
-                if let djiError = pointAtFront.error {
+                if let djiError = pointAtFront.errors.first {
                     throw djiError
                 }
             } catch {

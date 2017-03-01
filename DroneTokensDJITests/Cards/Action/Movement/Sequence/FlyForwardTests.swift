@@ -58,14 +58,14 @@ class FlyForwardTests: BaseDroneTokenTests {
                         return
                 }
                 
-                let inputBindings: [InputSlot: InputDataBinding] = [distanceSlot: .bound(distance.toJSON())]
+                let inputBindings: [InputSlot: DataBinding] = [distanceSlot: .bound(distance.toJSON())]
                 let tokenBindings = [droneTokenSlot: drone]
-                flyForward.setup(inputBindings, tokens: tokenBindings)
+                flyForward.setup(inputBindings: inputBindings, tokenBindings: tokenBindings)
                 
                 // execute
                 flyForward.main()
                 
-                if let djiError = flyForward.error {
+                if let djiError = flyForward.errors.first {
                     throw djiError
                 }
             } catch {

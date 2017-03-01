@@ -47,14 +47,14 @@ class PointInDirectionTests: BaseGimbalCardTests {
                         return
                 }
                 
-                let inputBindings = [inputLocationTokenSlot: InputDataBinding.bound(cardinalDirection.toJSON())]
+                let inputBindings = [inputLocationTokenSlot: DataBinding.bound(cardinalDirection.toJSON())]
                 let tokenBindings = [droneTokenSlot: drone, gimbalTokenSlot: gimbal]
-                pointInDirection.setup(inputBindings, tokens: tokenBindings)
+                pointInDirection.setup(inputBindings: inputBindings, tokenBindings: tokenBindings)
                 
                 // execute
                 pointInDirection.main()
                 
-                if let djiError = pointInDirection.error {
+                if let djiError = pointInDirection.errors.first {
                     throw djiError
                 }
                 

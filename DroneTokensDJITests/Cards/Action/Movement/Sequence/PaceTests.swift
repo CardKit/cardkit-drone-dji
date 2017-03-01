@@ -68,7 +68,7 @@ class PaceTests: BaseDroneTokenTests {
                         return
                 }
                 
-                let inputBindings: [InputSlot: InputDataBinding] = [
+                let inputBindings: [InputSlot: DataBinding] = [
                     pathSlot: .bound(path.toJSON()),
                     speedSlot: .bound(speed.toJSON()),
                     durationSlot: .bound(duration.toJSON()),
@@ -76,12 +76,12 @@ class PaceTests: BaseDroneTokenTests {
                 ]
                 
                 let tokenBindings = [droneTokenSlot: drone]
-                paceCard.setup(inputBindings, tokens: tokenBindings)
+                paceCard.setup(inputBindings: inputBindings, tokenBindings: tokenBindings)
                 
                 // execute
                 paceCard.main()
                 
-                if let djiError = paceCard.error {
+                if let djiError = paceCard.errors.first {
                     throw djiError
                 }
             } catch {

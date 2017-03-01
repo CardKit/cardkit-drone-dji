@@ -50,14 +50,14 @@ class PointAtLocationTests: BaseGimbalCardTests {
                         return
                 }
                 
-                let inputBindings = [inputLocationTokenSlot: InputDataBinding.bound(locationToPointAt.toJSON())]
+                let inputBindings = [inputLocationTokenSlot: DataBinding.bound(locationToPointAt.toJSON())]
                 let tokenBindings = [droneTokenSlot: drone, gimbalTokenSlot: gimbal]
-                pointAtLocation.setup(inputBindings, tokens: tokenBindings)
+                pointAtLocation.setup(inputBindings: inputBindings, tokenBindings: tokenBindings)
                 
                 // execute
                 pointAtLocation.main()
                 
-                if let djiError = pointAtLocation.error {
+                if let djiError = pointAtLocation.errors.first {
                     throw djiError
                 }
             } catch {
