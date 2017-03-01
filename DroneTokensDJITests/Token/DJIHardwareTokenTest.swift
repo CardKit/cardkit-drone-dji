@@ -10,6 +10,7 @@ import XCTest
 import DJISDK
 import CardKit
 import DroneCardKit
+
 @testable import DroneTokensDJI
 
 class DJIHardwareTokenTest: XCTestCase, DJISDKManagerDelegate {
