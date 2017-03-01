@@ -21,6 +21,7 @@
 		687DC9DD1E578BFD000F7EBE /* FlyPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DC9DB1E578BE1000F7EBE /* FlyPathTests.swift */; };
 		687DC9E01E578C7B000F7EBE /* BaseDroneTokenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DC9DE1E578C53000F7EBE /* BaseDroneTokenTests.swift */; };
 		687DC9E41E5793B1000F7EBE /* PaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DC9E31E5793B1000F7EBE /* PaceTests.swift */; };
+		688D74DF1E5F90B7000D9FD4 /* FlyForwardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688D74DD1E5F901E000D9FD4 /* FlyForwardTests.swift */; };
 		688EA0611E424A85008559F8 /* DJIAttitudeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688EA0601E424A85008559F8 /* DJIAttitudeExtension.swift */; };
 		689498E81DF4C373007D765A /* DJISDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 689498E71DF4C373007D765A /* DJISDK.framework */; };
 		689498E91DF4C391007D765A /* CardKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B21DF4C251003F1DA5 /* CardKit.framework */; };
@@ -91,6 +92,7 @@
 		687DC9DB1E578BE1000F7EBE /* FlyPathTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlyPathTests.swift; sourceTree = "<group>"; };
 		687DC9DE1E578C53000F7EBE /* BaseDroneTokenTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseDroneTokenTests.swift; sourceTree = "<group>"; };
 		687DC9E31E5793B1000F7EBE /* PaceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaceTests.swift; sourceTree = "<group>"; };
+		688D74DD1E5F901E000D9FD4 /* FlyForwardTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlyForwardTests.swift; sourceTree = "<group>"; };
 		688EA0601E424A85008559F8 /* DJIAttitudeExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJIAttitudeExtension.swift; sourceTree = "<group>"; };
 		689498E71DF4C373007D765A /* DJISDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DJISDK.framework; path = Frameworks/DJISDK.framework; sourceTree = "<group>"; };
 		68A419791E4CC3C00065ABCB /* PointAtLocationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointAtLocationTests.swift; sourceTree = "<group>"; };
@@ -227,6 +229,7 @@
 		687DC9DA1E578BD3000F7EBE /* Sequence */ = {
 			isa = PBXGroup;
 			children = (
+				688D74DD1E5F901E000D9FD4 /* FlyForwardTests.swift */,
 				687DC9DB1E578BE1000F7EBE /* FlyPathTests.swift */,
 				687DC9E31E5793B1000F7EBE /* PaceTests.swift */,
 			);
@@ -554,6 +557,7 @@
 				687DC9E41E5793B1000F7EBE /* PaceTests.swift in Sources */,
 				68A4197B1E4CC4600065ABCB /* PointAtLocationTests.swift in Sources */,
 				687DC9DD1E578BFD000F7EBE /* FlyPathTests.swift in Sources */,
+				688D74DF1E5F90B7000D9FD4 /* FlyForwardTests.swift in Sources */,
 				687DC9CD1E563783000F7EBE /* PointInDirectionTests.swift in Sources */,
 				687DC9CB1E563260000F7EBE /* PointAtGroundTests.swift in Sources */,
 				687DC9C91E5629FD000F7EBE /* PointAtFrontTests.swift in Sources */,
