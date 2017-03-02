@@ -255,9 +255,9 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         try self.executeWaypointMission(mission: mission)
     }
     
-    public func circle(around center: DCKCoordinate2D, atRadius radius: DCKDistance, atAltitude altitude: DCKRelativeAltitude, atAngularSpeed angularSpeed: DCKAngularVelocity?, atClockwise isClockwise: DCKMovementDirection?, toCircleRepeatedly toRepeat: Bool) throws {
+    public func circle(around center: DCKCoordinate2D, atRadius radius: DCKDistance, atAltitude altitude: DCKRelativeAltitude, atAngularSpeed angularSpeed: DCKAngularVelocity?, direction: DCKRotationDirection?, repeatedly shouldRepeat: Bool) throws {
         
-        print ("drone to performing circle operation. Circle Repeatedly: \(toRepeat)")
+        print("drone to performing circle operation. Circle Repeatedly: \(shouldRepeat)")
         
         let hotPointMission: DJIHotPointMission = DJIHotPointMission()
         hotPointMission.hotPoint = CLLocationCoordinate2DMake(center.latitude, center.longitude)
@@ -271,10 +271,16 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
             hotPointMission.angularVelocity = Float (20.0)
         }
         
-        if let isClockwise = isClockwise {
-            hotPointMission.isClockwise = Bool (isClockwise.isClockwise)
-        } else {
-            hotPointMission.isClockwise = true
+        // default to clockwise
+        hotPointMission.isClockwise = true
+        
+        if let direction = direction {
+            switch direction {
+            case .clockwise:
+                hotPointMission.isClockwise = true
+            case .counterClockwise:
+                hotPointMission.isClockwise = false
+            }
         }
         
         hotPointMission.startPoint = DJIHotPointStartPoint.nearest
@@ -283,7 +289,7 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         // Distinguishing mission execution of 'Circle Repeatedly' and 'Circle'.
         // DJIHotpoint mission only allows 'Circle Repeatedly'.
         // To perform single revolution of 'Circle', manual cancelling of the DJIHotPoint mission is needed.
-        if toRepeat {
+        if shouldRepeat {
             try self.executeMission(mission: hotPointMission)
         } else {
             try self.executeHotPointMission(hotPointMission: hotPointMission, withRevolutionLimit: 1)
