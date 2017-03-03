@@ -338,12 +338,15 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
     }
     
     public func spinAround(toYawAngle yaw: DCKAngle, atAngularSpeed angularSpeed: DCKAngularVelocity?) throws {
-        print ("Drone spining around to change yaw angle to \(yaw) degrees at AngularSpeed: \(angularSpeed)")
+        print("Drone spining around to change yaw angle to \(yaw) degrees at AngularSpeed: \(angularSpeed)")
         
+        //Method #1 : Use DJIAircraftYawStep mission. (NOT WORKNG)
+        /* Receives Mission Finished with error:Error 
+            Domain=DJISDKMissionErrorDomain Code=-5036 "Mission is stopped by user.(code:-5036) error */
+        /*
         var missionSteps: [DJIMissionStep] = []
-        
         // default angular velocity to move the drone's yaw angle is 20 degree/s according to DJI SDK
-        var angSpeed: Double = 20.0
+        var angSpeed: Double = 1.0
         if let angSpeedUnwrapped = angularSpeed?.degreesPerSecond, angSpeedUnwrapped > 0, angSpeedUnwrapped < 100 {
             angSpeed = angSpeedUnwrapped
         }
@@ -355,26 +358,49 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
         missionSteps.append(aircraftYawStep)
         
         try self.executeMissionSteps(missionSteps: missionSteps)
+        */
         
-        /*
-         // Need to look in to this later to control yaw angle
-         let semaphore = DispatchSemaphore(value: 0)
-         
-         
-         let yawAngleInDegrees = 90
-         var ctrlData: DJIVirtualStickFlightControlData = DJIVirtualStickFlightControlData()
-         ctrlData.yaw = Float(yawAngleInDegrees)
-         
-         if let isVirtualStickAvailable = self.aircraft.flightController?.isVirtualStickControlModeAvailable(),
-         isVirtualStickAvailable == true {
-         self.aircraft.flightController?.send(ctrlData) { (djiError) in
-         spinAroundError = djiError
-         semaphore.signal()
-         }
-         }
-         
-         semaphore.wait()
-         */
+    
+        //Method #2: Use Virtual Stick to change the yaw angle
+        // NOTE: Does not work on Mavic Pro. Only works on Matrice, but not reliable. Often fails for unknown reason..
+        try DispatchQueue.executeSynchronously { self.aircraft.flightController?.enableVirtualStickControlMode(completion: $0) }
+        
+        self.aircraft.flightController?.yawControlMode = DJIVirtualStickYawControlMode.angle
+        guard let currentAttitude = self.currentAttitude else {
+            throw DroneTokenError.failureRetrievingDroneState
+        }
+        
+        let initial_yawAngle: Double = currentAttitude.yaw.degrees
+        print("Current yaw angle: \(initial_yawAngle)")
+        let expected_yawAngle: Double = (initial_yawAngle + yaw.degrees).truncatingRemainder(dividingBy: 360.0)
+       
+        var ctrlData: DJIVirtualStickFlightControlData = DJIVirtualStickFlightControlData()
+        ctrlData.yaw = Float(yaw.degrees)
+        
+        guard let isVirtualStickAvailable = self.aircraft.flightController?.isVirtualStickControlModeAvailable(),
+            isVirtualStickAvailable == true else {
+                throw DJIDroneTokenError.failedToInstantiateVirtualStickMode
+        }
+        
+        try DispatchQueue.executeSynchronously { self.aircraft.flightController?.send(ctrlData, withCompletion: $0) }
+        
+        // Wait for drone's yaw angle to change
+        // giving 5 degree (generous) freedom. sometimes spinned yaw angle is not exactly what you intended to be.
+        // it could be more/less than your expected yaw angle
+        var counter: Int = 0
+        while let currentYawAngle = self.currentAttitude?.yaw.degrees,
+            abs(expected_yawAngle - currentYawAngle) > 5.0 {
+                Thread.sleep(forTimeInterval: 2)
+                counter += 1
+                if counter == 5 {
+                    // Yaw angle did not get changed for unknown reason
+                    try DispatchQueue.executeSynchronously { self.aircraft.flightController?.disableVirtualStickControlMode(completion: $0) }
+                    throw DJIDroneTokenError.failedToPerformVirtualStickAction
+                }
+        }
+        
+        print("Drone's new yaw angle: \(self.currentAttitude?.yaw)")
+        try DispatchQueue.executeSynchronously { self.aircraft.flightController?.disableVirtualStickControlMode(completion: $0) }
     }
     
     // MARK: - Instance Methods
@@ -471,10 +497,10 @@ public class DJIDroneToken: ExecutableTokenCard, DroneToken {
                                 }
                                 isPrevSlopePositive = true
                             }
-                            
-                        } else {
-                            prevDistance = distance
                         }
+                        
+                        prevDistance = distance
+                        
                         print ("DJI Hot Point Mission status: Circling. Distance from Starting Point: \(distance)")
                         
                     }
@@ -543,6 +569,8 @@ public enum DJIDroneTokenError: Error {
     case failedToInstantiateWaypointStep
     case indeterminateCurrentState
     case anotherMissionCurrentlyExecuting
+    case failedToInstantiateVirtualStickMode
+    case failedToPerformVirtualStickAction
 }
 
 // MARK: - FlightControllerDelegate
