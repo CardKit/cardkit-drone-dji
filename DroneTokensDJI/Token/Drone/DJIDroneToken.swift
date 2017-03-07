@@ -35,7 +35,7 @@ import DJISDK
 
 
 // MARK: DJIDroneToken
-public class DJIDroneToken: ExecutableTokenCard, DroneToken {
+public class DJIDroneToken: ExecutableToken, DroneToken {
     private let sleepTimeInSeconds = 2.0 //in seconds
     private let aircraft: DJIAircraft
     private let flightControllerDelegate = FlightControllerDelegate()
@@ -548,7 +548,7 @@ public enum DJIDroneTokenError: Error {
 // MARK: - FlightControllerDelegate
 
 // DJIFlightControllerDelegates must inherit from NSObject. We can't make DJIDroneToken inherit from
-// NSObject since it inherits from ExecutableTokenCard (which isn't an NSObject), so we use a private
+// NSObject since it inherits from ExecutableToken (which isn't an NSObject), so we use a private
 // class for this instead.
 fileprivate class FlightControllerDelegate: NSObject, DJIFlightControllerDelegate {
     var currentState: DJIFlightControllerCurrentState?

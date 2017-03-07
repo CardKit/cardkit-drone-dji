@@ -19,8 +19,8 @@ class BaseGimbalCardTests: DJIHardwareTokenTest {
     var droneTelemetryTokenCard: TokenCard = DroneCardKit.Token.Telemetry.makeCard()
     var gimbalTokenCard: TokenCard = DroneCardKit.Token.Gimbal.makeCard()
     
-    var gimbal: ExecutableTokenCard?
-    var drone: ExecutableTokenCard?
+    var gimbal: ExecutableToken?
+    var drone: ExecutableToken?
     let expectationTimeout: TimeInterval = 1000
     
     override func setUp() {

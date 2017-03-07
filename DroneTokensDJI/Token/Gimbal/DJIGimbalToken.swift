@@ -14,7 +14,7 @@ import DroneCardKit
 
 import DJISDK
 
-public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
+public class DJIGimbalToken: ExecutableToken, GimbalToken {
     private let gimbal: DJIGimbal
     
     //swiftlint:disable:next weak_delegate
@@ -238,7 +238,7 @@ public class DJIGimbalToken: ExecutableTokenCard, GimbalToken {
 // MARK: - GimbalDelegate
 
 /// DJIFlightControllerDelegates must inherit from NSObject. We can't make DJIGimbalToken inherit from
-/// NSObject since it inherits from ExecutableTokenCard (which isn't an NSObject), so we use a private
+/// NSObject since it inherits from ExecutableToken (which isn't an NSObject), so we use a private
 /// class for this instead.
 fileprivate class GimbalDelegate: NSObject, DJIGimbalDelegate {
     var currentState: DJIGimbalState?
