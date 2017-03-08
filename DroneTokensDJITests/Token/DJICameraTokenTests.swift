@@ -20,7 +20,7 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
     //Sometimes camera is nil.  Keep trying until it isn't.
     
     let expectationTimeout: TimeInterval = 1000
-    var cameraExecutableTokenCard: DJICameraToken?
+    var cameraExecutableToken: DJICameraToken?
     let cameraOptions: Set<CameraPhotoOption> = [CameraPhotoOption.aspectRatio(.aspect_16x9), CameraPhotoOption.quality(.normal)]
     let videoOptions: Set<CameraVideoOption> = [CameraVideoOption.framerate(.framerate_50fps), CameraVideoOption.resolution(.resolution_720p)]
     
@@ -43,9 +43,9 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
         print("Camera Video Resolution and Frame Rate Range: \(DJICameraParameters.sharedInstance().supportedCameraVideoResolutionAndFrameRateRange())")        
         
         let cameraTokenCard = DroneCardKit.Token.Camera.makeCard()
-        self.cameraExecutableTokenCard = DJICameraToken(with: cameraTokenCard, for: camera)
+        self.cameraExecutableToken = DJICameraToken(with: cameraTokenCard, for: camera)
         
-        XCTAssertNotNil(self.cameraExecutableTokenCard, "Camera Executable Token Card could not be created.")
+        XCTAssertNotNil(self.cameraExecutableToken, "Camera Executable Token Card could not be created.")
         
     }
     
@@ -56,7 +56,7 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
         
         DispatchQueue.global(qos: .default).async {
             do {
-                try self.cameraExecutableTokenCard?.takePhoto(options: self.cameraOptions)
+                try self.cameraExecutableToken?.takePhoto(options: self.cameraOptions)
             } catch {
                 print("error taking photo \(error)")
                 XCTAssertNil(error, "Took Photo")
@@ -79,7 +79,7 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
         
         DispatchQueue.global(qos: .default).async {
             do {
-                try self.cameraExecutableTokenCard?.takeHDRPhoto(options: self.cameraOptions)
+                try self.cameraExecutableToken?.takeHDRPhoto(options: self.cameraOptions)
             } catch {
                 print("error taking HDR Photo \(error)")
                 XCTAssertNil(error, "Took HDR Photo")
@@ -102,7 +102,7 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
         
         DispatchQueue.global(qos: .default).async {
             do {
-                try self.cameraExecutableTokenCard?.takePhotoBurst(count: PhotoBurstCount.burst_3, options: self.cameraOptions)
+                try self.cameraExecutableToken?.takePhotoBurst(count: PhotoBurstCount.burst_3, options: self.cameraOptions)
             } catch {
                 XCTAssertNil(error, "Took Photo Burst")
             }
@@ -127,12 +127,12 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
         backgroundQueue.async {
             do {
                 print("start taking interval photos")
-                try self.cameraExecutableTokenCard?.startTakingPhotos(at: timeInterval, options: self.cameraOptions)
+                try self.cameraExecutableToken?.startTakingPhotos(at: timeInterval, options: self.cameraOptions)
                 
                 backgroundQueue.asyncAfter(deadline: duration, execute: { 
                     do {
                         print("stop taking photos")
-                        try self.cameraExecutableTokenCard?.stopTakingPhotos()
+                        try self.cameraExecutableToken?.stopTakingPhotos()
                         cameraExpectation.fulfill()
                     } catch {
                         XCTAssertNil(error, "Took Photo Series - stopped taking photos")
@@ -156,7 +156,7 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
         let cameraExpectation = expectation(description: "take timelapse")
         DispatchQueue.global(qos: .default).async {
             do {
-                try self.cameraExecutableTokenCard?.startTimelapse(options: self.cameraOptions)
+                try self.cameraExecutableToken?.startTimelapse(options: self.cameraOptions)
                 cameraExpectation.fulfill()
             } catch {
                 XCTAssertNil(error, "Timelapse - started")
@@ -178,12 +178,12 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
         backgroundQueue.async {
             do {
                 print("start recording")
-                try self.cameraExecutableTokenCard?.startVideo(options: self.videoOptions)
+                try self.cameraExecutableToken?.startVideo(options: self.videoOptions)
                 
                 backgroundQueue.asyncAfter(deadline: duration, execute: { 
                     do {
                         print("stop recording")
-                        try self.cameraExecutableTokenCard?.stopVideo()
+                        try self.cameraExecutableToken?.stopVideo()
                         cameraExpectation.fulfill()
                     } catch {
                         XCTAssertNil(error, "Took Video - stopped taking video")

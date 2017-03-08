@@ -16,7 +16,7 @@ import DJISDK
 
 // MARK: DJICameraToken
 
-public class DJICameraToken: ExecutableTokenCard {
+public class DJICameraToken: ExecutableToken {
     private let camera: DJICamera
     
     //swiftlint:disable:next weak_delegate
@@ -413,7 +413,7 @@ extension PhotoBurstCount {
 // MARK: - CameraDelegate
 
 // DJICameraDelegates must inherit from NSObject. We can't make DJICameraToken inherit from
-// NSObject since it inherits from ExecutableTokenCard (which isn't an NSObject), so we use a private
+// NSObject since it inherits from ExecutableToken (which isn't an NSObject), so we use a private
 // class for this instead.
 fileprivate class CameraDelegate: NSObject, DJICameraDelegate {
     var lensState: DJICameraLensState?
