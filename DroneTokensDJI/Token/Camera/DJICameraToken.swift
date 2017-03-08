@@ -150,7 +150,7 @@ extension DJICameraToken: CameraToken {
         return first
     }
     
-    public func takePhotoBurst(count: PhotoBurstCount, options: Set<CameraPhotoOption>) throws -> DCKPhotoBurst {
+    public func takePhotoBurst(count: DCKPhotoBurstCount, options: Set<CameraPhotoOption>) throws -> DCKPhotoBurst {
         let cameraMode: DJICameraMode = .shootPhoto
         let shootMode: DJICameraShootPhotoMode = .burst
         let aspectRatio: DJICameraPhotoAspectRatio? = options.djiAspectRatio
@@ -291,9 +291,9 @@ extension Sequence where Iterator.Element == CameraVideoOption {
     }
 }
 
-// MARK: - PhotoAspectRatio Extensions
+// MARK: - DCKPhotoAspectRatio Extensions
 
-extension PhotoAspectRatio {
+extension DCKPhotoAspectRatio {
     var djiAspectRatio: DJICameraPhotoAspectRatio {
         switch self {
         case .aspect_16x9:
@@ -306,9 +306,9 @@ extension PhotoAspectRatio {
     }
 }
 
-// MARK: - PhotoQuality Extensions
+// MARK: - DCKPhotoQuality Extensions
 
-extension PhotoQuality {
+extension DCKPhotoQuality {
     var djiQuality: DJICameraPhotoQuality {
         switch self {
         case .excellent:
@@ -321,9 +321,9 @@ extension PhotoQuality {
     }
 }
 
-// MARK: - VideoFrameRate Extensions
+// MARK: - DCKVideoFrameRate Extensions
 
-extension VideoFramerate {
+extension DCKVideoFramerate {
     var djiVideoFrameRate: DJICameraVideoFrameRate {
         switch self {
         case .framerate_23dot976fps:
@@ -356,9 +356,9 @@ extension VideoFramerate {
     }
 }
 
-// MARK: - VideoResolution Extensions
+// MARK: - DCKVideoResolution Extensions
 
-extension VideoResolution {
+extension DCKVideoResolution {
     var djiVideoResolution: DJICameraVideoResolution {
         switch self {
         case .resolution_640x480:
@@ -391,9 +391,9 @@ extension VideoResolution {
     }
 }
 
-// MARK: - PhotoBurstCount Extensions
+// MARK: - DCKPhotoBurstCount Extensions
 
-extension PhotoBurstCount {
+extension DCKPhotoBurstCount {
     var djiPhotoBurstCount: DJICameraPhotoBurstCount {
         switch self {
         case .burst_3:
