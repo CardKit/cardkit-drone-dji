@@ -6,9 +6,6 @@
 //  Copyright © 2016 IBM. All rights reserved.
 //
 
-// swiftlint:disable variable_name
-// swiftlint:disable weak_delegate
-
 import Foundation
 
 import CardKit
@@ -38,9 +35,12 @@ import DJISDK
 public class DJIDroneToken: ExecutableToken, DroneToken {
     private let sleepTimeInSeconds = 2.0 //in seconds
     private let aircraft: DJIAircraft
+    
+    // swiftlint:disable weak_delegate
     private let flightControllerDelegate = FlightControllerDelegate()
     private let missionManagerDelegate = MissionManagerDelegate()
     private let missionManager = DJIMissionManager.sharedInstance()
+    // swiftlint:enable weak_delegate
     
     // MARK: Computed Properties
     
@@ -395,6 +395,7 @@ public class DJIDroneToken: ExecutableToken, DroneToken {
         try self.executeMissionSteps(missionSteps: [step])
     }
     
+    // swiftlint:disable:next cyclomatic_complexity function_body_length
     private func executeHotPointMission(hotPointMission: DJIHotPointMission, withRevolutionLimit limit: Int) throws {
         print("Execute Hot Point Mission Sync withRevolutionLimit: \(limit)")
         

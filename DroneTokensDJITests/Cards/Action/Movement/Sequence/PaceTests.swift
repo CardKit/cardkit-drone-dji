@@ -18,6 +18,8 @@ import XCTest
 import DJISDK
 
 class PaceTests: BaseDroneTokenTests {
+    
+    // swiftlint:disable:next function_body_length
     func testPaceCard() {
         let myExpectation = expectation(description: "testPaceCard expectation")
         
