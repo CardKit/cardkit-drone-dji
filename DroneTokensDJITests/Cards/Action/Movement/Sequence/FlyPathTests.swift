@@ -16,6 +16,8 @@ import XCTest
 import DJISDK
 
 class FlyPathTests: BaseDroneTokenTests {
+    
+    // swiftlint:disable:next function_body_length
     func testFlyPathCard() {
         let myExpectation = expectation(description: "testFlyPathCard expectation")
         

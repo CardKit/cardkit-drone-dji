@@ -19,7 +19,7 @@ import DJISDK
 public class DJICameraToken: ExecutableToken {
     private let camera: DJICamera
     
-    //swiftlint:disable:next weak_delegate
+    // swiftlint:disable:next weak_delegate
     fileprivate let cameraDelegate: CameraDelegate = CameraDelegate()
     
     public init(with card: TokenCard, for camera: DJICamera) {
@@ -32,7 +32,7 @@ public class DJICameraToken: ExecutableToken {
         try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: nil, burstCount: nil, aspectRatio: aspectRatio, quality: quality)
     }
     
-    //swiftlint:disable:next function_parameter_count function_body_length
+    // swiftlint:disable:next function_parameter_count function_body_length
     func takePhoto(cameraMode: DJICameraMode, shootMode: DJICameraShootPhotoMode, interval: DJICameraPhotoIntervalParam?, burstCount: DJICameraPhotoBurstCount?, aspectRatio: DJICameraPhotoAspectRatio?, quality: DJICameraPhotoQuality?) throws {
         
         do {
