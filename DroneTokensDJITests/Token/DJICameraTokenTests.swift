@@ -102,7 +102,7 @@ class DJICameraTokenTests: DJIHardwareTokenTest {
         
         DispatchQueue.global(qos: .default).async {
             do {
-                try self.cameraExecutableToken?.takePhotoBurst(count: PhotoBurstCount.burst_3, options: self.cameraOptions)
+                try self.cameraExecutableToken?.takePhotoBurst(count: DCKPhotoBurstCount.burst_3, options: self.cameraOptions)
             } catch {
                 XCTAssertNil(error, "Took Photo Burst")
             }

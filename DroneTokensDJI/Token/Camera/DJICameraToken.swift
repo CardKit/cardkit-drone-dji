@@ -156,17 +156,17 @@ extension DJICameraToken: CameraToken {
         let aspectRatio: DJICameraPhotoAspectRatio? = options.djiAspectRatio
         let quality: DJICameraPhotoQuality? = options.djiQuality
         
-        let unsignedCount: UInt = UInt(count.rawValue)
+        let unsignedCount: UInt = UInt(count.numericalValue)
         
         guard let photoBurstCount: DJICameraPhotoBurstCount = DJICameraPhotoBurstCount(rawValue: unsignedCount) else {
-            throw DJICameraTokenError.invalidPhotoBurstCountSpecified(count.rawValue)
+            throw DJICameraTokenError.invalidPhotoBurstCountSpecified(count.numericalValue)
         }
         
         // take the photo
         try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: nil, burstCount: photoBurstCount, aspectRatio: aspectRatio, quality: quality)
         
         // wait for the photos to appear and download them
-        let photos: [DCKPhoto] = self.cameraDelegate.waitForAndDownloadPhotos(count: count.rawValue)
+        let photos: [DCKPhoto] = self.cameraDelegate.waitForAndDownloadPhotos(count: count.numericalValue)
         let burst = DCKPhotoBurst(photos: photos)
         return burst
     }
