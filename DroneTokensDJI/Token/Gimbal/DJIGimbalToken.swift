@@ -34,7 +34,7 @@ public class DJIGimbalToken: ExecutableToken, GimbalToken {
         yawRange = GimbalRotationRange(axisEnabled: false, min: 0, max: 0)
         
         // figure out the [min, max] range of the gimbal's motion for each axis
-        for (key, val) in self.gimbal.gimbalCapability {
+        for (key, val) in self.gimbal.capabilities {
             guard let strKey = key as? String else { break }
             switch strKey {
             case "AdjustPitch":

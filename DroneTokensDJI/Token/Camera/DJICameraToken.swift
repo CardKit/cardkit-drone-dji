@@ -296,11 +296,11 @@ extension Sequence where Iterator.Element == CameraVideoOption {
 extension DCKPhotoAspectRatio {
     var djiAspectRatio: DJICameraPhotoAspectRatio {
         switch self {
-        case .aspect_16x9:
+        case .aspect16x9:
             return .ratio16_9
-        case .aspect_3x2:
+        case .aspect3x2:
             return .ratio3_2
-        case .aspect_4x3:
+        case .aspect4x3:
             return .ratio4_3
         }
     }
@@ -326,29 +326,29 @@ extension DCKPhotoQuality {
 extension DCKVideoFramerate {
     var djiVideoFrameRate: DJICameraVideoFrameRate {
         switch self {
-        case .framerate_23dot976fps:
+        case .framerate23dot976fps:
             return .rate23dot976FPS
-        case .framerate_24fps:
+        case .framerate24fps:
             return .rate24FPS
-        case .framerate_25fps:
+        case .framerate25fps:
             return .rate25FPS
-        case .framerate_29dot970fps:
+        case .framerate29dot970fps:
             return .rate29dot970FPS
-        case .framerate_30fps:
+        case .framerate30fps:
             return .rate29dot970FPS
-        case .framerate_47dot950fps:
+        case .framerate47dot950fps:
             return .rate47dot950FPS
-        case .framerate_48fps:
+        case .framerate48fps:
             return .rate47dot950FPS
-        case .framerate_50fps:
+        case .framerate50fps:
             return .rate50FPS
-        case .framerate_59dot940fps:
+        case .framerate59dot940fps:
             return .rate59dot940FPS
-        case .framerate_60fps:
+        case .framerate60fps:
             return .rate59dot940FPS
-        case .framerate_96fps:
+        case .framerate96fps:
             return .rate96FPS
-        case .framerate_120fps:
+        case .framerate120fps:
             return .rate120FPS
         case .unknown:
             return .rateUnknown
@@ -361,28 +361,28 @@ extension DCKVideoFramerate {
 extension DCKVideoResolution {
     var djiVideoResolution: DJICameraVideoResolution {
         switch self {
-        case .resolution_640x480:
+        case .resolution640x480:
             return .resolution640x480
-        case .resolution_640x512:
+        case .resolution640x512:
             return .resolution640x512
-        case .resolution_720p:
+        case .resolution720p:
             return .resolution1280x720
-        case .resolution_1080p:
+        case .resolution1080p:
             return .resolution1920x1080
-        case .resolution_2704x1520:
+        case .resolution2704x1520:
             return .resolution2704x1520
-        case .resolution_2720x1530:
+        case .resolution2720x1530:
             return .resolution2720x1530
-        case .resolution_3840x1572:
+        case .resolution3840x1572:
             return .resolution3840x1572
-        case .resolution_4k:
+        case .resolution4k:
             return .resolution3840x2160
-        case .resolution_4096x2160:
+        case .resolution4096x2160:
             return .resolution4096x2160
-        case .resolution_5280x2160:
+        case .resolution5280x2160:
             return .resolution5280x2160
         case .max:
-            return .resolutionMaxResolution
+            return .resolutionMax
         case .noSSDVideo:
             return .resolutionNoSSDVideo
         case .unknown:
@@ -396,15 +396,15 @@ extension DCKVideoResolution {
 extension DCKPhotoBurstCount {
     var djiPhotoBurstCount: DJICameraPhotoBurstCount {
         switch self {
-        case .burst_3:
+        case .burst3:
             return .count3
-        case .burst_5:
+        case .burst5:
             return .count5
-        case .burst_7:
+        case .burst7:
             return .count7
-        case .burst_10:
+        case .burst10:
             return .count10
-        case .burst_14:
+        case .burst14:
             return .count14
         }
     }

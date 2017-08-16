@@ -12,7 +12,6 @@
 		685338B71DF4C251003F1DA5 /* CardKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B21DF4C251003F1DA5 /* CardKit.framework */; };
 		685338B81DF4C251003F1DA5 /* CardKitRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */; };
 		685338B91DF4C251003F1DA5 /* DroneCardKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B41DF4C251003F1DA5 /* DroneCardKit.framework */; };
-		685338BA1DF4C251003F1DA5 /* Freddy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B51DF4C251003F1DA5 /* Freddy.framework */; };
 		687DC9C81E5629EE000F7EBE /* BaseGimbalCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DC9C61E5629D7000F7EBE /* BaseGimbalCardTests.swift */; };
 		687DC9C91E5629FD000F7EBE /* PointAtFrontTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DC9C41E56283F000F7EBE /* PointAtFrontTests.swift */; };
 		687DC9CB1E563260000F7EBE /* PointAtGroundTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DC9CA1E563260000F7EBE /* PointAtGroundTests.swift */; };
@@ -116,11 +115,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				689498E81DF4C373007D765A /* DJISDK.framework in Frameworks */,
-				685338BA1DF4C251003F1DA5 /* Freddy.framework in Frameworks */,
 				685338B71DF4C251003F1DA5 /* CardKit.framework in Frameworks */,
 				685338B81DF4C251003F1DA5 /* CardKitRuntime.framework in Frameworks */,
 				685338B91DF4C251003F1DA5 /* DroneCardKit.framework in Frameworks */,
+				689498E81DF4C373007D765A /* DJISDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,13 +339,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 685338AB1DF4C219003F1DA5 /* Build configuration list for PBXNativeTarget "DroneTokensDJI iOS" */;
 			buildPhases = (
-				CCF8A6031DFF00EF00BDCEE7 /* ShellScript */,
+				CCF8A6031DFF00EF00BDCEE7 /* Fetch DJI SDK */,
 				685338921DF4C219003F1DA5 /* Sources */,
 				685338931DF4C219003F1DA5 /* Frameworks */,
 				685338941DF4C219003F1DA5 /* Headers */,
 				685338951DF4C219003F1DA5 /* Resources */,
-				CCF8A6021DFEFFF700BDCEE7 /* ShellScript */,
-				685338BC1DF4C25A003F1DA5 /* ShellScript */,
+				CCF8A6021DFEFFF700BDCEE7 /* Swiftlint */,
+				685338BC1DF4C25A003F1DA5 /* Carthage */,
 			);
 			buildRules = (
 			);
@@ -403,7 +401,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0820;
-				LastUpgradeCheck = 0820;
+				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = IBM;
 				TargetAttributes = {
 					685338961DF4C219003F1DA5 = {
@@ -472,17 +470,17 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		685338BC1DF4C25A003F1DA5 /* ShellScript */ = {
+		685338BC1DF4C25A003F1DA5 /* Carthage */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/Freddy.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/CardKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/CardKitRuntime.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/DroneCardKit.framework",
 			);
+			name = Carthage;
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -506,26 +504,28 @@
 			shellPath = /bin/sh;
 			shellScript = "/usr/local/bin/carthage copy-frameworks";
 		};
-		CCF8A6021DFEFFF700BDCEE7 /* ShellScript */ = {
+		CCF8A6021DFEFFF700BDCEE7 /* Swiftlint */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = Swiftlint;
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export PATH=\"/usr/local/bin:$PATH\"\nif which swiftlint >/dev/null; then\nswiftlint\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi";
 		};
-		CCF8A6031DFF00EF00BDCEE7 /* ShellScript */ = {
+		CCF8A6031DFF00EF00BDCEE7 /* Fetch DJI SDK */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Fetch DJI SDK";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -621,7 +621,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -629,7 +631,11 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
@@ -675,7 +681,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -683,7 +691,11 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
