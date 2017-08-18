@@ -11,10 +11,9 @@ import Foundation
 import DJISDK
 
 extension DJIAttitude {
+    /// Normalizes the attitude (yaw, pitch, roll) from a range of [-180, 180] to the range [0, 360].
+    /// A yaw, pitch, and roll of (0, 0, 0) corresponds to an aircraft hovering level oriented toward True North.
     func normalized() -> DJIAttitude {
-        // From DJI Documentation
-        // Attitude of the aircraft where the pitch, roll, and yaw values will be in the range of [-180, 180]. If the values of the pitch, roll, and yaw are 0, the aircraft will be hovering level with a True North heading.
-        
         let normalizedYaw = (yaw + 360).truncatingRemainder(dividingBy: 360)
         let normalizedPitch = (pitch + 360).truncatingRemainder(dividingBy: 360)
         let normalizedRoll = (roll + 360).truncatingRemainder(dividingBy: 360)

@@ -96,8 +96,8 @@ public class DJIGimbalToken: ExecutableToken, GimbalToken {
         try self.rotate(yaw: zero, pitch: zero, roll: zero, relativeToDrone: false, withinTimeInSeconds: 1)
     }
     
-    public func rotate(yaw: DCKAngle?, pitch: DCKAngle?, roll: DCKAngle?, relativeAngle: Bool, withinTimeInSeconds duration: Double?) throws {
-        let rotationMode: DJIGimbalRotationMode = relativeAngle ? .relativeAngle : .absoluteAngle
+    public func rotate(yaw: DCKAngle?, pitch: DCKAngle?, roll: DCKAngle?, relative: Bool, withinTimeInSeconds duration: Double?) throws {
+        let rotationMode: DJIGimbalRotationMode = relative ? .relativeAngle : .absoluteAngle
         let duration = duration ?? 0.1
         let rotation = DJIGimbalRotation(pitchValue: pitch?.asNumber, rollValue: roll?.asNumber, yawValue: yaw?.asNumber, time: duration, mode: rotationMode)
         try DispatchQueue.executeSynchronously { self.gimbal.rotate(with: rotation, completion: $0) }
@@ -147,6 +147,7 @@ public class DJIGimbalToken: ExecutableToken, GimbalToken {
 /// DJIFlightControllerDelegates must inherit from NSObject. We can't make DJIGimbalToken inherit from
 /// NSObject since it inherits from ExecutableToken (which isn't an NSObject), so we use a private
 /// class for this instead.
+// swiftlint:disable:next private_over_fileprivate
 fileprivate class GimbalDelegate: NSObject, DJIGimbalDelegate {
     var currentState: DJIGimbalState?
     var currentSettings: DJIGimbalMovementSettings?
@@ -188,6 +189,7 @@ extension GimbalOrientation {
 
 // MARK: - GimbalRotationRange
 
+// swiftlint:disable:next private_over_fileprivate
 fileprivate struct GimbalRotationRange {
     var axisEnabled: Bool
     var min: Double

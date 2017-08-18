@@ -14,82 +14,48 @@ import DroneCardKit
 
 import DJISDK
 
-// swiftlint complains that the FlightControllerDelegate and MissionManagerDelegate should be weak to avoid reference cycles
-// However, I feel that this is not necessary with the way we are handing delegates in this class..
-
-// We need to hold a strong reference to [MissionManagerDelegate] as [DJIMissionManager] is most likely holding a weak reference to [MissionManagerDelegate].
-// [MissionManagerDelegate] stays in memory until [DJIDroneToken] gets deallocated. If we held a weak reference to [MissionManagerDelegate], then
-// there is nothing stopping ARC from deallocating [MissionManagerDelegate].
-//
-//  Example: (single line indicates weak reference, double line indicates strong reference)
-//
-//    [MissionManagerDelegate]  <------  [DJIMissionManager]
-//                    /\                    /\
-//                    \\                   //
-//                     \\                 //
-//                      \\               //
-//                        [DJIDroneToken]
-
-
 // MARK: DJIDroneToken
+
 public class DJIDroneToken: ExecutableToken, DroneToken {
-    private let sleepTimeInSeconds = 2.0 //in seconds
+    private let sleepTimeInSeconds = 1.0
     private let aircraft: DJIAircraft
     
-    // swiftlint:disable weak_delegate
+    // swiftlint:disable:next weak_delegate
     private let flightControllerDelegate = FlightControllerDelegate()
-    private let missionManagerDelegate = MissionManagerDelegate()
-    private let missionManager = DJIMissionManager.sharedInstance()
-    // swiftlint:enable weak_delegate
     
     // MARK: Computed Properties
     
     public var homeLocation: DCKCoordinate2D? {
-        guard let coordinates = self.flightControllerDelegate.currentState?.homeLocation else {
-            return nil
-        }
-        
-        return DCKCoordinate2D(latitude: coordinates.latitude, longitude: coordinates.longitude)
+        guard let location: CLLocation = self.flightControllerDelegate.state?.homeLocation else { return nil }
+        return DCKCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
     }
     
     public var currentLocation: DCKCoordinate2D? {
-        guard let location = flightControllerDelegate.currentState?.aircraftLocation else {
-            return nil
-        }
-        
-        return DCKCoordinate2D(latitude: location.latitude, longitude: location.longitude)
+        guard let location: CLLocation = self.flightControllerDelegate.state?.aircraftLocation else { return nil }
+        return DCKCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
     }
     
     public var currentAltitude: DCKRelativeAltitude? {
-        guard let altitude = flightControllerDelegate.currentState?.altitude else {
-            return nil
-        }
-        
-        return DCKRelativeAltitude(metersAboveGroundAtTakeoff: Double(altitude))
+        guard let altitude: Double = self.flightControllerDelegate.state?.altitude else { return nil }
+        return DCKRelativeAltitude(metersAboveGroundAtTakeoff: altitude)
     }
     
     public var currentAttitude: DCKAttitude? {
-        guard let attitude = flightControllerDelegate.currentState?.attitude else {
-            return nil
-        }
-        
-        // jw: I think I disagree with normalizing this here, I thought the normalization
-        // discussion we had was about the gimbal because different gimbals have different
-        // ranges of motion.
-        let normalizedAttitude = attitude.normalized()
-        return DCKAttitude(yaw: DCKAngle(degrees: normalizedAttitude.yaw), pitch: DCKAngle(degrees: normalizedAttitude.pitch), roll: DCKAngle(degrees: normalizedAttitude.roll))
+        guard let attitude: DJIAttitude = flightControllerDelegate.state?.attitude else { return nil }
+        return DCKAttitude(yaw: DCKAngle(degrees: attitude.yaw), pitch: DCKAngle(degrees: attitude.pitch), roll: DCKAngle(degrees: attitude.roll))
     }
     
-    public var areMotorsOn: Bool? {
-        return flightControllerDelegate.currentState?.areMotorsOn
+    public var areMotorsOn: Bool {
+        return self.flightControllerDelegate.state?.areMotorsOn ?? false
     }
     
-    public var isLandingGearDown: Bool? {
-        guard let landingGear = self.aircraft.flightController?.landingGear else {
-            return false
-        }
-        
-        return landingGear.status == .deployed
+    public var isFlying: Bool {
+        return self.flightControllerDelegate.state?.isFlying ?? false
+    }
+    
+    public var isLandingGearDown: Bool {
+        guard let landingGear: DJILandingGear = self.aircraft.flightController?.landingGear else { return false }
+        return landingGear.state == .deployed
     }
     
     // MARK: Init
@@ -97,13 +63,13 @@ public class DJIDroneToken: ExecutableToken, DroneToken {
     public init(with card: TokenCard, for aircraft: DJIAircraft) {
         self.aircraft = aircraft
         self.aircraft.flightController?.delegate = self.flightControllerDelegate
-        missionManager?.delegate = missionManagerDelegate
         super.init(with: card)
     }
     
     // MARK: DroneToken
     
     public func spinMotors(on: Bool) throws {
+        print("spin motors: \(on)")
         if on {
             try DispatchQueue.executeSynchronously { self.aircraft.flightController?.turnOnMotors(completion: $0) }
         } else {
@@ -112,468 +78,290 @@ public class DJIDroneToken: ExecutableToken, DroneToken {
     }
     
     public func takeOff(at altitude: DCKRelativeAltitude?) throws {
-        print("drone taking off and climbing to altitude \(altitude)")
+        print("drone taking off and climbing to altitude \(String(describing: altitude))")
         
-        var missionSteps: [DJIMissionStep] = []
+        var mission: [DJIMissionAction] = []
         
-        let takeOffStep = DJITakeoffStep()
-        missionSteps.append(takeOffStep)
+        let takeOff = DJITakeOffAction()
+        mission.append(takeOff)
         
-        if let desiredAltitude = altitude?.metersAboveGroundAtTakeoff {
-            
-            guard let altitudeStep = DJIGoToStep(altitude: Float(desiredAltitude)) else {
-                throw DJIDroneTokenError.failedToInstantiateCustomMission
+        if let altitude = altitude?.metersAboveGroundAtTakeoff {
+            guard let climbToAltitude = DJIGoToAction(altitude: altitude) else {
+                throw DJIDroneTokenError.failedToCreateMissionAction
             }
             
-            missionSteps.append(altitudeStep)
+            mission.append(climbToAltitude)
         }
         
-        try self.executeMissionSteps(missionSteps: missionSteps)
+        try self.executeMission(mission)
     }
     
-    public func hover(at altitude: DCKRelativeAltitude?, withYaw yaw: DCKAngle?) throws {
-        print("drone hovering at altitude: \(altitude), withYaw: \(yaw)")
+    public func hover(at altitude: DCKRelativeAltitude?) throws {
+        print("drone hovering at altitude: \(String(describing: altitude))")
         
-        // stop all current missions
-        // we have to check if we are currently executing a mission before we stop it, or this occurs:
+        var mission: [DJIMissionAction] = []
         
-        // (Error Domain=DJISDKMissionErrorDomain Code=-5016 "Aircraft is not running a mission or current
-        // mission object in mission manager is empty.(code:-5016)" UserInfo={NSLocalizedDescription=Aircraft
-        // is not running a mission or current mission object in mission manager is empty.(code:-5016)})
-        if self.missionManager?.currentExecutingMission() != nil {
-            try DispatchQueue.executeSynchronously { self.missionManager?.stopMissionExecution(completion: $0) }
+        if let altitude = altitude {
+            guard let climbToAltitude = DJIGoToAction(altitude: altitude.metersAboveGroundAtTakeoff) else {
+                throw DJIDroneTokenError.failedToCreateMissionAction
+            }
+            mission.append(climbToAltitude)
         }
         
-        try self.takeOff(at: altitude)
-        
-        // change yaw (if specified)
-        // NOTE: WILL NEED TO LOOK AT THIS
-        //this method of controlling yaw does not work
-        // it "freezes" the drone and does not allow for other commands to be sent (e.g. land)
-        //            if error == nil { //, let yawAngleInDegrees = yaw?.degrees {
-        //                let yawAngleInDegrees = 90
-        //                var ctrlData: DJIVirtualStickFlightControlData = DJIVirtualStickFlightControlData()
-        //                ctrlData.yaw = Float(yawAngleInDegrees)
-        //
-        //                if let isVirtualStickAvailable = self.aircraft.flightController?.isVirtualStickControlModeAvailable(),
-        //                    isVirtualStickAvailable == true {
-        //                    self.aircraft.flightController?.send(ctrlData) { (djiError) in
-        //                        error = djiError
-        //                        semaphore.signal()
-        //                    }
-        //                }
-        //
-        //                semaphore.wait()
-        //            }
+        try self.executeMission(mission)
     }
     
-    public func fly(to coordinate: DCKCoordinate2D, atYaw yaw: DCKAngle?, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?) throws {
-        print("drone fly to coordinate: [\(coordinate)] atAltitude: \(altitude) atSpeed: \(speed)")
+    public func orient(to yaw: DCKAngle) throws {
+        print("drone orienting to yaw: \(yaw)")
         
-        if yaw != nil {
-            try self.hover(withYaw: yaw)
+        var mission: [DJIMissionAction] = []
+        
+        guard let rotateToYaw = DJIAircraftYawAction(relativeAngle: yaw.degrees, andAngularVelocity: Defaults.angularVelocity) else {
+            throw DJIDroneTokenError.failedToCreateMissionAction
         }
         
-        let coord: CLLocationCoordinate2D = CLLocationCoordinate2DMake(coordinate.latitude, coordinate.longitude)
+        mission.append(rotateToYaw)
         
-        var missionSteps: [DJIMissionStep] = []
+        try self.executeMission(mission)
+    }
+    
+    public func fly(to coordinate: DCKCoordinate2D, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?) throws {
+        print("drone fly to coordinate: [\(coordinate)] atAltitude: \(String(describing: altitude)) atSpeed: \(String(describing: speed))")
         
-        if let altitudeInMeters = altitude?.metersAboveGroundAtTakeoff,
-            let altitudeStep = DJIGoToStep(altitude: Float(altitudeInMeters)) {
-            missionSteps.append(altitudeStep)
+        var mission: [DJIMissionAction] = []
+        
+        let location: CLLocationCoordinate2D = CLLocationCoordinate2DMake(coordinate.latitude, coordinate.longitude)
+        
+        var goToLocation: DJIGoToAction? = nil
+        
+        if let altitude = altitude {
+            goToLocation = DJIGoToAction(coordinate: location, altitude: altitude.metersAboveGroundAtTakeoff)
         } else {
-            if let currentAltitude: DCKRelativeAltitude = self.currentAltitude,
-                let altitudeStep = DJIGoToStep(altitude: Float(currentAltitude.metersAboveGroundAtTakeoff)) {
-                missionSteps.append(altitudeStep)
-            }
+            goToLocation = DJIGoToAction(coordinate: location)
         }
         
-        guard let flyStep = DJIGoToStep(coordinate: coord) else {
-            throw DJIDroneTokenError.failedToInstantiateCustomMission
+        if let speed = speed {
+            goToLocation?.flightSpeed = Float(speed.metersPerSecond)
         }
         
-        if let speedInMetersPerSecond = speed?.metersPerSecond, speedInMetersPerSecond > 0 {
-            flyStep.flightSpeed = Float(speedInMetersPerSecond)
+        if let goToLocation = goToLocation {
+            mission.append(goToLocation)
+        } else {
+            throw DJIDroneTokenError.failedToCreateMissionAction
         }
-        missionSteps.append(flyStep)
         
-        try self.executeMissionSteps(missionSteps: missionSteps)
+        try self.executeMission(mission)
     }
     
-
     public func fly(on path: DCKCoordinate2DPath, atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?) throws {
-      
-        var altitudeInMeters: Double?
+        print("drone fly on path: [\(path)] atAltitude: \(String(describing: altitude)) atSpeed: \(String(describing: speed))")
         
-        // if altitude was not passed, use current altitude
-        if let userSetAltitude = altitude {
-            altitudeInMeters = userSetAltitude.metersAboveGroundAtTakeoff
-        } else {
-            guard let currentAltitude = self.flightControllerDelegate.currentState?.altitude else {
-                throw DJIDroneTokenError.indeterminateCurrentState
-            }
-            altitudeInMeters = Double(currentAltitude)
-        }
-        
-        if let altitudeInMeters = altitudeInMeters {
-            let coordinate3DPath = path.path.map { (coordinate2d) -> DCKCoordinate3D in
-                DCKCoordinate3D(latitude: coordinate2d.latitude, longitude: coordinate2d.longitude, altitude: DCKRelativeAltitude(metersAboveGroundAtTakeoff: altitudeInMeters))
-            }
-            try self.fly(on: DCKCoordinate3DPath(path: coordinate3DPath), atSpeed: speed)
-        }
-    }
-    
-    
-    public func fly(on path: DCKCoordinate3DPath, atSpeed speed: DCKSpeed?) throws {
-        print("drone flying on path: [\(path)] at current altitude at speed \(speed)")
-        
-        let mission = DJIWaypointMission()
-        mission.finishedAction = .noAction
-        mission.headingMode = .auto
-        mission.flightPathMode = .normal
-        
-        if let speedInMetersPerSecond = speed?.metersPerSecond, speedInMetersPerSecond > 0 {
-            mission.autoFlightSpeed = Float(speedInMetersPerSecond)
-        }
-        
-        if let latitude = self.currentLocation?.latitude, let longitude =  self.currentLocation?.longitude {
-            let homeCoordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-            mission.add(DJIWaypoint(coordinate: homeCoordinate))
-        }
+        var mission: [DJIMissionAction] = []
         
         for coordinate in path.path {
-            // create a waypoint to each destination
-            let c = CLLocationCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude)
-            let waypoint = DJIWaypoint(coordinate: c)
-            waypoint.altitude = Float(coordinate.altitude.metersAboveGroundAtTakeoff)
+            let location: CLLocationCoordinate2D = CLLocationCoordinate2DMake(coordinate.latitude, coordinate.longitude)
+            var goToLocation: DJIGoToAction? = nil
             
-            // add it to the mission
-            mission.add(waypoint)
-        }
-        
-        // execute it
-        try self.executeWaypointMission(mission: mission)
-    }
-    
-    public func circle(around center: DCKCoordinate2D, atRadius radius: DCKDistance, atAltitude altitude: DCKRelativeAltitude, atAngularSpeed angularSpeed: DCKAngularVelocity?, direction: DCKRotationDirection?, repeatedly shouldRepeat: Bool) throws {
-        
-        print("drone to performing circle operation. Circle Repeatedly: \(shouldRepeat)")
-        
-        let hotPointMission: DJIHotPointMission = DJIHotPointMission()
-        hotPointMission.hotPoint = CLLocationCoordinate2DMake(center.latitude, center.longitude)
-        hotPointMission.radius = Float(radius.meters)
-        hotPointMission.altitude = Float(altitude.metersAboveGroundAtTakeoff)
-        
-        if let angSpeed = angularSpeed {
-            hotPointMission.angularVelocity = Float(angSpeed.degreesPerSecond)
-        } else {
-            // setting default angularVelocity to 20 degrees/sec
-            hotPointMission.angularVelocity = Float (20.0)
-        }
-        
-        // default to clockwise
-        hotPointMission.isClockwise = true
-        
-        if let direction = direction {
-            switch direction {
-            case .clockwise:
-                hotPointMission.isClockwise = true
-            case .counterClockwise:
-                hotPointMission.isClockwise = false
+            if let altitude = altitude {
+                goToLocation = DJIGoToAction(coordinate: location, altitude: altitude.metersAboveGroundAtTakeoff)
+            } else {
+                goToLocation = DJIGoToAction(coordinate: location)
+            }
+            
+            if let speed = speed {
+                goToLocation?.flightSpeed = Float(speed.metersPerSecond)
+            }
+            
+            if let goToLocation = goToLocation {
+                mission.append(goToLocation)
+            } else {
+                throw DJIDroneTokenError.failedToCreateMissionAction
             }
         }
         
-        hotPointMission.startPoint = DJIHotPointStartPoint.nearest
-        hotPointMission.heading = DJIHotPointHeading.towardHotPoint
+        try self.executeMission(mission)
+    }
+    
+    public func fly(on path: DCKCoordinate3DPath, atSpeed speed: DCKSpeed?) throws {
+        print("drone flying on path: [\(path)] at current altitude at speed \(String(describing: speed))")
         
-        // Distinguishing mission execution of 'Circle Repeatedly' and 'Circle'.
-        // DJIHotpoint mission only allows 'Circle Repeatedly'.
-        // To perform single revolution of 'Circle', manual cancelling of the DJIHotPoint mission is needed.
-        if shouldRepeat {
-            try self.executeMission(mission: hotPointMission)
-        } else {
-            try self.executeHotPointMission(hotPointMission: hotPointMission, withRevolutionLimit: 1)
+        var mission: [DJIMissionAction] = []
+        
+        for coordinate in path.path {
+            let location: CLLocationCoordinate2D = CLLocationCoordinate2DMake(coordinate.latitude, coordinate.longitude)
+            guard let goToLocation = DJIGoToAction(coordinate: location, altitude: coordinate.altitude.metersAboveGroundAtTakeoff) else {
+                throw DJIDroneTokenError.failedToCreateMissionAction
+            }
+            
+            if let speed = speed {
+                goToLocation.flightSpeed = Float(speed.metersPerSecond)
+            }
+            
+            mission.append(goToLocation)
         }
+        
+        try self.executeMission(mission)
+    }
+    
+    public func circle(around center: DCKCoordinate2D, atRadius radius: DCKDistance, atAltitude altitude: DCKRelativeAltitude?, atAngularVelocity angularVelocity: DCKAngularVelocity?) throws {
+        print("drone flying in circle around \(center) at radius \(radius) at altitude \(String(describing: altitude)) at angular velocity \(String(describing: angularVelocity))")
+        
+        let hotpointMission = DJIHotpointMission()
+        
+        // clamp the radius
+        let radius = clamp(value: Float(radius.meters), min: DJIHotpointMinRadius, max: DJIHotpointMaxRadius)
+        hotpointMission.radius = radius
+        
+        // clamp the altitude
+        if let altitude = altitude {
+            hotpointMission.altitude = clamp(value: Float(altitude.metersAboveGroundAtTakeoff), min: DJIHotpointMinAltitude, max: DJIHotpointMaxAltitude)
+        }
+        
+        // round the angular velocity since DJI only supports whole numbers
+        if let angularVelocity = angularVelocity {
+            let degreesPerSecond = Int(angularVelocity.degreesPerSecond.rounded())
+            hotpointMission.angularVelocity = Int(degreesPerSecond)
+        }
+        
+        // point toward the center of the circle
+        hotpointMission.heading = .towardHotpoint
+        
+        // make sure the hotpoint mission is valid, otherwise throw the error
+        if let error = hotpointMission.checkParameters() {
+            throw error
+        }
+        
+        // it's go time
+        guard let circle = DJIHotpointAction(mission: hotpointMission) else {
+            throw DJIDroneTokenError.failedToCreateMissionAction
+        }
+        
+        try self.executeMission([circle])
     }
 
-    public func returnHome(atAltitude altitude: DCKRelativeAltitude?, atSpeed speed: DCKSpeed?, toLand land: Bool) throws {
-        print ("drone returning home atAltitude: \(altitude), atSpeed: \(speed), landAfterReturningHome: \(land)")
+    public func returnHome() throws {
+        print ("drone returning home")
         
-        guard let homeCoordinates = self.homeLocation else {
-            throw DJIDroneTokenError.indeterminateCurrentState
-        }
-        
-        try self.fly(to: homeCoordinates, atAltitude: altitude, atSpeed: speed)
-        try self.land()
+        let goHome = DJIGoHomeAction()
+        try self.executeMission([goHome])
     }
     
     public func landingGear(down: Bool) throws {
         if down {
-            try DispatchQueue.executeSynchronously { self.aircraft.flightController?.landingGear?.deployLandingGear(completion: $0) }
+            try DispatchQueue.executeSynchronously { self.aircraft.flightController?.landingGear?.deploy(completion: $0) }
         } else {
-            try DispatchQueue.executeSynchronously { self.aircraft.flightController?.landingGear?.retractLandingGear(completion: $0) }
+            try DispatchQueue.executeSynchronously { self.aircraft.flightController?.landingGear?.retract(completion: $0) }
         }
     }
-    
     
     public func land() throws {
-        print ("Drone landing..")
-    
-        /*
-         Before we auto land, we need to stop any current missions. If this fails, we should
-         still try to autoland. Maybe autoland will force the missions to stop executing.
-         Therefore, since we are going to autoland anyways, we are ignoring the error in
-         stopMissionExecution().
-         */
-        if self.missionManager?.currentExecutingMission() != nil {
-            try DispatchQueue.executeSynchronously { self.missionManager?.stopMissionExecution(completion: $0) }
-        }
+        print("landing drone")
         
-        try DispatchQueue.executeSynchronously { self.aircraft.flightController?.autoLanding(completion: $0) }
+        // cancel any timeline missions in progress
+        guard let missionControl = DJISDKManager.missionControl() else {
+            throw DJIDroneTokenError.failedToObtainMissionControl
+        }
+        missionControl.stopTimeline()
+        
+        // tell the flight controller to start landing
+        try DispatchQueue.executeSynchronously { self.aircraft.flightController?.startLanding(completion: $0) }
         
         // wait for drone to reach the height to ask for landing confirmation
-        while let isFlying = self.flightControllerDelegate.currentState?.isLandingConfirmationNeeded, !isFlying {
+        while let ready = self.flightControllerDelegate.state?.isLandingConfirmationNeeded, !ready {
             Thread.sleep(forTimeInterval: self.sleepTimeInSeconds)
         }
         
+        // drone is hovering, confirm it is OK to land
         try DispatchQueue.executeSynchronously { self.aircraft.flightController?.confirmLanding(completion: $0) }
         
-        while let isFlying = self.flightControllerDelegate.currentState?.isFlying, isFlying {
+        // wait until landing is completely finished
+        while let areMotorsOn = self.flightControllerDelegate.state?.areMotorsOn, areMotorsOn {
             Thread.sleep(forTimeInterval: self.sleepTimeInSeconds)
         }
-    }
-    
-    public func spinAround(toYawAngle yaw: DCKAngle, atAngularSpeed angularSpeed: DCKAngularVelocity?) throws {
-        print("Drone spining around to change yaw angle to \(yaw) degrees at AngularSpeed: \(angularSpeed)")
         
-        //Method #1 : Use DJIAircraftYawStep mission. (NOT WORKNG)
-        /* Receives Mission Finished with error:Error 
-            Domain=DJISDKMissionErrorDomain Code=-5036 "Mission is stopped by user.(code:-5036) error */
-        /*
-        var missionSteps: [DJIMissionStep] = []
-        // default angular velocity to move the drone's yaw angle is 20 degree/s according to DJI SDK
-        var angSpeed: Double = 1.0
-        if let angSpeedUnwrapped = angularSpeed?.degreesPerSecond, angSpeedUnwrapped > 0, angSpeedUnwrapped < 100 {
-            angSpeed = angSpeedUnwrapped
-        }
-        
-        guard let aircraftYawStep = DJIAircraftYawStep(relativeAngle: yaw.degrees, andAngularVelocity: angSpeed) else {
-            throw DJIDroneTokenError.failedToInstantiateWaypointStep
-        }
-        
-        missionSteps.append(aircraftYawStep)
-        
-        try self.executeMissionSteps(missionSteps: missionSteps)
-        */
-        
-    
-        //Method #2: Use Virtual Stick to change the yaw angle
-        // NOTE: Does not work on Mavic Pro. Only works on Matrice, but not reliable. Often fails for unknown reason..
-        try DispatchQueue.executeSynchronously { self.aircraft.flightController?.enableVirtualStickControlMode(completion: $0) }
-        
-        self.aircraft.flightController?.yawControlMode = DJIVirtualStickYawControlMode.angle
-        guard let currentAttitude = self.currentAttitude else {
-            throw DroneTokenError.failureRetrievingDroneState
-        }
-        
-        let initial_yawAngle: Double = currentAttitude.yaw.degrees
-        print("Current yaw angle: \(initial_yawAngle)")
-        let expected_yawAngle: Double = (initial_yawAngle + yaw.degrees).truncatingRemainder(dividingBy: 360.0)
-       
-        var ctrlData: DJIVirtualStickFlightControlData = DJIVirtualStickFlightControlData()
-        ctrlData.yaw = Float(yaw.degrees)
-        
-        guard let isVirtualStickAvailable = self.aircraft.flightController?.isVirtualStickControlModeAvailable(),
-            isVirtualStickAvailable == true else {
-                throw DJIDroneTokenError.failedToInstantiateVirtualStickMode
-        }
-        
-        try DispatchQueue.executeSynchronously { self.aircraft.flightController?.send(ctrlData, withCompletion: $0) }
-        
-        // Wait for drone's yaw angle to change
-        // giving 5 degree (generous) freedom. sometimes spinned yaw angle is not exactly what you intended to be.
-        // it could be more/less than your expected yaw angle
-        var counter: Int = 0
-        while let currentYawAngle = self.currentAttitude?.yaw.degrees,
-            abs(expected_yawAngle - currentYawAngle) > 5.0 {
-                Thread.sleep(forTimeInterval: 2)
-                counter += 1
-                if counter == 5 {
-                    // Yaw angle did not get changed for unknown reason
-                    try DispatchQueue.executeSynchronously { self.aircraft.flightController?.disableVirtualStickControlMode(completion: $0) }
-                    throw DJIDroneTokenError.failedToPerformVirtualStickAction
-                }
-        }
-        
-        print("Drone's new yaw angle: \(self.currentAttitude?.yaw)")
-        try DispatchQueue.executeSynchronously { self.aircraft.flightController?.disableVirtualStickControlMode(completion: $0) }
+        // turn the motors off
+        try self.spinMotors(on: false)
     }
     
     // MARK: - Instance Methods
-    private func executeWaypointMission(mission: DJIWaypointMission) throws {
-        
-        // create a waypoint step
-        guard let step = DJIWaypointStep(waypointMission: mission) else {
-            throw DJIDroneTokenError.failedToInstantiateWaypointStep
-        }
-        
-        // execute it
-        try self.executeMissionSteps(missionSteps: [step])
-    }
     
-    // swiftlint:disable:next cyclomatic_complexity function_body_length
-    private func executeHotPointMission(hotPointMission: DJIHotPointMission, withRevolutionLimit limit: Int) throws {
-        print("Execute Hot Point Mission Sync withRevolutionLimit: \(limit)")
-        
-        guard let missionManager = missionManager else {
-            throw DJIDroneTokenError.failedToInstantiateMissionManager
+    private func executeMission(_ mission: [DJIMissionAction]) throws {
+        guard let missionControl = DJISDKManager.missionControl() else {
+            throw DJIDroneTokenError.failedToObtainMissionControl
         }
         
-        guard !missionManagerDelegate.isExecuting else {
-            throw DJIDroneTokenError.anotherMissionCurrentlyExecuting
-        }
+        // stop & reset any previous timeline
+        missionControl.stopTimeline()
         
-        missionManagerDelegate.resetState()
+        // add the mission actions to the timeline
+        missionControl.scheduleElements(mission)
         
-        try DispatchQueue.executeSynchronously { missionManager.prepare(hotPointMission, withProgress: nil, withCompletion: $0) }
-        
-        try DispatchQueue.executeSynchronously { missionManager.startMissionExecution(completion: $0) }
-        
-        missionManagerDelegate.isExecuting = true
-        var startPointLocation: DCKCoordinate2D?
-        var prevDistance: Double?
-        var isPrevSlopePositive: Bool = true
-        var revolutionCounter: Int = 0
-        
-        while missionManagerDelegate.isExecuting {
-            if let status: DJIHotPointMissionStatus = missionManagerDelegate.progressStatus as? DJIHotPointMissionStatus {
-                if status.executionState == DJIHotpointMissionExecutionState.initializing {
-                    print ("DJI Hot Point Mission status: flying to the nearest starting point")
-                } else if status.executionState == DJIHotpointMissionExecutionState.moving {
-                    
-                    // guard current location
-                    guard let currentLocation: DCKCoordinate2D = self.currentLocation else {
-                        print ("DJI Hot Point Mission status: cannot determine current location. Aborting mission.")
-                        try DispatchQueue.executeSynchronously { missionManager.stopMissionExecution(completion: $0) }
-                        throw DJIDroneTokenError.indeterminateCurrentState
-                    }
-                    
-                    // two ways you can check whether the revolution has completed
-                    // Method 1: Use angular velocity
-                    // Sleep until the num of revolution is completed
-                    /*
-                     startPointLocation = DCKCoordinate2D(latitude: currentLocation.latitude, longitude: currentLocation.longitude)
-                     let sleepTime: Double = Double(360.0/hotPointMission.angularVelocity) * Double(limit)
-                     Thread.sleep(forTimeInterval: sleepTime)
-                     print ("DJI Hot Point Mission status: \(limit) revolution has completed.")
-                     self.missionManager?.stopMissionExecution { (djiError) in
-                     semaphore.signal()
-                     error = djiError
-                     }
-                     
-                     semaphore.wait()
-                     */
-                    
-                    // Method 2
-                    if startPointLocation == nil {
-                        startPointLocation = DCKCoordinate2D(latitude: currentLocation.latitude, longitude: currentLocation.longitude)
-                    } else {
-                        
-                        // this error should never happen
-                        guard let startPoint: DCKCoordinate2D = startPointLocation else {
-                            print ("DJI Hot Point Mission status: cannot determine the circle starting location. Aborting mission.")
-                            try DispatchQueue.executeSynchronously { missionManager.stopMissionExecution(completion: $0) }
-                            throw DJIDroneTokenError.indeterminateCurrentState
-                        }
-                        
-                        let distance: Double = currentLocation.distance(to: startPoint)
-                        if let prevDistance = prevDistance {
-                            let changeInDistance: Double = distance - prevDistance
-                            if changeInDistance < 0 {
-                                isPrevSlopePositive = false
-                            } else {
-                                if isPrevSlopePositive == false {
-                                    revolutionCounter += 1
-                                    if revolutionCounter == limit {
-                                        print ("DJI Hot Point Mission status: \(limit) revolution has completed. Distance: \(distance)")
-                                        try DispatchQueue.executeSynchronously { missionManager.stopMissionExecution(completion: $0) }
-                                    } else {
-                                        print ("DJI Hot Point Mission status: \(revolutionCounter) revolution has completed. Remaining # of revolution: \(limit-revolutionCounter)")
-                                        
-                                    }
-                                }
-                                isPrevSlopePositive = true
-                            }
-                        }
-                        
-                        prevDistance = distance
-                        
-                        print ("DJI Hot Point Mission status: Circling. Distance from Starting Point: \(distance)")
-                        
-                    }
-                }
+        // listen for state changes
+        var isExecuting = true
+        var missionError: Error? = nil
+        missionControl.addListener(self, toTimelineProgressWith: { (event: DJIMissionControlTimelineEvent, _, error: Error?, _) in
+            switch event {
+            case .started:
+                isExecuting = true
+            case .startError:
+                isExecuting = false
+            case .stopError:
+                isExecuting = false
+            case .stopped:
+                isExecuting = false
+            case .finished:
+                isExecuting = false
+            default:
+                break
             }
-            Thread.sleep(forTimeInterval: sleepTimeInSeconds)
+            
+            // capture any error that occurred
+            missionError = error
+        })
+        
+        // execute the mission
+        missionControl.startTimeline()
+        
+        // wait for the mission to finish
+        try DispatchQueue.executeSynchronously { asyncCompletionHandler in
+            repeat {
+                Thread.sleep(forTimeInterval: 1)
+            } while isExecuting == false
+            asyncCompletionHandler?(nil)
         }
         
-        missionManagerDelegate.resetState()
-        
-        if let error = missionManagerDelegate.executionError {
+        // throw any error that occurred
+        if let error = missionError {
             throw error
         }
     }
     
-    private func executeMissionSteps(missionSteps: [DJIMissionStep]) throws {
-        guard let mission = DJICustomMission(steps: missionSteps) else {
-            throw DJIDroneTokenError.failedToInstantiateCustomMission
-        }
-        
-        try self.executeMission(mission: mission)
-    }
-    
-    private func executeMission(mission: DJIMission) throws {
-        print("Execute Mission Sync")
-        guard let missionManager = missionManager else {
-            throw DJIDroneTokenError.failedToInstantiateMissionManager
-        }
-        
-        guard !missionManagerDelegate.isExecuting else {
-            throw DJIDroneTokenError.anotherMissionCurrentlyExecuting
-        }
-        
-        missionManagerDelegate.resetState()
-        
-        
-        try DispatchQueue.executeSynchronously { missionManager.prepare(mission, withProgress: nil, withCompletion: $0) }
-        
-        try DispatchQueue.executeSynchronously { missionManager.startMissionExecution(completion: $0) }
-        missionManagerDelegate.isExecuting = true
-        
-        while missionManagerDelegate.isExecuting {
-            Thread.sleep(forTimeInterval: sleepTimeInSeconds)
-        }
-        
-        missionManagerDelegate.resetState()
-        
-        if let error = missionManagerDelegate.executionError {
-            throw error
-        }
+    /// Clamp the given value to the range; values that fall below the range are held at the minimum,
+    /// and values that fall above the range are held at the maximu.
+    fileprivate func clamp(value: Float, min: Float, max: Float) -> Float {
+        if value < min { return min }
+        if value > max { return max }
+        return value
     }
 }
 
-// MARK: - DJIDroneTokenDefaults
+// MARK: - Defaults
 
+// swiftlint:disable:next private_over_fileprivate
 fileprivate struct Defaults {
+    /// Default speed is 2.0 meters per second
     static let speed: Double = 2.0
+    
+    /// Default angular velocity is 20 degrees per second
+    static let angularVelocity = 20.0
 }
 
 
 // MARK: - DJIDroneTokenError
 
 public enum DJIDroneTokenError: Error {
-    case failedToInstantiateCustomMission
-    case failedToInstantiateMissionManager
-    case failedToInstantiateWaypointStep
+    case failedToObtainMissionControl
+    case failedToCreateMissionAction
     case indeterminateCurrentState
     case anotherMissionCurrentlyExecuting
     case failedToInstantiateVirtualStickMode
@@ -585,43 +373,16 @@ public enum DJIDroneTokenError: Error {
 // DJIFlightControllerDelegates must inherit from NSObject. We can't make DJIDroneToken inherit from
 // NSObject since it inherits from ExecutableToken (which isn't an NSObject), so we use a private
 // class for this instead.
+// swiftlint:disable:next private_over_fileprivate
 fileprivate class FlightControllerDelegate: NSObject, DJIFlightControllerDelegate {
-    var currentState: DJIFlightControllerCurrentState?
+    var state: DJIFlightControllerState?
+    var imuState: DJIIMUState?
     
-    func flightController(_ flightController: DJIFlightController, didUpdateSystemState state: DJIFlightControllerCurrentState) {
-        self.currentState = state
-    }
-}
-
-fileprivate class MissionManagerDelegate: NSObject, DJIMissionManagerDelegate {
-    var progressStatus: DJIMissionProgressStatus?
-    var isExecuting: Bool = false
-    var executionError: Error?
-    
-    public func resetState() {
-        progressStatus = nil
-        isExecuting = false
-        executionError = nil
+    func flightController(_ fc: DJIFlightController, didUpdate state: DJIFlightControllerState) {
+        self.state = state
     }
     
-    public func missionManager(_ manager: DJIMissionManager, didFinishMissionExecution error: Error?) {
-        if let error = error {
-            print("Mission Finished with error:\(error)")
-        } else {
-            print("Mission Finished!")
-        }
-        
-        isExecuting = false
-        executionError = error
-    }
-    
-    public func missionManager(_ manager: DJIMissionManager, missionProgressStatus missionProgress: DJIMissionProgressStatus) {
-        if missionProgress is DJICustomMissionStatus,
-            let customMissionStatus: DJICustomMissionStatus = (missionProgress as? DJICustomMissionStatus),
-            let currentExecStep: DJIMissionStep = customMissionStatus.currentExecutingStep {
-            print("Mission Status -- error: \(missionProgress.error) -- currentStep: \(currentExecStep)")
-        }
-        
-        progressStatus = missionProgress
+    func flightController(_ fc: DJIFlightController, didUpdate imuState: DJIIMUState) {
+        self.imuState = imuState
     }
 }

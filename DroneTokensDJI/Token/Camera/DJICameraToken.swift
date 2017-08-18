@@ -386,6 +386,7 @@ extension DCKPhotoBurstCount {
 // DJICameraDelegates must inherit from NSObject. We can't make DJICameraToken inherit from
 // NSObject since it inherits from ExecutableToken (which isn't an NSObject), so we use a private
 // class for this instead.
+// swiftlint:disable:next private_over_fileprivate
 fileprivate class CameraDelegate: NSObject, DJICameraDelegate {
     var sdCardState: DJICameraSDCardState?
     var ssdState: DJICameraSSDState?
@@ -560,6 +561,7 @@ fileprivate class CameraDelegate: NSObject, DJICameraDelegate {
 
 // MARK: - SynchronizedQueue
 
+// swiftlint:disable:next private_over_fileprivate
 fileprivate class SynchronizedQueue<T> {
     private var array: [T] = []
     private let accessQueue = DispatchQueue(label: "SynchronizedQueueAccess", attributes: .concurrent)
