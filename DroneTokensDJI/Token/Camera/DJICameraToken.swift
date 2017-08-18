@@ -28,15 +28,16 @@ public class DJICameraToken: ExecutableToken {
         super.init(with: card)
     }
     
-    func takePhoto(cameraMode: DJICameraMode, shootMode: DJICameraShootPhotoMode, aspectRatio: DJICameraPhotoAspectRatio?, quality: DJICameraPhotoQuality?) throws {
-        try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: nil, burstCount: nil, aspectRatio: aspectRatio, quality: quality)
+    func takePhoto(cameraMode: DJICameraMode, shootMode: DJICameraShootPhotoMode, aspectRatio: DJICameraPhotoAspectRatio?) throws {
+        try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: nil, burstCount: nil, aspectRatio: aspectRatio)
     }
     
     // swiftlint:disable:next function_parameter_count function_body_length
-    func takePhoto(cameraMode: DJICameraMode, shootMode: DJICameraShootPhotoMode, interval: DJICameraPhotoIntervalParam?, burstCount: DJICameraPhotoBurstCount?, aspectRatio: DJICameraPhotoAspectRatio?, quality: DJICameraPhotoQuality?) throws {
+    func takePhoto(cameraMode: DJICameraMode, shootMode: DJICameraShootPhotoMode, interval: DJICameraPhotoTimeIntervalSettings?, burstCount: DJICameraPhotoBurstCount?, aspectRatio: DJICameraPhotoAspectRatio?) throws {
         
+        // set the camera mode
         do {
-            try DispatchQueue.executeSynchronously { self.camera.setCameraMode(cameraMode, withCompletion: $0) }
+            try DispatchQueue.executeSynchronously { self.camera.setMode(cameraMode, withCompletion: $0) }
         } catch {
             throw error
         }
@@ -50,21 +51,19 @@ public class DJICameraToken: ExecutableToken {
             throw DJICameraTokenError.sdCardFull
         }
         
+        // set the shoot mode
+        try DispatchQueue.executeSynchronously { self.camera.setShootPhotoMode(shootMode, withCompletion: $0) }
+        
         // set the aspect ratio
         if let aspectRatio = aspectRatio {
-            try DispatchQueue.executeSynchronously { self.camera.setPhotoRatio(aspectRatio, withCompletion: $0) }
-        }
-        
-        // set the quality
-        if let quality = quality {
-            try DispatchQueue.executeSynchronously { self.camera.setPhotoQuality(quality, withCompletion: $0) }
+            try DispatchQueue.executeSynchronously { self.camera.setPhotoAspectRatio(aspectRatio, withCompletion: $0) }
         }
         
         // set the burstCount (if we're taking photos in burst mode)
         if shootMode == .burst, let burstCount = burstCount {
             do {
                 try DispatchQueue.executeSynchronously { self.camera.setPhotoBurstCount(burstCount, withCompletion: $0) }
-            } catch {
+            } catch let error {
                 let nsError = error as NSError
                 if nsError.code == DJISDKError.invalidParameters.rawValue {
                     //DJISDKError of .invalidParameters typically means that the burst count is not supported by the camera hardware in use.
@@ -77,25 +76,26 @@ public class DJICameraToken: ExecutableToken {
         
         // set the interval (if we're taking photos in an interval)
         if shootMode == .interval, let interval = interval {
-            try DispatchQueue.executeSynchronously { self.camera.setPhotoIntervalParam(interval, withCompletion: $0) }
+            try DispatchQueue.executeSynchronously { self.camera.setPhotoTimeIntervalSettings(interval, withCompletion: $0) }
         }
         
         // take the photo
-        try DispatchQueue.executeSynchronously { self.camera.startShootPhoto(shootMode, withCompletion: $0) }
+        try DispatchQueue.executeSynchronously { self.camera.startShootPhoto(completion: $0) }
     }
     
     func stopPhotos() throws {
         try DispatchQueue.executeSynchronously { self.camera.stopShootPhoto(completion: $0) }
     }
     
-    func recordVideo(cameraMode: DJICameraMode, frameRate: DJICameraVideoFrameRate?, resolution: DJICameraVideoResolution?) throws {
-        try DispatchQueue.executeSynchronously { self.camera.setCameraMode(cameraMode, withCompletion: $0) }
+    func recordVideo(cameraMode: DJICameraMode, framerate: DJICameraVideoFrameRate?, resolution: DJICameraVideoResolution?) throws {
+        try DispatchQueue.executeSynchronously { self.camera.setMode(cameraMode, withCompletion: $0) }
         
-        if let frameRate = frameRate, let resolution = resolution {
-            try DispatchQueue.executeSynchronously { self.camera.setVideoResolution(resolution, andFrameRate: frameRate, withCompletion: $0) }
+        if let framerate = framerate, let resolution = resolution {
+            let resolutionAndFramerate = DJICameraVideoResolutionAndFrameRate(resolution: resolution, frameRate: framerate)
+            try DispatchQueue.executeSynchronously { self.camera.setVideoResolutionAndFrameRate(resolutionAndFramerate, withCompletion: $0) }
         }
         
-        try DispatchQueue.executeSynchronously { self.camera.startRecordVideo(completion: $0)}
+        try DispatchQueue.executeSynchronously { self.camera.startRecordVideo(completion: $0) }
         
         // the startRecordVideo callback does not coincide with the actual system state changing to recording;
         // RunLoop similarly prevents the system state from updating
@@ -120,10 +120,9 @@ extension DJICameraToken: CameraToken {
         let cameraMode: DJICameraMode = .shootPhoto
         let shootMode: DJICameraShootPhotoMode = .single
         let aspectRatio: DJICameraPhotoAspectRatio? = options.djiAspectRatio
-        let quality: DJICameraPhotoQuality? = options.djiQuality
         
         // take the photo
-        try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, aspectRatio: aspectRatio, quality: quality)
+        try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, aspectRatio: aspectRatio)
         
         // wait for the photo to appear and download it
         let photos: [DCKPhoto] = self.cameraDelegate.waitForAndDownloadPhotos(count: 1)
@@ -137,10 +136,9 @@ extension DJICameraToken: CameraToken {
         let cameraMode: DJICameraMode = .shootPhoto
         let shootMode: DJICameraShootPhotoMode = .HDR
         let aspectRatio: DJICameraPhotoAspectRatio? = options.djiAspectRatio
-        let quality: DJICameraPhotoQuality? = options.djiQuality
         
         // take the photo
-        try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, aspectRatio: aspectRatio, quality: quality)
+        try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, aspectRatio: aspectRatio)
         
         // wait for the photo to appear and download it
         let photos: [DCKPhoto] = self.cameraDelegate.waitForAndDownloadPhotos(count: 1)
@@ -154,19 +152,18 @@ extension DJICameraToken: CameraToken {
         let cameraMode: DJICameraMode = .shootPhoto
         let shootMode: DJICameraShootPhotoMode = .burst
         let aspectRatio: DJICameraPhotoAspectRatio? = options.djiAspectRatio
-        let quality: DJICameraPhotoQuality? = options.djiQuality
         
-        let unsignedCount: UInt = UInt(count.numericalValue)
+        let unsignedCount: UInt = UInt(count.rawValue)
         
         guard let photoBurstCount: DJICameraPhotoBurstCount = DJICameraPhotoBurstCount(rawValue: unsignedCount) else {
-            throw DJICameraTokenError.invalidPhotoBurstCountSpecified(count.numericalValue)
+            throw DJICameraTokenError.invalidPhotoBurstCountSpecified(count.rawValue)
         }
         
         // take the photo
-        try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: nil, burstCount: photoBurstCount, aspectRatio: aspectRatio, quality: quality)
+        try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: nil, burstCount: photoBurstCount, aspectRatio: aspectRatio)
         
         // wait for the photos to appear and download them
-        let photos: [DCKPhoto] = self.cameraDelegate.waitForAndDownloadPhotos(count: count.numericalValue)
+        let photos: [DCKPhoto] = self.cameraDelegate.waitForAndDownloadPhotos(count: count.rawValue)
         let burst = DCKPhotoBurst(photos: photos)
         return burst
     }
@@ -175,14 +172,13 @@ extension DJICameraToken: CameraToken {
         let cameraMode: DJICameraMode = .shootPhoto
         let shootMode: DJICameraShootPhotoMode = .interval
         let aspectRatio: DJICameraPhotoAspectRatio? = options.djiAspectRatio
-        let quality: DJICameraPhotoQuality? = options.djiQuality
         
         // figure out the interval
         // a captureCount of 255 means the camera will continue taking photos until stopShootPhotoWithCompletion() is called
-        let djiInterval = DJICameraPhotoIntervalParam(captureCount: 255, timeIntervalInSeconds: UInt16(interval))
+        let djiInterval = DJICameraPhotoTimeIntervalSettings(captureCount: 255, timeIntervalInSeconds: UInt16(interval))
         
         // take the photos
-        try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: djiInterval, burstCount: nil, aspectRatio: aspectRatio, quality: quality)
+        try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, interval: djiInterval, burstCount: nil, aspectRatio: aspectRatio)
     }
     
     public func stopTakingPhotos() throws -> DCKPhotoBurst {
@@ -199,10 +195,9 @@ extension DJICameraToken: CameraToken {
         let cameraMode: DJICameraMode = .shootPhoto
         let shootMode: DJICameraShootPhotoMode = .timeLapse
         let aspectRatio: DJICameraPhotoAspectRatio? = options.djiAspectRatio
-        let quality: DJICameraPhotoQuality? = options.djiQuality
         
         // take the timelapse video
-        try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, aspectRatio: aspectRatio, quality: quality)
+        try self.takePhoto(cameraMode: cameraMode, shootMode: shootMode, aspectRatio: aspectRatio)
     }
     
     public func stopTimelapse() throws -> DCKVideo {
@@ -219,10 +214,10 @@ extension DJICameraToken: CameraToken {
     
     public func startVideo(options: Set<CameraVideoOption>) throws {
         let cameraMode: DJICameraMode = .recordVideo
-        let frameRate: DJICameraVideoFrameRate? = options.djiVideoFrameRate
+        let framerate: DJICameraVideoFrameRate? = options.djiVideoFrameRate
         let resolution: DJICameraVideoResolution? = options.djiVideoResolution
         
-        try self.recordVideo(cameraMode: cameraMode, frameRate: frameRate, resolution: resolution)
+        try self.recordVideo(cameraMode: cameraMode, framerate: framerate, resolution: resolution)
     }
     
     public func stopVideo() throws -> DCKVideo {
@@ -254,15 +249,6 @@ extension Sequence where Iterator.Element == CameraPhotoOption {
         for option in self {
             if case .aspectRatio(let r) = option {
                 return r.djiAspectRatio
-            }
-        }
-        return nil
-    }
-    
-    var djiQuality: DJICameraPhotoQuality? {
-        for option in self {
-            if case .quality(let q) = option {
-                return q.djiQuality
             }
         }
         return nil
@@ -302,21 +288,6 @@ extension DCKPhotoAspectRatio {
             return .ratio3_2
         case .aspect4x3:
             return .ratio4_3
-        }
-    }
-}
-
-// MARK: - DCKPhotoQuality Extensions
-
-extension DCKPhotoQuality {
-    var djiQuality: DJICameraPhotoQuality {
-        switch self {
-        case .excellent:
-            return .excellent
-        case .fine:
-            return .fine
-        case .normal:
-            return .normal
         }
     }
 }
@@ -416,14 +387,13 @@ extension DCKPhotoBurstCount {
 // NSObject since it inherits from ExecutableToken (which isn't an NSObject), so we use a private
 // class for this instead.
 fileprivate class CameraDelegate: NSObject, DJICameraDelegate {
-    var lensState: DJICameraLensState?
     var sdCardState: DJICameraSDCardState?
     var ssdState: DJICameraSSDState?
     var systemState: DJICameraSystemState?
     
     // keep track of when we see new media files created on the drone
-    var newPhotos: SynchronizedQueue<DJIMedia> = SynchronizedQueue<DJIMedia>()
-    var newVideos: SynchronizedQueue<DJIMedia> = SynchronizedQueue<DJIMedia>()
+    var newPhotos: SynchronizedQueue<DJIMediaFile> = SynchronizedQueue<DJIMediaFile>()
+    var newVideos: SynchronizedQueue<DJIMediaFile> = SynchronizedQueue<DJIMediaFile>()
     
     // used for converting DJIMedia timeCreated to Date()
     fileprivate lazy var dateFormatter: DateFormatter = {
@@ -467,7 +437,7 @@ fileprivate class CameraDelegate: NSObject, DJICameraDelegate {
         return self.downloadAllMediaFromQueue(queue: newVideos, transformer: transformDJIMediaToDCKVideo)
     }
     
-    fileprivate func downloadAllMediaFromQueue<T>(queue: SynchronizedQueue<DJIMedia>, transformer: @escaping ((DJIMedia, Data) -> T)) -> [T] {
+    fileprivate func downloadAllMediaFromQueue<T>(queue: SynchronizedQueue<DJIMediaFile>, transformer: @escaping ((DJIMediaFile, Data) -> T)) -> [T] {
         var downloaded: [T] = []
         
         while queue.count > 0 {
@@ -475,7 +445,7 @@ fileprivate class CameraDelegate: NSObject, DJICameraDelegate {
             guard let media = queue.dequeue() else { break }
             
             // download it
-            let object = self.downloadObject(media: media, transformer: transformer)
+            let object = self.downloadMediaFile(media: media, transformer: transformer)
             
             // add it to the return pile
             if let object = object {
@@ -486,66 +456,53 @@ fileprivate class CameraDelegate: NSObject, DJICameraDelegate {
         return downloaded
     }
     
-    fileprivate func downloadObject<T>(media: DJIMedia, transformer: @escaping ((DJIMedia, Data) -> T)) -> T? {
-        var object: T?
+    fileprivate func downloadMediaFile<T>(media: DJIMediaFile, transformer: @escaping ((DJIMediaFile, Data) -> T)) -> T? {
+        var object: T? = nil
+        var mediaFileData: Data = Data()
         
         do {
             try DispatchQueue.executeSynchronously { asyncCompletionHandler in
-                media.fetchData(completion: { (data: Data?, _: UnsafeMutablePointer<ObjCBool>?, error: Error?) in
-                    
-                    // wrap in the desired class
-                    if let data = data {
-                        object = transformer(media, data)
+                let queue = DispatchQueue(label: "DJIMediaFile fetchData")
+                media.fetchData(withOffset: 0, update: queue, update: { data, isComplete, error in
+                    // if there was an error, bail
+                    if let error = error {
+                        object = nil
+                        asyncCompletionHandler?(error)
                     }
                     
-                    // return
-                    asyncCompletionHandler?(error)
+                    // data is the next chunk of data read from the file, append it to the buffer
+                    if let data = data {
+                        mediaFileData.append(data)
+                    }
+                    
+                    // if the download has completed, transform the media file into the requested object type
+                    // (e.g. DCKPhoto or DCKVideo) and return
+                    if isComplete {
+                        object = transformer(media, mediaFileData)
+                        asyncCompletionHandler?(error)
+                    }
                 })
             }
         } catch let error {
-            print("error downloading DJIMedia: \(error)")
+            print("error downloading DJIMediaFile: \(error)")
         }
         
         return object
     }
     
-    fileprivate func transformDJIMediaToDCKPhoto(media: DJIMedia, data: Data) -> DCKPhoto {
+    fileprivate func transformDJIMediaToDCKPhoto(media: DJIMediaFile, data: Data) -> DCKPhoto {
         let timeCreated = self.dateFormatter.date(from: media.timeCreated) ?? Date()
         
         return DCKPhoto(fileName: media.fileName, sizeInBytes: UInt(media.fileSizeInBytes), timeCreated: timeCreated, data: data, location: nil)
     }
     
-    fileprivate func transformDJIMediaToDCKVideo(media: DJIMedia, data: Data) -> DCKVideo {
+    fileprivate func transformDJIMediaToDCKVideo(media: DJIMediaFile, data: Data) -> DCKVideo {
         let timeCreated = self.dateFormatter.date(from: media.timeCreated) ?? Date()
         
         return DCKVideo(fileName: media.fileName, sizeInBytes: UInt(media.fileSizeInBytes), timeCreated: timeCreated, durationInSeconds: Double(media.durationInSeconds), data: data)
     }
     
     // MARK: DJICameraDelegate
-    
-    func camera(_ camera: DJICamera, didUpdate ssdState: DJICameraSSDState) {
-        self.ssdState = ssdState
-    }
-    
-    func camera(_ camera: DJICamera, didUpdate lensState: DJICameraLensState) {
-        self.lensState = lensState
-    }
-    
-    func camera(_ camera: DJICamera, didGenerateNewMediaFile newMedia: DJIMedia) {
-        // keep track of the file that was added
-        switch newMedia.mediaType {
-        case .JPEG, .RAWDNG, .TIFF:
-            newPhotos.enqueue(newElement: newMedia)
-        case .M4V, .MOV, .MP4:
-            newVideos.enqueue(newElement: newMedia)
-        case .panorama, .unknown: break
-            // ignore, we don't support these
-        }
-    }
-    
-    func camera(_ camera: DJICamera, didUpdate sdCardState: DJICameraSDCardState) {
-        self.sdCardState = sdCardState
-    }
     
     func camera(_ camera: DJICamera, didUpdate systemState: DJICameraSystemState) {
         //        print("SYSTEM STATE CHANGED isShootingInterval:\(systemState.isShootingIntervalPhoto)")
@@ -555,11 +512,36 @@ fileprivate class CameraDelegate: NSObject, DJICameraDelegate {
         self.systemState = systemState
     }
     
-    func camera(_ camera: DJICamera, didUpdateTemperatureData temperature: Float) {
-        // tbd
+    func camera(_ camera: DJICamera, didUpdate focusState: DJICameraFocusState) {
+        
+    }
+    
+    func camera(_ camera: DJICamera, didGenerateNewMediaFile newMedia: DJIMediaFile) {
+        // keep track of the file that was added
+        switch newMedia.mediaType {
+        case .JPEG, .RAWDNG, .TIFF:
+            newPhotos.enqueue(newElement: newMedia)
+        case .MOV, .MP4:
+            newVideos.enqueue(newElement: newMedia)
+        case .panorama, .shallowFocus, .unknown:
+            // ignore, we don't support these
+            break
+        }
     }
     
     func camera(_ camera: DJICamera, didGenerateTimeLapsePreview previewImage: UIImage) {
+        // tbd
+    }
+    
+    func camera(_ camera: DJICamera, didUpdate sdCardState: DJICameraSDCardState) {
+        self.sdCardState = sdCardState
+    }
+    
+    func camera(_ camera: DJICamera, didUpdate ssdState: DJICameraSSDState) {
+        self.ssdState = ssdState
+    }
+    
+    func camera(_ camera: DJICamera, didUpdate temperatureAggregations: DJICameraThermalAreaTemperatureAggregations) {
         // tbd
     }
     
@@ -567,15 +549,11 @@ fileprivate class CameraDelegate: NSObject, DJICameraDelegate {
         // tbd
     }
     
-    func camera(_ camera: DJICamera, didUpdateCurrentExposureParameters params: DJICameraExposureParameters) {
+    func camera(_ camera: DJICamera, didUpdate exposureSettings: DJICameraExposureSettings) {
         // tbd
     }
     
-    func camera(_ camera: DJICamera, didReceiveVideoData videoBuffer: UnsafeMutablePointer<UInt8>, length size: Int) {
-        // tbd
-    }
-    
-    func camera(_ camera: DJICamera, didUpdate temperatureAggregations: DJICameraThermalAreaTemperatureAggregations) {
+    func camera(_ camera: DJICamera, didUpdateTemperatureData temperature: Float) {
         // tbd
     }
 }
