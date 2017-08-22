@@ -6,23 +6,22 @@
 //  Copyright © 2017 IBM. All rights reserved.
 //
 
-@testable import DroneTokensDJI
-@testable import DroneCardKit
-@testable import CardKitRuntime
-@testable import CardKit
-
 import XCTest
+
+@testable import CardKit
+@testable import CardKitRuntime
+@testable import DroneCardKit
+@testable import DroneTokensDJI
 
 import DJISDK
 
-class FlyPathTests: BaseDroneTokenTests {
-    
+class FlyPathTests: BaseDroneCardTests {
     // swiftlint:disable:next function_body_length
     func testFlyPathCard() {
         let myExpectation = expectation(description: "testFlyPathCard expectation")
         
-        guard let drone = drone else {
-            XCTFail("Could not find drone and/or gimbal hardware")
+        guard let drone = self.drone else {
+            XCTFail("could not find drone hardware")
             return
         }
         
@@ -58,24 +57,14 @@ class FlyPathTests: BaseDroneTokenTests {
                 let flyPath = FlyPath(with: DroneCardKit.Action.Movement.Sequence.FlyPath.makeCard())
                 
                 // bind input and token slots
-                guard let droneTokenSlot = flyPath.actionCard.tokenSlots.slot(named: "Drone"),
-                    let pathSlot = flyPath.actionCard.inputSlots.slot(named: "Path"),
-                    let speedSlot = flyPath.actionCard.inputSlots.slot(named: "Speed") ,
-                    let durationSlot = flyPath.actionCard.inputSlots.slot(named: "Duration"),
-                    let altitudeSlot = flyPath.actionCard.inputSlots.slot(named: "Altitude")  else {
-                        XCTFail("could not find the right token/input slots")
-                        myExpectation.fulfill()
-                        return
-                }
-                
-                let inputBindings: [InputSlot: DataBinding] = [
-                    pathSlot: .bound(path.toJSON()),
-                    speedSlot: .bound(speed.toJSON()),
-                    durationSlot: .bound(duration.toJSON()),
-                    altitudeSlot: .bound(altitude.toJSON())
+                let inputBindings: [String: Codable] = [
+                    "Path": path,
+                    "Speed": speed,
+                    "Duration": duration,
+                    "Altitude": altitude
                 ]
                 
-                let tokenBindings = [droneTokenSlot: drone]
+                let tokenBindings: [String: ExecutableToken] = ["Drone": drone]
                 flyPath.setup(inputBindings: inputBindings, tokenBindings: tokenBindings)
                 
                 // execute

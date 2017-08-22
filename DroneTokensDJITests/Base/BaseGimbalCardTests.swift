@@ -6,22 +6,21 @@
 //  Copyright © 2017 IBM. All rights reserved.
 //
 
-@testable import DroneTokensDJI
-@testable import DroneCardKit
-@testable import CardKitRuntime
-@testable import CardKit
-
 import XCTest
+
+@testable import CardKit
+@testable import CardKitRuntime
+@testable import DroneCardKit
+@testable import DroneTokensDJI
 
 import DJISDK
 
-class BaseGimbalCardTests: DJIHardwareTokenTest {
-    var droneTelemetryTokenCard: TokenCard = DroneCardKit.Token.Telemetry.makeCard()
+class BaseGimbalCardTests: BaseHardwareTokenTest {
+    var telemetryTokenCard: TokenCard = DroneCardKit.Token.Telemetry.makeCard()
     var gimbalTokenCard: TokenCard = DroneCardKit.Token.Gimbal.makeCard()
     
     var gimbal: ExecutableToken?
-    var drone: ExecutableToken?
-    let expectationTimeout: TimeInterval = 1000
+    var telemetry: ExecutableToken?
     
     override func setUp() {
         super.setUp()
@@ -33,7 +32,7 @@ class BaseGimbalCardTests: DJIHardwareTokenTest {
             return
         }
         
-        self.drone = DJIDroneToken(with: droneTelemetryTokenCard, for: aircraft)
+        self.telemetry = DJIDroneToken(with: telemetryTokenCard, for: aircraft)
         
         guard let gimbalHardware = aircraft.gimbal else {
             XCTFail("Gimbal does not exist")

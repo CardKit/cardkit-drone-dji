@@ -6,12 +6,12 @@
 //  Copyright © 2017 IBM. All rights reserved.
 //
 
-@testable import DroneTokensDJI
-@testable import DroneCardKit
-@testable import CardKitRuntime
-@testable import CardKit
-
 import XCTest
+
+@testable import CardKit
+@testable import CardKitRuntime
+@testable import DroneCardKit
+@testable import DroneTokensDJI
 
 import DJISDK
 
@@ -19,7 +19,7 @@ class PointAtGroundTests: BaseGimbalCardTests {
     func testPointAtGroundCard() {
         let myExpectation = expectation(description: "testPointAtGroundCard expectation")
         
-        guard let gimbal = gimbal else {
+        guard let gimbal = self.gimbal else {
             XCTFail("Could not find gimbal hardware")
             return
         }
@@ -30,13 +30,7 @@ class PointAtGroundTests: BaseGimbalCardTests {
                 let pointAtGround = PointAtGround(with: DroneCardKit.Action.Tech.Gimbal.PointAtGround.makeCard())
                 
                 // bind input and token slots
-                guard let gimbalTokenSlot = pointAtGround.actionCard.tokenSlots.slot(named: "Gimbal") else {
-                    XCTFail("could not find the right token/input slots")
-                    myExpectation.fulfill()
-                    return
-                }
-                
-                let tokenBindings = [gimbalTokenSlot: gimbal]
+                let tokenBindings: [String: ExecutableToken] = ["Gimbal": gimbal]
                 pointAtGround.setup(inputBindings: [:], tokenBindings: tokenBindings)
                 
                 // execute
@@ -45,7 +39,7 @@ class PointAtGroundTests: BaseGimbalCardTests {
                 if let djiError = pointAtGround.errors.first {
                     throw djiError
                 }
-            } catch {
+            } catch let error {
                 XCTFail("\(error)")
             }
             
@@ -57,6 +51,5 @@ class PointAtGroundTests: BaseGimbalCardTests {
                 XCTFail("testPointAtGroundCard error: \(error)")
             }
         }
-    }
-    
+    }    
 }

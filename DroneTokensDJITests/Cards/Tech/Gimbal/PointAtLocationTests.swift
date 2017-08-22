@@ -6,12 +6,12 @@
 //  Copyright © 2017 IBM. All rights reserved.
 //
 
-@testable import DroneTokensDJI
-@testable import DroneCardKit
-@testable import CardKitRuntime
-@testable import CardKit
-
 import XCTest
+
+@testable import CardKit
+@testable import CardKitRuntime
+@testable import DroneCardKit
+@testable import DroneTokensDJI
 
 import DJISDK
 
@@ -19,7 +19,7 @@ class PointAtLocationTests: BaseGimbalCardTests {
     func testPointAtLocationCard() {
         let myExpectation = expectation(description: "testPointAtLocationCard expectation")
         
-        guard let drone = drone, let gimbal = gimbal else {
+        guard let telemetry = self.telemetry, let gimbal = self.gimbal else {
             XCTFail("Could not find drone and/or gimbal hardware")
             return
         }
@@ -27,31 +27,14 @@ class PointAtLocationTests: BaseGimbalCardTests {
         DispatchQueue.global(qos: .default).async {
             do {
                 // determine location to point at
-                let originalLocation = DCKCoordinate2D(latitude: 23.00099, longitude: 113.9599)
-                let newLocation = DCKCoordinate2D(latitude: 23.00199, longitude: 113.9600)
-                let locationToPointAt = DCKCoordinate3D(latitude: newLocation.latitude, longitude: newLocation.longitude, altitude: DCKRelativeAltitude(metersAboveGroundAtTakeoff: 0.0))
-                
-                // takeoff and hover at 10m
-                if let droneToken = drone as? DroneToken {
-                    try droneToken.fly(to: originalLocation, atAltitude: DCKRelativeAltitude(metersAboveGroundAtTakeoff: 100))
-                } else {
-                    XCTFail("Could not cast `drone` as DroneToken.")
-                }
+                let locationToPointAt = DCKCoordinate3D(latitude: 23.00199, longitude: 113.9600, altitude: DCKRelativeAltitude(metersAboveGroundAtTakeoff: 0.0))
                 
                 // setup PointAtLocation card
                 let pointAtLocation = PointAtLocation(with: DroneCardKit.Action.Tech.Gimbal.PointAtLocation.makeCard())
                 
                 // bind input and token slots
-                guard let droneTokenSlot = pointAtLocation.actionCard.tokenSlots.slot(named: "DroneTelemetry"),
-                    let gimbalTokenSlot = pointAtLocation.actionCard.tokenSlots.slot(named: "Gimbal"),
-                    let inputLocationTokenSlot = pointAtLocation.actionCard.inputSlots.slot(named: "Location") else {
-                        XCTFail("could not find the right token/input slots")
-                        myExpectation.fulfill()
-                        return
-                }
-                
-                let inputBindings = [inputLocationTokenSlot: DataBinding.bound(locationToPointAt.toJSON())]
-                let tokenBindings = [droneTokenSlot: drone, gimbalTokenSlot: gimbal]
+                let inputBindings: [String: Codable] = ["Location": locationToPointAt]
+                let tokenBindings: [String: ExecutableToken] = ["Telemetry": telemetry, "Gimbal": gimbal]
                 pointAtLocation.setup(inputBindings: inputBindings, tokenBindings: tokenBindings)
                 
                 // execute
@@ -67,11 +50,10 @@ class PointAtLocationTests: BaseGimbalCardTests {
             myExpectation.fulfill()
         }
         
-        waitForExpectations(timeout: expectationTimeout) { error in
+        waitForExpectations(timeout: self.expectationTimeout) { error in
             if let error = error {
                 XCTFail("testPointAtLocationCard error: \(error)")
             }
         }
     }
-    
 }

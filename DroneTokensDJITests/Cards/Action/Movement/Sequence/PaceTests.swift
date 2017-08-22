@@ -6,25 +6,22 @@
 //  Copyright © 2017 IBM. All rights reserved.
 //
 
-import Foundation
-
-@testable import DroneTokensDJI
-@testable import DroneCardKit
-@testable import CardKitRuntime
-@testable import CardKit
-
 import XCTest
+
+@testable import CardKit
+@testable import CardKitRuntime
+@testable import DroneCardKit
+@testable import DroneTokensDJI
 
 import DJISDK
 
-class PaceTests: BaseDroneTokenTests {
-    
+class PaceTests: BaseDroneCardTests {
     // swiftlint:disable:next function_body_length
     func testPaceCard() {
         let myExpectation = expectation(description: "testPaceCard expectation")
         
-        guard let drone = drone else {
-            XCTFail("Could not find drone and/or gimbal hardware")
+        guard let drone = self.drone else {
+            XCTFail("could not find drone hardware")
             return
         }
         
@@ -35,13 +32,13 @@ class PaceTests: BaseDroneTokenTests {
                 // determine path to fly
                 // https://www.google.com/maps/dir/23.00099,+113.9599/23.0013356,113.9594235/23.0015072,113.9602554/23.0009514,113.9602443/23.0010923,113.9599299/@23.001543,113.959468,18.95z/data=!4m10!4m9!1m3!2m2!1d113.9599!2d23.00099!1m0!1m0!1m0!1m0!3e2
                 
-                
                 let locationsInPath: [DCKCoordinate2D] = [
                     DCKCoordinate2D(latitude: 23.0013356, longitude: 113.9594235),
                     DCKCoordinate2D(latitude: 23.0015072, longitude: 113.9602554),
                     DCKCoordinate2D(latitude: 23.0009514, longitude: 113.9602443),
                     DCKCoordinate2D(latitude: 23.0010923, longitude: 113.9599299)
                 ]
+                
                 let path = DCKCoordinate2DPath(path: locationsInPath)
                 
                 // create other inputs
@@ -60,24 +57,14 @@ class PaceTests: BaseDroneTokenTests {
                 let paceCard = Pace(with: DroneCardKit.Action.Movement.Sequence.Pace.makeCard())
                 
                 // bind input and token slots
-                guard let droneTokenSlot = paceCard.actionCard.tokenSlots.slot(named: "Drone"),
-                    let pathSlot = paceCard.actionCard.inputSlots.slot(named: "Path"),
-                    let speedSlot = paceCard.actionCard.inputSlots.slot(named: "Speed") ,
-                    let durationSlot = paceCard.actionCard.inputSlots.slot(named: "Duration"),
-                    let altitudeSlot = paceCard.actionCard.inputSlots.slot(named: "Altitude")  else {
-                        XCTFail("could not find the right token/input slots")
-                        myExpectation.fulfill()
-                        return
-                }
-                
-                let inputBindings: [InputSlot: DataBinding] = [
-                    pathSlot: .bound(path.toJSON()),
-                    speedSlot: .bound(speed.toJSON()),
-                    durationSlot: .bound(duration.toJSON()),
-                    altitudeSlot: .bound(altitude.toJSON())
+                let inputBindings: [String: Codable] = [
+                    "Path": path,
+                    "Speed": speed,
+                    "Duration": duration,
+                    "Altitude": altitude
                 ]
                 
-                let tokenBindings = [droneTokenSlot: drone]
+                let tokenBindings: [String: ExecutableToken] = ["Drone": drone]
                 paceCard.setup(inputBindings: inputBindings, tokenBindings: tokenBindings)
                 
                 // execute
@@ -98,6 +85,5 @@ class PaceTests: BaseDroneTokenTests {
                 XCTFail("testPaceCard error: \(error)")
             }
         }
-        
     }
 }
