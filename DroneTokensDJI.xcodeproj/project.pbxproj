@@ -24,9 +24,8 @@
 		689498E91DF4C391007D765A /* CardKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B21DF4C251003F1DA5 /* CardKit.framework */; };
 		689498EA1DF4C391007D765A /* CardKitRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */; };
 		689498EB1DF4C391007D765A /* DroneCardKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B41DF4C251003F1DA5 /* DroneCardKit.framework */; };
-		689498EC1DF4C391007D765A /* Freddy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B51DF4C251003F1DA5 /* Freddy.framework */; };
 		689498F11DF4C5AB007D765A /* DJISDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 689498E71DF4C373007D765A /* DJISDK.framework */; };
-		689498F31DF4C62F007D765A /* DJISDK.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 689498E71DF4C373007D765A /* DJISDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		689498F31DF4C62F007D765A /* DJISDK.framework in DJISDK */ = {isa = PBXBuildFile; fileRef = 689498E71DF4C373007D765A /* DJISDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		68A4197B1E4CC4600065ABCB /* PointAtLocationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A419791E4CC3C00065ABCB /* PointAtLocationTests.swift */; };
 		CC09F3261F4B81DB003FA148 /* BaseDroneCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC09F3231F4B81CE003FA148 /* BaseDroneCardTests.swift */; };
 		CC09F3271F4B81DB003FA148 /* BaseGimbalCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC09F3241F4B81CE003FA148 /* BaseGimbalCardTests.swift */; };
@@ -61,14 +60,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		689498F21DF4C621007D765A /* CopyFiles */ = {
+		689498F21DF4C621007D765A /* DJISDK */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				689498F31DF4C62F007D765A /* DJISDK.framework in CopyFiles */,
+				689498F31DF4C62F007D765A /* DJISDK.framework in DJISDK */,
 			);
+			name = DJISDK;
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -82,7 +82,6 @@
 		685338B21DF4C251003F1DA5 /* CardKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CardKit.framework; path = Carthage/Build/iOS/CardKit.framework; sourceTree = "<group>"; };
 		685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CardKitRuntime.framework; path = Carthage/Build/iOS/CardKitRuntime.framework; sourceTree = "<group>"; };
 		685338B41DF4C251003F1DA5 /* DroneCardKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DroneCardKit.framework; path = Carthage/Build/iOS/DroneCardKit.framework; sourceTree = "<group>"; };
-		685338B51DF4C251003F1DA5 /* Freddy.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Freddy.framework; path = Carthage/Build/iOS/Freddy.framework; sourceTree = "<group>"; };
 		687DC9C41E56283F000F7EBE /* PointAtFrontTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointAtFrontTests.swift; sourceTree = "<group>"; };
 		687DC9CA1E563260000F7EBE /* PointAtGroundTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointAtGroundTests.swift; sourceTree = "<group>"; };
 		687DC9CC1E563783000F7EBE /* PointInDirectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointInDirectionTests.swift; sourceTree = "<group>"; };
@@ -131,7 +130,6 @@
 				689498F11DF4C5AB007D765A /* DJISDK.framework in Frameworks */,
 				689498EA1DF4C391007D765A /* CardKitRuntime.framework in Frameworks */,
 				689498EB1DF4C391007D765A /* DroneCardKit.framework in Frameworks */,
-				689498EC1DF4C391007D765A /* Freddy.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,6 +150,7 @@
 				685338A41DF4C219003F1DA5 /* DroneTokensDJITests */,
 				D58DE4961E4278CC00011E93 /* HostApplicationForTests */,
 				685338B11DF4C251003F1DA5 /* Frameworks */,
+				685338981DF4C219003F1DA5 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -190,11 +189,9 @@
 		685338B11DF4C251003F1DA5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				685338981DF4C219003F1DA5 /* Products */,
 				685338B21DF4C251003F1DA5 /* CardKit.framework */,
 				685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */,
 				685338B41DF4C251003F1DA5 /* DroneCardKit.framework */,
-				685338B51DF4C251003F1DA5 /* Freddy.framework */,
 				689498E71DF4C373007D765A /* DJISDK.framework */,
 			);
 			name = Frameworks;
@@ -371,8 +368,8 @@
 				6853389C1DF4C219003F1DA5 /* Sources */,
 				6853389D1DF4C219003F1DA5 /* Frameworks */,
 				6853389E1DF4C219003F1DA5 /* Resources */,
-				689498F01DF4C3A1007D765A /* ShellScript */,
-				689498F21DF4C621007D765A /* CopyFiles */,
+				689498F01DF4C3A1007D765A /* Carthage */,
+				689498F21DF4C621007D765A /* DJISDK */,
 			);
 			buildRules = (
 			);
@@ -495,17 +492,17 @@
 			shellPath = /bin/sh;
 			shellScript = "/usr/local/bin/carthage copy-frameworks";
 		};
-		689498F01DF4C3A1007D765A /* ShellScript */ = {
+		689498F01DF4C3A1007D765A /* Carthage */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/Freddy.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/CardKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/CardKitRuntime.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/DroneCardKit.framework",
 			);
+			name = Carthage;
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
