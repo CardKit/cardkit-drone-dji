@@ -19,6 +19,7 @@ class DJICameraTokenTests: BaseHardwareTokenTest {
     var camera: DJICameraToken?
     let cameraOptions: Set<CameraPhotoOption> = [CameraPhotoOption.aspectRatio(.aspect16x9)]
     let videoOptions: Set<CameraVideoOption> = [CameraVideoOption.framerate(.framerate50fps), CameraVideoOption.resolution(.resolution720p)]
+    let cameraDuration: Int = 3
     
     override func setUp() {
         super.setUp()
@@ -110,7 +111,7 @@ class DJICameraTokenTests: BaseHardwareTokenTest {
         let cameraExpectation = expectation(description: "take photo series")
         let backgroundQueue = DispatchQueue(label: "photos")
         let timeInterval: TimeInterval = 5.0
-        let duration = DispatchTime.now() + .seconds(20)
+        let duration = DispatchTime.now() + .seconds(self.cameraDuration)
         
         backgroundQueue.async {
             do {
@@ -140,7 +141,7 @@ class DJICameraTokenTests: BaseHardwareTokenTest {
     func testTakeTimelapse() {
         let cameraExpectation = expectation(description: "take timelapse")
         let backgroundQueue = DispatchQueue(label: "timelapse")
-        let duration = DispatchTime.now() + .seconds(20)
+        let duration = DispatchTime.now() + .seconds(self.cameraDuration)
         
         backgroundQueue.async {
             do {
@@ -171,13 +172,13 @@ class DJICameraTokenTests: BaseHardwareTokenTest {
     func testCameraRecordVideo() {
         let cameraExpectation = expectation(description: "record video")
         let backgroundQueue = DispatchQueue(label: "recordVideo")
-        let duration = DispatchTime.now() + .seconds(10)
+        let duration = DispatchTime.now() + .seconds(self.cameraDuration)
         
         backgroundQueue.async {
             do {
                 try self.camera?.startVideo(options: self.videoOptions)
                 
-                backgroundQueue.asyncAfter(deadline: duration, execute: { 
+                backgroundQueue.asyncAfter(deadline: duration, execute: {
                     do {
                         _ = try self.camera?.stopVideo()
                     } catch {

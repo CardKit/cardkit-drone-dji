@@ -22,16 +22,25 @@ class BaseHardwareTokenTest: XCTestCase, DJISDKManagerDelegate {
     var product: DJIBaseProduct?
     var aircraft: DJIAircraft?
     var isConnected: Bool = false
+    var error: Error?
     
     override func setUp() {
         super.setUp()
         
+        // don't continue the test if a failure occurs
+        super.continueAfterFailure = false
+        
+        // register with the DJI SDK
         DJISDKManager.registerApp(with: self)
         
         // asynchronous processes in setUp() must be handled with RunLoop and not XCTestExpections;
         // semaphores blocked the callbacks expected from DJI
-        while !self.isConnected {
+        while !self.isConnected && self.error == nil {
             RunLoop.current.run(mode: .defaultRunLoopMode, before: Date.distantFuture)
+        }
+        
+        if let error = self.error {
+            XCTFail("\(error)")
         }
     }
     
@@ -58,13 +67,24 @@ class BaseHardwareTokenTest: XCTestCase, DJISDKManagerDelegate {
     
     func appRegisteredWithError(_ error: Error?) {
         if let error = error {
-            XCTFail("error registering app: \(error)")
+            self.error = error
+            return
         }
         
         let connectionSuccess = DJISDKManager.startConnectionToProduct()
         if !connectionSuccess {
-            XCTFail("error connecting to product")
+            self.error = error
+            return
         }
+        
+        // time out after 5 seconds if we didn't connect
+        let fiveSeconds = DispatchTime.now() + .seconds(5)
+        DispatchQueue.main.asyncAfter(deadline: fiveSeconds, execute: {
+            if !self.isConnected {
+                DJISDKManager.stopConnectionToProduct()
+                self.error = DJIHardwareTokenTestError.productConnectionTimedOut
+            }
+        })
         
         if let bridgeAppIP = self.bridgeAppIP {
             DJISDKManager.enableBridgeMode(withBridgeAppIP: bridgeAppIP)
@@ -75,6 +95,7 @@ class BaseHardwareTokenTest: XCTestCase, DJISDKManagerDelegate {
         guard let product = product else {
             print("productConnected called, but product is nil")
             self.product = nil
+            self.error = DJIHardwareTokenTestError.failedToObtainProduct
             return
         }
         
@@ -93,4 +114,9 @@ class BaseHardwareTokenTest: XCTestCase, DJISDKManagerDelegate {
         self.aircraft = nil
         self.isConnected = false
     }
+}
+
+enum DJIHardwareTokenTestError: Error {
+    case productConnectionTimedOut
+    case failedToObtainProduct
 }

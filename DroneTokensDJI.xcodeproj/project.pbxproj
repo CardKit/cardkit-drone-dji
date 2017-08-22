@@ -178,10 +178,10 @@
 		685338A41DF4C219003F1DA5 /* DroneTokensDJITests */ = {
 			isa = PBXGroup;
 			children = (
+				685338A71DF4C219003F1DA5 /* Info.plist */,
 				CC09F3221F4B81CE003FA148 /* Base */,
 				68A419771E4CC3A00065ABCB /* Cards */,
 				CC524AD81E660F2700773BFB /* Token */,
-				685338A71DF4C219003F1DA5 /* Info.plist */,
 			);
 			path = DroneTokensDJITests;
 			sourceTree = "<group>";
