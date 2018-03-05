@@ -12,14 +12,11 @@
 		685338B71DF4C251003F1DA5 /* CardKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B21DF4C251003F1DA5 /* CardKit.framework */; };
 		685338B81DF4C251003F1DA5 /* CardKitRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */; };
 		685338B91DF4C251003F1DA5 /* DroneCardKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B41DF4C251003F1DA5 /* DroneCardKit.framework */; };
-		685338BA1DF4C251003F1DA5 /* Freddy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B51DF4C251003F1DA5 /* Freddy.framework */; };
-		687DC9C81E5629EE000F7EBE /* BaseGimbalCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DC9C61E5629D7000F7EBE /* BaseGimbalCardTests.swift */; };
 		687DC9C91E5629FD000F7EBE /* PointAtFrontTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DC9C41E56283F000F7EBE /* PointAtFrontTests.swift */; };
 		687DC9CB1E563260000F7EBE /* PointAtGroundTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DC9CA1E563260000F7EBE /* PointAtGroundTests.swift */; };
 		687DC9CD1E563783000F7EBE /* PointInDirectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DC9CC1E563783000F7EBE /* PointInDirectionTests.swift */; };
 		687DC9CF1E564C56000F7EBE /* PanBetweenLocationsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DC9CE1E564C56000F7EBE /* PanBetweenLocationsTests.swift */; };
 		687DC9DD1E578BFD000F7EBE /* FlyPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DC9DB1E578BE1000F7EBE /* FlyPathTests.swift */; };
-		687DC9E01E578C7B000F7EBE /* BaseDroneTokenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DC9DE1E578C53000F7EBE /* BaseDroneTokenTests.swift */; };
 		687DC9E41E5793B1000F7EBE /* PaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 687DC9E31E5793B1000F7EBE /* PaceTests.swift */; };
 		688D74DF1E5F90B7000D9FD4 /* FlyForwardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688D74DD1E5F901E000D9FD4 /* FlyForwardTests.swift */; };
 		688EA0611E424A85008559F8 /* DJIAttitudeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688EA0601E424A85008559F8 /* DJIAttitudeExtension.swift */; };
@@ -27,13 +24,14 @@
 		689498E91DF4C391007D765A /* CardKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B21DF4C251003F1DA5 /* CardKit.framework */; };
 		689498EA1DF4C391007D765A /* CardKitRuntime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */; };
 		689498EB1DF4C391007D765A /* DroneCardKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B41DF4C251003F1DA5 /* DroneCardKit.framework */; };
-		689498EC1DF4C391007D765A /* Freddy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 685338B51DF4C251003F1DA5 /* Freddy.framework */; };
 		689498F11DF4C5AB007D765A /* DJISDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 689498E71DF4C373007D765A /* DJISDK.framework */; };
-		689498F31DF4C62F007D765A /* DJISDK.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 689498E71DF4C373007D765A /* DJISDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		689498F31DF4C62F007D765A /* DJISDK.framework in DJISDK */ = {isa = PBXBuildFile; fileRef = 689498E71DF4C373007D765A /* DJISDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		68A4197B1E4CC4600065ABCB /* PointAtLocationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A419791E4CC3C00065ABCB /* PointAtLocationTests.swift */; };
+		CC09F3261F4B81DB003FA148 /* BaseDroneCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC09F3231F4B81CE003FA148 /* BaseDroneCardTests.swift */; };
+		CC09F3271F4B81DB003FA148 /* BaseGimbalCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC09F3241F4B81CE003FA148 /* BaseGimbalCardTests.swift */; };
+		CC09F3281F4B81DB003FA148 /* BaseHardwareTokenTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC09F3251F4B81CE003FA148 /* BaseHardwareTokenTest.swift */; };
 		CC524ADC1E660F2700773BFB /* DJICameraTokenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC524AD91E660F2700773BFB /* DJICameraTokenTests.swift */; };
 		CC524ADD1E660F2700773BFB /* DJIGimbalTokenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC524ADA1E660F2700773BFB /* DJIGimbalTokenTests.swift */; };
-		CC524ADE1E660F2700773BFB /* DJIHardwareTokenTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC524ADB1E660F2700773BFB /* DJIHardwareTokenTest.swift */; };
 		CC64ECAA1E415B2200F7010D /* DJICameraToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC64ECA51E415B2200F7010D /* DJICameraToken.swift */; };
 		CC64ECAB1E415B2200F7010D /* DJIDroneToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC64ECA71E415B2200F7010D /* DJIDroneToken.swift */; };
 		CC64ECAC1E415B2200F7010D /* DJIGimbalToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC64ECA91E415B2200F7010D /* DJIGimbalToken.swift */; };
@@ -62,14 +60,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		689498F21DF4C621007D765A /* CopyFiles */ = {
+		689498F21DF4C621007D765A /* DJISDK */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				689498F31DF4C62F007D765A /* DJISDK.framework in CopyFiles */,
+				689498F31DF4C62F007D765A /* DJISDK.framework in DJISDK */,
 			);
+			name = DJISDK;
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -83,22 +82,21 @@
 		685338B21DF4C251003F1DA5 /* CardKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CardKit.framework; path = Carthage/Build/iOS/CardKit.framework; sourceTree = "<group>"; };
 		685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CardKitRuntime.framework; path = Carthage/Build/iOS/CardKitRuntime.framework; sourceTree = "<group>"; };
 		685338B41DF4C251003F1DA5 /* DroneCardKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DroneCardKit.framework; path = Carthage/Build/iOS/DroneCardKit.framework; sourceTree = "<group>"; };
-		685338B51DF4C251003F1DA5 /* Freddy.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Freddy.framework; path = Carthage/Build/iOS/Freddy.framework; sourceTree = "<group>"; };
 		687DC9C41E56283F000F7EBE /* PointAtFrontTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointAtFrontTests.swift; sourceTree = "<group>"; };
-		687DC9C61E5629D7000F7EBE /* BaseGimbalCardTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseGimbalCardTests.swift; sourceTree = "<group>"; };
 		687DC9CA1E563260000F7EBE /* PointAtGroundTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointAtGroundTests.swift; sourceTree = "<group>"; };
 		687DC9CC1E563783000F7EBE /* PointInDirectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointInDirectionTests.swift; sourceTree = "<group>"; };
 		687DC9CE1E564C56000F7EBE /* PanBetweenLocationsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PanBetweenLocationsTests.swift; sourceTree = "<group>"; };
 		687DC9DB1E578BE1000F7EBE /* FlyPathTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlyPathTests.swift; sourceTree = "<group>"; };
-		687DC9DE1E578C53000F7EBE /* BaseDroneTokenTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseDroneTokenTests.swift; sourceTree = "<group>"; };
 		687DC9E31E5793B1000F7EBE /* PaceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaceTests.swift; sourceTree = "<group>"; };
 		688D74DD1E5F901E000D9FD4 /* FlyForwardTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlyForwardTests.swift; sourceTree = "<group>"; };
 		688EA0601E424A85008559F8 /* DJIAttitudeExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJIAttitudeExtension.swift; sourceTree = "<group>"; };
 		689498E71DF4C373007D765A /* DJISDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DJISDK.framework; path = Frameworks/DJISDK.framework; sourceTree = "<group>"; };
 		68A419791E4CC3C00065ABCB /* PointAtLocationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointAtLocationTests.swift; sourceTree = "<group>"; };
+		CC09F3231F4B81CE003FA148 /* BaseDroneCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseDroneCardTests.swift; sourceTree = "<group>"; };
+		CC09F3241F4B81CE003FA148 /* BaseGimbalCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseGimbalCardTests.swift; sourceTree = "<group>"; };
+		CC09F3251F4B81CE003FA148 /* BaseHardwareTokenTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseHardwareTokenTest.swift; sourceTree = "<group>"; };
 		CC524AD91E660F2700773BFB /* DJICameraTokenTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJICameraTokenTests.swift; sourceTree = "<group>"; };
 		CC524ADA1E660F2700773BFB /* DJIGimbalTokenTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJIGimbalTokenTests.swift; sourceTree = "<group>"; };
-		CC524ADB1E660F2700773BFB /* DJIHardwareTokenTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJIHardwareTokenTest.swift; sourceTree = "<group>"; };
 		CC64ECA51E415B2200F7010D /* DJICameraToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJICameraToken.swift; sourceTree = "<group>"; };
 		CC64ECA71E415B2200F7010D /* DJIDroneToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJIDroneToken.swift; sourceTree = "<group>"; };
 		CC64ECA91E415B2200F7010D /* DJIGimbalToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJIGimbalToken.swift; sourceTree = "<group>"; };
@@ -116,11 +114,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				689498E81DF4C373007D765A /* DJISDK.framework in Frameworks */,
-				685338BA1DF4C251003F1DA5 /* Freddy.framework in Frameworks */,
 				685338B71DF4C251003F1DA5 /* CardKit.framework in Frameworks */,
 				685338B81DF4C251003F1DA5 /* CardKitRuntime.framework in Frameworks */,
 				685338B91DF4C251003F1DA5 /* DroneCardKit.framework in Frameworks */,
+				689498E81DF4C373007D765A /* DJISDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,7 +130,6 @@
 				689498F11DF4C5AB007D765A /* DJISDK.framework in Frameworks */,
 				689498EA1DF4C391007D765A /* CardKitRuntime.framework in Frameworks */,
 				689498EB1DF4C391007D765A /* DroneCardKit.framework in Frameworks */,
-				689498EC1DF4C391007D765A /* Freddy.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -154,6 +150,7 @@
 				685338A41DF4C219003F1DA5 /* DroneTokensDJITests */,
 				D58DE4961E4278CC00011E93 /* HostApplicationForTests */,
 				685338B11DF4C251003F1DA5 /* Frameworks */,
+				685338981DF4C219003F1DA5 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -181,9 +178,10 @@
 		685338A41DF4C219003F1DA5 /* DroneTokensDJITests */ = {
 			isa = PBXGroup;
 			children = (
+				685338A71DF4C219003F1DA5 /* Info.plist */,
+				CC09F3221F4B81CE003FA148 /* Base */,
 				68A419771E4CC3A00065ABCB /* Cards */,
 				CC524AD81E660F2700773BFB /* Token */,
-				685338A71DF4C219003F1DA5 /* Info.plist */,
 			);
 			path = DroneTokensDJITests;
 			sourceTree = "<group>";
@@ -191,11 +189,9 @@
 		685338B11DF4C251003F1DA5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				685338981DF4C219003F1DA5 /* Products */,
 				685338B21DF4C251003F1DA5 /* CardKit.framework */,
 				685338B31DF4C251003F1DA5 /* CardKitRuntime.framework */,
 				685338B41DF4C251003F1DA5 /* DroneCardKit.framework */,
-				685338B51DF4C251003F1DA5 /* Freddy.framework */,
 				689498E71DF4C373007D765A /* DJISDK.framework */,
 			);
 			name = Frameworks;
@@ -212,7 +208,6 @@
 		687DC9D81E578BC2000F7EBE /* Action */ = {
 			isa = PBXGroup;
 			children = (
-				687DC9DE1E578C53000F7EBE /* BaseDroneTokenTests.swift */,
 				687DC9D91E578BC9000F7EBE /* Movement */,
 			);
 			path = Action;
@@ -261,9 +256,18 @@
 				687DC9C41E56283F000F7EBE /* PointAtFrontTests.swift */,
 				687DC9CC1E563783000F7EBE /* PointInDirectionTests.swift */,
 				687DC9CE1E564C56000F7EBE /* PanBetweenLocationsTests.swift */,
-				687DC9C61E5629D7000F7EBE /* BaseGimbalCardTests.swift */,
 			);
 			path = Gimbal;
+			sourceTree = "<group>";
+		};
+		CC09F3221F4B81CE003FA148 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				CC09F3251F4B81CE003FA148 /* BaseHardwareTokenTest.swift */,
+				CC09F3231F4B81CE003FA148 /* BaseDroneCardTests.swift */,
+				CC09F3241F4B81CE003FA148 /* BaseGimbalCardTests.swift */,
+			);
+			path = Base;
 			sourceTree = "<group>";
 		};
 		CC524AD81E660F2700773BFB /* Token */ = {
@@ -271,7 +275,6 @@
 			children = (
 				CC524AD91E660F2700773BFB /* DJICameraTokenTests.swift */,
 				CC524ADA1E660F2700773BFB /* DJIGimbalTokenTests.swift */,
-				CC524ADB1E660F2700773BFB /* DJIHardwareTokenTest.swift */,
 			);
 			path = Token;
 			sourceTree = "<group>";
@@ -341,13 +344,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 685338AB1DF4C219003F1DA5 /* Build configuration list for PBXNativeTarget "DroneTokensDJI iOS" */;
 			buildPhases = (
-				CCF8A6031DFF00EF00BDCEE7 /* ShellScript */,
+				CCF8A6031DFF00EF00BDCEE7 /* Fetch DJI SDK */,
 				685338921DF4C219003F1DA5 /* Sources */,
 				685338931DF4C219003F1DA5 /* Frameworks */,
 				685338941DF4C219003F1DA5 /* Headers */,
 				685338951DF4C219003F1DA5 /* Resources */,
-				CCF8A6021DFEFFF700BDCEE7 /* ShellScript */,
-				685338BC1DF4C25A003F1DA5 /* ShellScript */,
+				CCF8A6021DFEFFF700BDCEE7 /* Swiftlint */,
+				685338BC1DF4C25A003F1DA5 /* Carthage */,
 			);
 			buildRules = (
 			);
@@ -365,8 +368,8 @@
 				6853389C1DF4C219003F1DA5 /* Sources */,
 				6853389D1DF4C219003F1DA5 /* Frameworks */,
 				6853389E1DF4C219003F1DA5 /* Resources */,
-				689498F01DF4C3A1007D765A /* ShellScript */,
-				689498F21DF4C621007D765A /* CopyFiles */,
+				689498F01DF4C3A1007D765A /* Carthage */,
+				689498F21DF4C621007D765A /* DJISDK */,
 			);
 			buildRules = (
 			);
@@ -403,7 +406,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0820;
-				LastUpgradeCheck = 0820;
+				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = IBM;
 				TargetAttributes = {
 					685338961DF4C219003F1DA5 = {
@@ -472,60 +475,62 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		685338BC1DF4C25A003F1DA5 /* ShellScript */ = {
+		685338BC1DF4C25A003F1DA5 /* Carthage */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/Freddy.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/CardKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/CardKitRuntime.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/DroneCardKit.framework",
 			);
+			name = Carthage;
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/usr/local/bin/carthage copy-frameworks";
 		};
-		689498F01DF4C3A1007D765A /* ShellScript */ = {
+		689498F01DF4C3A1007D765A /* Carthage */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/Freddy.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/CardKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/CardKitRuntime.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/DroneCardKit.framework",
 			);
+			name = Carthage;
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/usr/local/bin/carthage copy-frameworks";
 		};
-		CCF8A6021DFEFFF700BDCEE7 /* ShellScript */ = {
+		CCF8A6021DFEFFF700BDCEE7 /* Swiftlint */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = Swiftlint;
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export PATH=\"/usr/local/bin:$PATH\"\nif which swiftlint >/dev/null; then\nswiftlint\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi";
 		};
-		CCF8A6031DFF00EF00BDCEE7 /* ShellScript */ = {
+		CCF8A6031DFF00EF00BDCEE7 /* Fetch DJI SDK */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Fetch DJI SDK";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -550,10 +555,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				687DC9C81E5629EE000F7EBE /* BaseGimbalCardTests.swift in Sources */,
+				CC09F3271F4B81DB003FA148 /* BaseGimbalCardTests.swift in Sources */,
 				687DC9CF1E564C56000F7EBE /* PanBetweenLocationsTests.swift in Sources */,
 				CC524ADC1E660F2700773BFB /* DJICameraTokenTests.swift in Sources */,
-				CC524ADE1E660F2700773BFB /* DJIHardwareTokenTest.swift in Sources */,
 				687DC9E41E5793B1000F7EBE /* PaceTests.swift in Sources */,
 				68A4197B1E4CC4600065ABCB /* PointAtLocationTests.swift in Sources */,
 				687DC9DD1E578BFD000F7EBE /* FlyPathTests.swift in Sources */,
@@ -561,8 +565,9 @@
 				687DC9CD1E563783000F7EBE /* PointInDirectionTests.swift in Sources */,
 				687DC9CB1E563260000F7EBE /* PointAtGroundTests.swift in Sources */,
 				687DC9C91E5629FD000F7EBE /* PointAtFrontTests.swift in Sources */,
+				CC09F3261F4B81DB003FA148 /* BaseDroneCardTests.swift in Sources */,
 				CC524ADD1E660F2700773BFB /* DJIGimbalTokenTests.swift in Sources */,
-				687DC9E01E578C7B000F7EBE /* BaseDroneTokenTests.swift in Sources */,
+				CC09F3281F4B81DB003FA148 /* BaseHardwareTokenTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -621,7 +626,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -629,7 +636,11 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
@@ -675,7 +686,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -683,7 +696,11 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;

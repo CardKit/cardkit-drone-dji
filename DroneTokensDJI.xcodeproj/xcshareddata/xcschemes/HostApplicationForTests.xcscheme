@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "685338961DF4C219003F1DA5"
-               BuildableName = "DroneTokensDJI.framework"
-               BlueprintName = "DroneTokensDJI iOS"
+               BlueprintIdentifier = "D58DE4941E4278CC00011E93"
+               BuildableName = "HostApplicationForTests.app"
+               BlueprintName = "HostApplicationForTests"
                ReferencedContainer = "container:DroneTokensDJI.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -29,23 +29,13 @@
       language = ""
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "6853389F1DF4C219003F1DA5"
-               BuildableName = "DroneTokensDJITests iOS.xctest"
-               BlueprintName = "DroneTokensDJITests iOS"
-               ReferencedContainer = "container:DroneTokensDJI.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "685338961DF4C219003F1DA5"
-            BuildableName = "DroneTokensDJI.framework"
-            BlueprintName = "DroneTokensDJI iOS"
+            BlueprintIdentifier = "D58DE4941E4278CC00011E93"
+            BuildableName = "HostApplicationForTests.app"
+            BlueprintName = "HostApplicationForTests"
             ReferencedContainer = "container:DroneTokensDJI.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -63,15 +53,16 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "685338961DF4C219003F1DA5"
-            BuildableName = "DroneTokensDJI.framework"
-            BlueprintName = "DroneTokensDJI iOS"
+            BlueprintIdentifier = "D58DE4941E4278CC00011E93"
+            BuildableName = "HostApplicationForTests.app"
+            BlueprintName = "HostApplicationForTests"
             ReferencedContainer = "container:DroneTokensDJI.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -81,15 +72,16 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "685338961DF4C219003F1DA5"
-            BuildableName = "DroneTokensDJI.framework"
-            BlueprintName = "DroneTokensDJI iOS"
+            BlueprintIdentifier = "D58DE4941E4278CC00011E93"
+            BuildableName = "HostApplicationForTests.app"
+            BlueprintName = "HostApplicationForTests"
             ReferencedContainer = "container:DroneTokensDJI.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

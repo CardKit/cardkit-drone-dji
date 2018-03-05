@@ -6,26 +6,21 @@
 //  Copyright © 2017 IBM. All rights reserved.
 //
 
-@testable import DroneTokensDJI
-@testable import DroneCardKit
-@testable import CardKitRuntime
-@testable import CardKit
-
 import XCTest
+
+@testable import CardKit
+@testable import CardKitRuntime
+@testable import DroneCardKit
+@testable import DroneTokensDJI
 
 import DJISDK
 
-class FlyForwardTests: BaseDroneTokenTests {
-    // when  ideally it would be good to test fly forward when facing different angles (various yaw angles)
-    // however we are not able to update our yaw yet.. therefore the yaw will have 
-    // to be manually updated for now with the remote controller in the simulator
-    // this test will make the drone take off and hover and fly forward in the direction 
-    // that it is already facing
+class FlyForwardTests: BaseDroneCardTests {
     func testFlyForwardCard() {
         let myExpectation = expectation(description: "testFlyForwardCard expectation")
         
-        guard let drone = drone else {
-            XCTFail("Could not find drone and/or gimbal hardware")
+        guard let drone = self.drone else {
+            XCTFail("could not find drone hardware")
             return
         }
         
@@ -51,15 +46,8 @@ class FlyForwardTests: BaseDroneTokenTests {
                 let flyForward = FlyForward(with: DroneCardKit.Action.Movement.Simple.FlyForward.makeCard())
                 
                 // bind input and token slots
-                guard let droneTokenSlot = flyForward.actionCard.tokenSlots.slot(named: "Drone"),
-                    let distanceSlot = flyForward.actionCard.inputSlots.slot(named: "Distance") else {
-                        XCTFail("could not find the right token/input slots")
-                        myExpectation.fulfill()
-                        return
-                }
-                
-                let inputBindings: [InputSlot: DataBinding] = [distanceSlot: .bound(distance.toJSON())]
-                let tokenBindings = [droneTokenSlot: drone]
+                let inputBindings: [String: Codable] = ["Distance": distance]
+                let tokenBindings: [String: ExecutableToken] = ["Drone": drone]
                 flyForward.setup(inputBindings: inputBindings, tokenBindings: tokenBindings)
                 
                 // execute
