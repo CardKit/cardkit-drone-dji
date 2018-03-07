@@ -1,1 +1,1 @@
-git "git@github.ibm.com:ETX-CardKit/drone-card-kit.git" "master"
+git "git@github.ibm.com:CardKit/cardkit-drone.git" "master"
