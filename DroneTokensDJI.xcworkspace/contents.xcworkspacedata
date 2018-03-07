@@ -2,13 +2,13 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:../card-kit/CardKit.xcodeproj">
+      location = "group:../cardkit/CardKit.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:../card-kit-runtime/CardKitRuntime.xcodeproj">
+      location = "group:../cardkit-runtime/CardKitRuntime.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:../drone-card-kit/DroneCardKit.xcodeproj">
+      location = "group:../cardkit-drone/DroneCardKit.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:DroneTokensDJI.xcodeproj">

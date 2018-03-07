@@ -100,6 +100,7 @@
 		CC64ECA51E415B2200F7010D /* DJICameraToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJICameraToken.swift; sourceTree = "<group>"; };
 		CC64ECA71E415B2200F7010D /* DJIDroneToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJIDroneToken.swift; sourceTree = "<group>"; };
 		CC64ECA91E415B2200F7010D /* DJIGimbalToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DJIGimbalToken.swift; sourceTree = "<group>"; };
+		CCF5401620504D7B00022405 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D58DE4951E4278CC00011E93 /* HostApplicationForTests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HostApplicationForTests.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D58DE4971E4278CC00011E93 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D58DE4991E4278CC00011E93 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -146,6 +147,7 @@
 		6853388D1DF4C219003F1DA5 = {
 			isa = PBXGroup;
 			children = (
+				CCF5401620504D7B00022405 /* README.md */,
 				685338991DF4C219003F1DA5 /* DroneTokensDJI */,
 				685338A41DF4C219003F1DA5 /* DroneTokensDJITests */,
 				D58DE4961E4278CC00011E93 /* HostApplicationForTests */,
@@ -412,17 +414,20 @@
 					685338961DF4C219003F1DA5 = {
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = 76CMF53Q35;
+						LastSwiftMigration = 0920;
 						ProvisioningStyle = Automatic;
 					};
 					6853389F1DF4C219003F1DA5 = {
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = 76CMF53Q35;
+						LastSwiftMigration = 0920;
 						ProvisioningStyle = Automatic;
 						TestTargetID = D58DE4941E4278CC00011E93;
 					};
 					D58DE4941E4278CC00011E93 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = 76CMF53Q35;
+						LastSwiftMigration = 0920;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -752,7 +757,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ibm.research.DroneTokensDJI;
 				PRODUCT_NAME = DroneTokensDJI;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -778,7 +783,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ibm.research.DroneTokensDJI;
 				PRODUCT_NAME = DroneTokensDJI;
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
@@ -796,7 +801,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ibm.research.DroneTokensDJITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HostApplicationForTests.app/HostApplicationForTests";
 			};
 			name = Debug;
@@ -815,7 +821,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ibm.research.DroneTokensDJITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HostApplicationForTests.app/HostApplicationForTests";
 			};
 			name = Release;
@@ -831,7 +838,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ibm.research.DroneTokensDJITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -846,7 +853,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ibm.research.DroneTokensDJITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
