@@ -12,7 +12,7 @@ DroneTokensDJI depends on [CardKit](https://github.com/CardKit/cardkit), the [Ca
 
 ## Known Limitations
 
-This framework was developed against the DJI SDK version 4.2.2. Newer versions of the DJI SDK may require updates to this code.
+This framework was developed against the DJI SDK version 4.4. Newer versions of the DJI SDK may require updates to this code.
 
 ## Contributing
 

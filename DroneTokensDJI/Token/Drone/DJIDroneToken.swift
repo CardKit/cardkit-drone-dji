@@ -228,7 +228,7 @@ public class DJIDroneToken: ExecutableToken, DroneToken {
         // round the angular velocity since DJI only supports whole numbers
         if let angularVelocity = angularVelocity {
             let degreesPerSecond = Int(angularVelocity.degreesPerSecond.rounded())
-            hotpointMission.angularVelocity = Int(degreesPerSecond)
+            hotpointMission.angularVelocity = Float(degreesPerSecond)
         }
         
         // point toward the center of the circle
